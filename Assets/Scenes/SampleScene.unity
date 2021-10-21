@@ -589,7 +589,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1553391019}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -166, y: 7.2, z: -10}
+  m_LocalPosition: {x: 0, y: -2.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 698159475}
@@ -634,7 +634,7 @@ MonoBehaviour:
   mCurrentNodeId: -1
   mFramesOfJumping: 0
   mStuckFrames: 0
-  mMaxJumpHeight: 6
+  mMaxJumpHeight: 7
   mWidth: 2
   mHeight: 5
 --- !u!114 &1622671712 stripped
@@ -808,7 +808,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677416477}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -166, y: 7.2, z: -10}
+  m_LocalPosition: {x: 0, y: -2.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1123,7 +1123,7 @@ PrefabInstance:
       objectReference: {fileID: 239620179}
     - target: {fileID: 7457381203073081213, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: jumpForce
-      value: 20
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203073081213, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: spriteObject
@@ -1135,11 +1135,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -166
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.z
