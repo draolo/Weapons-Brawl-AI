@@ -4,22 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerWeaponManager_Inventory : NetworkBehaviour {
+public class PlayerWeaponManager_Inventory : MonoBehaviour {
 
     //Inventory Stuff
     public List<AbstractWeaponGeneric> Weapons = new List<AbstractWeaponGeneric>();
     public int currentWeaponID;
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallBack;
+    public bool _inturn=true;
 
     //Weapon Manager Stuff
     public GameObject throwingChargeBar;
     public int AxeSpeed=10;
     public int timeToRepairAfterAttack = 5;
     public bool canAttack = true;
-    public bool idleByBuilding = false;
 
-    public BuildingController buildingController;
     private InventoryUI inventoryUI;
     private AbstractWeaponGeneric CurrentWeapon;
     private GameObject Axe;
@@ -49,49 +48,35 @@ public class PlayerWeaponManager_Inventory : NetworkBehaviour {
 
     protected void Update()
     {
-        if (hasAuthority && !idleByBuilding)
-        {
-            if (canAttack && buildingController.isBuilding == false)
+
+            if (canAttack)
             {
                 if (Input.GetButtonDown("Fire1"))
                     throwingChargeBar.SetActive(true);
 
                 if (Input.GetButtonUp("Fire1"))
                 {
-                    CmdAttack(throwingChargeBar.GetComponent<ThrowingPowerBarScript>().Charge);
-                    canAttack = false;
-                    StartCoroutine(gameObject.GetComponent<PlayerManager>().LockAfterSec(timeToRepairAfterAttack));
+                    //CmdAttack(throwingChargeBar.GetComponent<ThrowingPowerBarScript>().Charge);
+                    CmdAttack(100);
+
+                    //canAttack = false;
                     throwingChargeBar.SetActive(false);
                 }
             }
-
-            if (Input.GetButtonDown("Switch Left"))
-            {
-                int numberOfWeapons = Weapons.Count;
-                int switchTo = currentWeaponID - 1;
-                if (switchTo < 0)
-                {
-                    switchTo += numberOfWeapons;
-                }
-                CmdSwitchWeapon(switchTo);
-            }                
+              
             if (Input.GetButtonDown("Switch Right"))
             {
                 int numberOfWeapons = Weapons.Count;
                 CmdSwitchWeapon((currentWeaponID+1)%numberOfWeapons);
             }
                 
-        }
+        
 
-        if (hasAuthority)
-        {
-            if (buildingController.isBuilding)
-                CmdSetActiveWeapon(false);
-            else
+       
                 CmdSetActiveWeapon(true);
-        }
+       
 
-        if (hasAuthority && gameObject.GetComponent<PlayerManager>().isInTurn)
+        if (_inturn)
         {
             if (Input.GetButtonDown("Axe"))
             {
@@ -171,45 +156,45 @@ public class PlayerWeaponManager_Inventory : NetworkBehaviour {
 
 
 
-    [Command]
+    
     public void CmdSetActiveWeapon(bool active)
     {
         RpcSetActiveWeapon(active);
     }
 
-    [ClientRpc]
+    
     private void RpcSetActiveWeapon(bool active)
     {
         SetActiveWeapon(active);
     }
 
 
-    [Command]
+    
     public void CmdAddWeapon(GameObject weaponToAdd, GameObject player)
     {
         RpcAddWeapon(weaponToAdd, player);
     }
 
-    [ClientRpc]
+    
     private void RpcAddWeapon(GameObject weaponToAdd, GameObject player)
     {
         AddWeapon(weaponToAdd, player);
     }
 
 
-    [Command]
+    
     public void CmdAttack(int charge)
     {
         CurrentWeapon.Attack(charge);
     }
 
-    [Command]
+    
     void CmdActivateAxe(bool active)
     {
         RpcActivateAxe(active);
     }
 
-    [ClientRpc]
+    
     void RpcActivateAxe(bool active)
     {
         ActivateAxe(active);
@@ -217,13 +202,13 @@ public class PlayerWeaponManager_Inventory : NetworkBehaviour {
 
 
 
-    [Command]
+    
     public void CmdSwitchWeapon(int id)
     {
         RpcSwitchWeapon(id);
     }
 
-    [ClientRpc]
+    
     private void RpcSwitchWeapon(int id)
     {
         SwitchWeapon(id);

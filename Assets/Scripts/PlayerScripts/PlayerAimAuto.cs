@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerAim : MonoBehaviour
+public class PlayerAimAuto : MonoBehaviour
 {
 
     public float firePointRadius = 3.15f;
@@ -16,19 +16,16 @@ public class PlayerAim : MonoBehaviour
 
     void Update()
     {
-        if (true)
+        TargetAim targetAim= GetComponent<TargetAim>();
+        Vector2 direction = targetAim.Aim();
+        Debug.Log(direction);
+        if (direction.x < -999)
         {
-            var rot = FirePointPivot.transform.rotation.eulerAngles.z;
-            var dir = Input.GetAxisRaw("Vertical");
-            var a = rot < upperAngle + 10f & dir < 0;
-            var b = rot > lowerAngle - 10f & dir > 0;
-            if (rot < upperAngle || rot > lowerAngle || a || b)
-                FirePointPivot.transform.Rotate(0f, 0f, dir * speed);
+            return;
         }
-
-
-
-
+        float angle = Vector2.Angle( Vector2.right, direction);
+        
+        FirePointPivot.transform.eulerAngles=new Vector3(0f, 0f, angle);
 
     }
 

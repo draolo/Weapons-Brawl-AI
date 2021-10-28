@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public abstract class AbstractWeaponGeneric : NetworkBehaviour {
+public abstract class AbstractWeaponGeneric : MonoBehaviour {
 
     protected Transform firePoint;
 
@@ -24,6 +24,6 @@ public abstract class AbstractWeaponGeneric : NetworkBehaviour {
         firePoint = Player.Find("FirePointPivot/FirePoint");
     }
 
-    [Server]
+
     public abstract void Attack(int charge);
 }

@@ -195,7 +195,6 @@ public class Bot : Character
         }
 
         Vector2 pathPosition = (Vector2)transform.position - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        Debug.Log(pathPosition);
         reachedX = ReachedNodeOnXAxis(pathPosition, prevDest, currentDest);
         reachedY = ReachedNodeOnYAxis(pathPosition, prevDest, currentDest);
 

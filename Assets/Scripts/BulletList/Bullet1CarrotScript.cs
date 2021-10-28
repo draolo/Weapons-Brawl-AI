@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,7 +8,9 @@ public class Bullet1CarrotScript : AbstractBulletExplosive
     new void Start()
     {
         base.Start();
+        Debug.Log("speed"+speed);
         rb.velocity = transform.right * speed;
+
     }
 
 

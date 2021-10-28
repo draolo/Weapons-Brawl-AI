@@ -26,7 +26,7 @@ public class Bullet2BombScript : AbstractBulletExplosive
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isServer)
+
         {
             var enemy = collision.gameObject.GetComponent<PlayerHealth>();
             if (enemy)

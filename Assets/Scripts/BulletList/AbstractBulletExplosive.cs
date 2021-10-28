@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public abstract class AbstractBulletExplosive : NetworkBehaviour {
+public abstract class AbstractBulletExplosive : MonoBehaviour {
 
     [Range(2, 60)] [SerializeField] public int ExplosionRadius = 2;
 
@@ -13,19 +12,19 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
     public float speed = 20f;
 
     public Rigidbody2D rb;
-    public MapController map;
+    public Map map;
     public GameObject explosionEffect;
 
 
     protected void Start()
     {
-        map = FindObjectOfType<MapController>();
+        map = FindObjectOfType<Map>();
     }
 
 
     public void ExplodeCircle()
     {
-        if (isServer)
+
         {
             DestroyMapCircle();
             DestroyWalls();
@@ -36,7 +35,6 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
     }
 
 
-    [Server]
     private void DestroyMapCircle()
     {
         foreach (var p in new BoundsInt(-ExplosionRadius, -ExplosionRadius, 0, 2 * ExplosionRadius + 1, 2 * ExplosionRadius + 1, 1).allPositionsWithin)
@@ -45,10 +43,12 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
             int y = p[1];
             if (x * x + y * y - ExplosionRadius * ExplosionRadius < 0)
             {
-                Vector3Int position = Vector3Int.FloorToInt(gameObject.transform.position);
+                Vector3 position = gameObject.transform.position;
                 position.z = 0; // A volte diventa -1 a caso quindi lo forzo a 0 io
-                Vector3Int destroyPos = position + p;
-                map.CmdDestroyTile(destroyPos.x, destroyPos.y, destroyPos.z);
+                Vector3 destroyPos = position + p;
+                int destroyX, destroyY;
+                map.GetMapTileAtPoint(destroyPos, out destroyX, out destroyY);
+                map.SetTile(destroyX,destroyY,TileType.Empty);
             }
         }
     }
@@ -57,14 +57,12 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
 
 
 
-    [Server]
     void FlingWhoIsInsideTheExplosionCallback()
     {
         //FlingWhoIsInsideTheExplosion();
         RpcFlingWhoIsInsideTheExplosion(); //rpc are called also on the server
     }
 
-    [ClientRpc]
     void RpcFlingWhoIsInsideTheExplosion()
     {
         FlingWhoIsInsideTheExplosion();
@@ -88,7 +86,6 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
 
 
 
-    [Server]
     void ExplosionAnimationCallback()
     {
         //ExplosionAnimation();
@@ -98,7 +95,6 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
 
 
 
-    [ClientRpc]
     void RpcExplosionAnimation()
     {
         ExplosionAnimation();
@@ -116,8 +112,6 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
 
 
 
-
-    [Server]
     void DamageWhoIsInsideTheExplosion()
     {
         Collider2D[] hittedList = Physics2D.OverlapCircleAll(transform.position, ExplosionRadius);
@@ -130,7 +124,7 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
         }
     }
 
-    [Server]
+
     void DestroyWalls()
     {
         Collider2D[] hittedList = Physics2D.OverlapCircleAll(transform.position, ExplosionRadius);
@@ -138,7 +132,6 @@ public abstract class AbstractBulletExplosive : NetworkBehaviour {
         {
             if (hitted.CompareTag("Wall"))
             {
-                NetworkServer.UnSpawn(hitted.gameObject);
                 Destroy(hitted.gameObject);
             }
         }
