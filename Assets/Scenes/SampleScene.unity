@@ -335,6 +335,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid
       objectReference: {fileID: 0}
+    - target: {fileID: 2574781824428115469, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_Size.x
+      value: 450
+      objectReference: {fileID: 0}
+    - target: {fileID: 2574781824428115469, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_Size.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 2574781824428115469, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2574781824428115469, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_Offset.y
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2574781824428115472, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -735,7 +751,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799970732}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 33.5, y: 22.5, z: -58.32695}
+  m_LocalPosition: {x: -77.3, y: 30, z: -58.32695}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
