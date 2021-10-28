@@ -23,10 +23,10 @@ public class PlayerAimAuto : MonoBehaviour
         {
             return;
         }
-        float angle = Vector2.Angle( Vector2.right, direction);
+        float angle =Mathf.Rad2Deg*Mathf.Atan2(direction.y,direction.x);
         
         FirePointPivot.transform.eulerAngles=new Vector3(0f, 0f, angle);
-
+        Debug.Log(targetAim.CollisionPredictionStupid(direction));
     }
 
 

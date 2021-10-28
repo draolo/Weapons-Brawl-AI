@@ -27,7 +27,6 @@ public abstract class AbstractBulletExplosive : MonoBehaviour {
 
         {
             DestroyMapCircle();
-            DestroyWalls();
             DamageWhoIsInsideTheExplosion();
             FlingWhoIsInsideTheExplosionCallback();
             ExplosionAnimationCallback();
@@ -125,17 +124,7 @@ public abstract class AbstractBulletExplosive : MonoBehaviour {
     }
 
 
-    void DestroyWalls()
-    {
-        Collider2D[] hittedList = Physics2D.OverlapCircleAll(transform.position, ExplosionRadius);
-        foreach (Collider2D hitted in hittedList)
-        {
-            if (hitted.CompareTag("Wall"))
-            {
-                Destroy(hitted.gameObject);
-            }
-        }
-    }
+
 
 
 
