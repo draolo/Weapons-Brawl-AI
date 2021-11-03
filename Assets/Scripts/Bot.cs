@@ -32,7 +32,7 @@ public class Bot : Character
 	public const int cMaxStuckFrames = 20;
 	
 	
-    public void TappedOnTile(Vector2i mapPosInTile)
+    public void GoToPosition(Vector2i mapPosInTile)
     {
         while (!(mMap.IsGround(mapPosInTile.x, mapPosInTile.y)))
         {
@@ -41,14 +41,12 @@ public class Bot : Character
         MoveTo(new Vector2i(mapPosInTile.x, mapPosInTile.y + 1));
     }
 
-    public void BotInit(bool[] inputs, bool[] prevInputs)
+    public void BotInit()
     {
-      
+        mInputs = new bool[(int)KeyInput.Count];
+        mPrevInputs = new bool[(int)KeyInput.Count];
 
-        mInputs = inputs;
-        mPrevInputs = prevInputs;
-
-    //  mAudioSource = GetComponent<AudioSource>();
+        //  mAudioSource = GetComponent<AudioSource>();
         mPosition = transform.position;
 
         mAABB.HalfSize = new Vector2(0.5f*mWidth, 0.5f*mHeight);
@@ -243,6 +241,11 @@ public class Bot : Character
         }
 
         return 0;
+    }
+
+    void FixedUpdate()
+    {
+        BotUpdate();
     }
 
     public void BotUpdate()

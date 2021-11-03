@@ -360,6 +360,51 @@ PrefabInstance:
     - {fileID: 2574781823019446580, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
     - {fileID: 2574781823019446579, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+--- !u!1 &1070145467
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1070145469}
+  - component: {fileID: 1070145468}
+  m_Layer: 0
+  m_Name: PathManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1070145468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070145467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8811c1f00e6c5f640a9e4c07733e0ca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1622671711}
+  map: {fileID: 1342043166}
+--- !u!4 &1070145469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070145467}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -73.31319, y: 115.791176, z: -171.55307}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1342043160 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2574781823019446582, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
@@ -407,11 +452,6 @@ MonoBehaviour:
   tilePrefab: {fileID: 11400000, guid: 726c1233fe2e42e45b0d96493c321941, type: 2}
   mWidth: 358
   mHeight: 75
-  player: {fileID: 1622671711}
-  goLeftKey: 97
-  goRightKey: 100
-  goJumpKey: 32
-  goDownKey: 115
   tilemap: {fileID: 1342043165}
 --- !u!1 &1553391019
 GameObject:

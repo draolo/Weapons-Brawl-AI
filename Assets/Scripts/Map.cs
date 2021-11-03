@@ -70,17 +70,11 @@ public partial class Map : MonoBehaviour
     //public MapRoomData mapRoomOneWay;
 
     //public Camera gameCamera;
-    public Bot player;
-    bool[] inputs;
-    bool[] prevInputs;
 
-    int lastMouseTileX = -1;
-    int lastMouseTileY = -1;
 
-    public KeyCode goLeftKey = KeyCode.A;
-    public KeyCode goRightKey = KeyCode.D;
-    public KeyCode goJumpKey = KeyCode.Space;
-    public KeyCode goDownKey = KeyCode.S;
+
+
+
 
     //public RectTransform sliderHigh;
     //public RectTransform sliderLow;
@@ -289,13 +283,8 @@ public partial class Map : MonoBehaviour
     public void Start()
     {
 
-        //var mapRoom = mapRoomOneWay;
-        mRandomNumber = new System.Random();
-
         Application.targetFrameRate = 60;
         
-        inputs = new bool[(int)KeyInput.Count];
-        prevInputs = new bool[(int)KeyInput.Count];
 
         //set the position
         position = transform.position;
@@ -306,12 +295,7 @@ public partial class Map : MonoBehaviour
         tiles = new TileType[mWidth, mHeight];
         tilesSprites = new TileBase[mWidth, mHeight];
         TileBase[] actualTiles=tilemap.GetTilesBlock(tilemap.cellBounds);
-        Debug.Log("firstTile " +(actualTiles[367]==null));
         tilemapOffset = tilemap.cellBounds.min;
-        Debug.Log(tilemap.cellBounds);
-        Debug.Log(mWidth);
-        Debug.Log(mHeight);
-        Debug.Log(actualTiles.Length);
         mGrid = new byte[Mathf.NextPowerOfTwo((int)mWidth), Mathf.NextPowerOfTwo((int)mHeight)];
         InitPathFinder();
 
@@ -335,7 +319,6 @@ public partial class Map : MonoBehaviour
             }
         }
 
-        Debug.Log("tile: "+tiles[0,1]);
 
 
         for (int y = 0; y < mHeight; ++y)
@@ -350,182 +333,7 @@ public partial class Map : MonoBehaviour
             tiles[x, mHeight - 2] = TileType.Block;
         }
 
-        /*for (int y = 2; y < mHeight - 2; ++y)
-        {
-            for (int x = 2; x < mWidth - 2; ++x)
-            {
-                if (y < mHeight/4)
-                    SetTile(x, y, TileType.Block);
-            }
-        }*/
 
-        player.BotInit(inputs, prevInputs);
-        player.mMap = this;
-        //player.mPosition = new Vector2(2 * Map.cTileSize, (mHeight / 2) * Map.cTileSize + player.mAABB.HalfSizeY);
     }
 
-    void Update()
-    {
-        inputs[(int)KeyInput.GoRight] = Input.GetKey(goRightKey);
-        inputs[(int)KeyInput.GoLeft] = Input.GetKey(goLeftKey);
-        inputs[(int)KeyInput.GoDown] = Input.GetKey(goDownKey);
-        inputs[(int)KeyInput.Jump] = Input.GetKey(goJumpKey);
-
-        if (Input.GetKeyUp(KeyCode.Mouse0))
-            lastMouseTileX = lastMouseTileY = -1;
-
-        //Vector3 mousePos = Input.mousePosition;
-        //Vector2 cameraPos = Camera.main.transform.position;
-        var mousePosInWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        int mouseTileX, mouseTileY;
-        GetMapTileAtPoint(mousePosInWorld, out mouseTileX, out mouseTileY);
-       // Vector2 bottomLeft = (Vector2)sliderLow.position + sliderLow.rect.min;
-        //Vector2 topRight = (Vector2)sliderHigh.position + sliderHigh.rect.max;
-
-        if (Input.GetKeyDown(KeyCode.Tab))
-            Debug.Break();
-
-        //Debug.Log(mousePos + "   " + bottomLeft + "     " + topRight);
-
- 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            Debug.Log("mouse: " + mousePosInWorld);
-            Debug.Log("go to: "+mouseTileX + "  " + mouseTileY);
-            player.TappedOnTile(new Vector2i(mouseTileX, mouseTileY));
-        }
-
-        if (Input.GetKey(KeyCode.Mouse1) || Input.GetKey(KeyCode.Mouse2))
-        {
-            if (mouseTileX != lastMouseTileX || mouseTileY != lastMouseTileY || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Mouse2))
-            {
-                if (!IsNotEmpty(mouseTileX, mouseTileY))
-                    SetTile(mouseTileX, mouseTileY, Input.GetKey(KeyCode.Mouse1) ? TileType.Block : TileType.OneWay);
-                else
-                    SetTile(mouseTileX, mouseTileY, TileType.Empty);
-
-                lastMouseTileX = mouseTileX;
-                lastMouseTileY = mouseTileY;
-
-                Debug.Log(mouseTileX + "  " + mouseTileY);
-            }
-        }
-    }
-
-    System.Random mRandomNumber;
-  
-   /* 
-    void AutoTile(TileType type, int x, int y, int rand4NeighbourTiles, int rand3NeighbourTiles,
-        int rand2NeighbourPipeTiles, int rand2NeighbourCornerTiles, int rand1NeighbourTiles, int rand0NeighbourTiles)
-    {
-        if (x >= mWidth || x < 0 || y >= mHeight || y < 0)
-            return;
-
-        if (tiles[x, y] != TileType.Block)
-            return;
-
-        int tileOnLeft = tiles[x - 1, y] == tiles[x, y] ? 1 : 0;
-        int tileOnRight = tiles[x + 1, y] == tiles[x, y] ? 1 : 0;
-        int tileOnTop = tiles[x, y + 1] == tiles[x, y] ? 1 : 0;
-        int tileOnBottom = tiles[x, y - 1] == tiles[x, y] ? 1 : 0;
-
-        float scaleX = 1.0f;
-        float scaleY = 1.0f;
-        float rot = 0.0f;
-        int id = 0;
-
-        int sum = tileOnLeft + tileOnRight + tileOnTop + tileOnBottom;
-
-        switch (sum)
-        {
-            case 0:
-                id = 1 + mRandomNumber.Next(rand0NeighbourTiles);
-
-                break;
-            case 1:
-                id = 1 + rand0NeighbourTiles + mRandomNumber.Next(rand1NeighbourTiles);
-
-                if (tileOnRight == 1)
-                    scaleX = -1;
-                else if (tileOnTop == 1)
-                    rot = -1;
-                else if (tileOnBottom == 1)
-                {
-                    rot = 1;
-                    scaleY = -1;
-                }
-
-                break;
-            case 2:
-
-                if (tileOnLeft + tileOnBottom == 2)
-                {
-                    id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + rand2NeighbourPipeTiles
-                        + mRandomNumber.Next(rand2NeighbourCornerTiles);
-                }
-                else if (tileOnRight + tileOnBottom == 2)
-                {
-                    id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + rand2NeighbourPipeTiles
-                        + mRandomNumber.Next(rand2NeighbourCornerTiles);
-                    scaleX = -1;
-                }
-                else if (tileOnTop + tileOnLeft == 2)
-                {
-                    id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + rand2NeighbourPipeTiles
-                        + mRandomNumber.Next(rand2NeighbourCornerTiles);
-                    scaleY = -1;
-                }
-                else if (tileOnTop + tileOnRight == 2)
-                {
-                    id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + rand2NeighbourPipeTiles
-                        + mRandomNumber.Next(rand2NeighbourCornerTiles);
-                    scaleX = -1;
-                    scaleY = -1;
-                }
-                else if (tileOnTop + tileOnBottom == 2)
-                {
-                    id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + mRandomNumber.Next(rand2NeighbourPipeTiles);
-                    rot = 1;
-                }
-                else if (tileOnRight + tileOnLeft == 2)
-                    id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + mRandomNumber.Next(rand2NeighbourPipeTiles);
-
-                break;
-            case 3:
-                id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + rand2NeighbourPipeTiles
-                    + rand2NeighbourCornerTiles + mRandomNumber.Next(rand3NeighbourTiles);
-
-                if (tileOnLeft == 0)
-                {
-                    rot = 1;
-                    scaleX = -1;
-                }
-                else if (tileOnRight == 0)
-                {
-                    rot = 1;
-                    scaleY = -1;
-                }
-                else if (tileOnBottom == 0)
-                    scaleY = -1;
-
-                break;
-
-            case 4:
-                id = 1 + rand0NeighbourTiles + rand1NeighbourTiles + rand2NeighbourPipeTiles
-                    + rand2NeighbourCornerTiles + rand3NeighbourTiles + mRandomNumber.Next(rand4NeighbourTiles);
-
-                break;
-        }
-
-        tilesSprites[x, y].transform.localScale = new Vector3(scaleX, scaleY, 1.0f);
-        tilesSprites[x, y].transform.eulerAngles = new Vector3(0.0f, 0.0f, rot * 90.0f);
-        tilesSprites[x, y].sprite = mDirtSprites[id - 1];
-    }
-    */
-
-    void FixedUpdate()
-    {
-        player.BotUpdate();
-    }
 }

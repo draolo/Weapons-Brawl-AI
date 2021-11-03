@@ -18,7 +18,6 @@ public class PlayerAimAuto : MonoBehaviour
     {
         TargetAim targetAim= GetComponent<TargetAim>();
         Vector2 direction = targetAim.Aim();
-        Debug.Log(direction);
         if (direction.x < -999)
         {
             return;
@@ -26,7 +25,6 @@ public class PlayerAimAuto : MonoBehaviour
         float angle =Mathf.Rad2Deg*Mathf.Atan2(direction.y,direction.x);
         
         FirePointPivot.transform.eulerAngles=new Vector3(0f, 0f, angle);
-        Debug.Log(targetAim.CollisionPredictionStupid(direction));
     }
 
 
