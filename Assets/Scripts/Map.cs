@@ -17,7 +17,6 @@ public enum TileType
 [System.Serializable]
 public partial class Map : MonoBehaviour 
 {
-	
 	/// <summary>
 	/// The map's position in world space. Bottom left corner.
 	/// </summary>
@@ -66,18 +65,6 @@ public partial class Map : MonoBehaviour
 	/// </summary>
 	public int mHeight = 77;
 
-    //public MapRoomData mapRoomSimple;
-    //public MapRoomData mapRoomOneWay;
-
-    //public Camera gameCamera;
-
-
-
-
-
-
-    //public RectTransform sliderHigh;
-    //public RectTransform sliderLow;
 
     public Tilemap tilemap;
     private Vector3Int tilemapOffset;
@@ -262,15 +249,6 @@ public partial class Map : MonoBehaviour
             Vector3Int tileposition = new Vector3Int(x, y, 0) + tilemapOffset;
             tilemap.SetTile(tileposition, tilePrefab);
         }
-        /*else if (type == TileType.OneWay) //no oneway platform
-        {
-            mGrid[x, y] = 1;
-            tilesSprites[x, y].enabled = true;
-
-            tilesSprites[x, y].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-            tilesSprites[x, y].transform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
-            tilesSprites[x, y].sprite = mDirtSprites[25];
-        }*/
         else
         {
             mGrid[x, y] = 1;
