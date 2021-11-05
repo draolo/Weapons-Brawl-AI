@@ -5,31 +5,23 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
-public class PlayerManager : NetworkBehaviour {
-    [SyncVar]
+public class PlayerManager : MonoBehaviour {
     public GameObject controller;
+    public GameObject spriteObject;
 
-    [SyncVar]
     public bool isInTurn;
     public List<MonoBehaviour> scriptToDisable;
 
     private void Start()
     {
-        if (hasAuthority)
-        {
-            InventoryUI inventory = GetGameObjectInRoot("Canvas").GetComponent<InventoryUI>();
-            ResurrectionMenuUI resurrection = GetGameObjectInRoot("Canvas").GetComponent<ResurrectionMenuUI>();
-            inventory.InitializeInventoryUI(this.gameObject);
-            resurrection.InizializeInventoryUI(this.gameObject);
 
-            //CmdSetTeam();
-        }
         SetSpriteColor();
     }
 
     void SetSpriteColor()
     {
-        GetComponent<SpriteRenderer>().color = GetTeam();
+
+        spriteObject.GetComponent<SpriteRenderer>().color = GetTeam();
     }
     
     public IEnumerator LockAfterSec(int sec)
@@ -38,8 +30,7 @@ public class PlayerManager : NetworkBehaviour {
         yield return new WaitForSeconds(sec);
         ChangeActiveStatus(false);
     }
-   
-    [ClientRpc]
+
     public void RpcChangeActiveStatus(bool active)
     {
         ChangeActiveStatus(active);
@@ -56,7 +47,6 @@ public class PlayerManager : NetworkBehaviour {
         }
     }
 
-    [Command]
     private void CmdActiveInTurn(bool active)
     {
         isInTurn = active;
@@ -64,7 +54,9 @@ public class PlayerManager : NetworkBehaviour {
 
     internal Color GetTeam()
     {
-        return controller.GetComponent<PlayerInfo>().team;
+        return Color.white;
+        // TODO REAL GET COLOR
+        //return controller.GetComponent<PlayerInfo>().team;
     }
 
     private GameObject GetGameObjectInRoot(string objname)
@@ -78,10 +70,9 @@ public class PlayerManager : NetworkBehaviour {
 
     public void PlayerDie()
     {
-        if (isServer)
-        {
+
             controller.GetComponent<PlayerInfo>().status=PlayerInfo.Status.dead;
-        }
+
         
     }
 
@@ -92,13 +83,11 @@ public class PlayerManager : NetworkBehaviour {
         GetComponent<Rigidbody2D>().velocity = new Vector2(velx, vely);
     }
 
-    [Command]
     public void CmdSetVelocity(float velx, float vely)
     {
         RpcSetVelocity(velx, vely);
     }
 
-    [ClientRpc]
     private void RpcSetVelocity(float velx, float vely)
     {
         SetVelocity(velx, vely);

@@ -5,9 +5,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-public class PlayerChestManager : NetworkBehaviour {
+public class PlayerChestManager : MonoBehaviour {
 
-    [SyncVar]
     public string allyToResurrect;
     public int InteractionRadius = 3;
     public bool waitingUser=false;
@@ -20,8 +19,7 @@ public class PlayerChestManager : NetworkBehaviour {
 	}
 	
 	void Update () {
-        if (hasAuthority)
-        {
+
             if (Input.GetButtonDown("Chest"))
             {
                 RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, InteractionRadius, new Vector2(0, 0));
@@ -40,7 +38,7 @@ public class PlayerChestManager : NetworkBehaviour {
                 CmdInteract();
                 interactionStart = false;
             }
-        }
+        
 	}
 
     public void AbortInteraction()
@@ -48,7 +46,7 @@ public class PlayerChestManager : NetworkBehaviour {
         interactionStart = false;
     }
 
-    [Command]
+
     private void CmdInteract()
     {
 
@@ -62,7 +60,6 @@ public class PlayerChestManager : NetworkBehaviour {
         
     }
 
-    [Command]
     public void CmdSetAllyToResurrect(string name)
     {
         allyToResurrect = name;

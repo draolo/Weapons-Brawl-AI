@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-public abstract class AbstractChest : NetworkBehaviour {
+public abstract class AbstractChest : MonoBehaviour {
 
     public int level;
     public CircleCollider2D playerNextToRay;
@@ -27,7 +27,6 @@ public abstract class AbstractChest : NetworkBehaviour {
             
     }
 
-    [ClientRpc]
     public void RpcDestroy()
     {
         Destroy(gameObject);

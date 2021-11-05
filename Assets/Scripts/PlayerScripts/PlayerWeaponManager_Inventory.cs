@@ -76,21 +76,8 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
                 CmdSetActiveWeapon(true);
        
 
-        if (_inturn)
-        {
-            if (Input.GetButtonDown("Axe"))
-            {
-                CmdActivateAxe(true);
-                StartCoroutine(SwingAxe());
-            }
-        }
     }
 
-    void ActivateAxe(bool active)
-    {
-        Axe.SetActive(active);
-        FirePoint.SetActive(!active);
-    }
 
     public void SwitchWeapon(int id)
     {
@@ -101,18 +88,6 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
         currentWeaponID = id;
     }
 
-    IEnumerator SwingAxe()
-    {
-        Quaternion previousRotation = Pivot.transform.localRotation;
-        Pivot.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
-        while (Pivot.transform.localRotation.eulerAngles.z <= 90 || Pivot.transform.localRotation.eulerAngles.z > 300)
-        {
-            Pivot.transform.Rotate(0f, 0f, -10f * AxeSpeed * Time.deltaTime);
-            yield return 0;
-        }
-        CmdActivateAxe(false);
-        Pivot.transform.localRotation = previousRotation;
-    }
 
     private void AddWeapon(GameObject weaponToAdd, GameObject player)
     {
@@ -130,7 +105,6 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
         weaponToAdd.GetComponent<AbstractWeaponGeneric>().SetPlayer(player);
 
         Weapons.Add(weaponToAdd.GetComponent<AbstractWeaponGeneric>());
-        inventoryUI.UpdateUI();
     }
 
     public GameObject GetCurrentWeapon()
@@ -189,16 +163,10 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
     }
 
     
-    void CmdActivateAxe(bool active)
-    {
-        RpcActivateAxe(active);
-    }
+
 
     
-    void RpcActivateAxe(bool active)
-    {
-        ActivateAxe(active);
-    }
+
 
 
 

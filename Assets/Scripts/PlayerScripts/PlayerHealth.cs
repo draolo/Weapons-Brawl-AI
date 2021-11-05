@@ -3,14 +3,14 @@ using UnityEngine.Networking;
 using System.Collections;
 using System;
 
-public class PlayerHealth : NetworkBehaviour {
+public class PlayerHealth : MonoBehaviour {
 
-    [SyncVar]
+
     public int hp = 100;
     public int maxHealth = 100;
     public GameObject healthBar;
 
-    [Command]
+
     public void CmdTakeDamage(int damage, GameObject fromWho)
     {
         damage = Math.Min(hp,damage);
@@ -18,6 +18,8 @@ public class PlayerHealth : NetworkBehaviour {
         hp = Math.Max(0, hp);
         CmdRefreshHealth();
         gameObject.GetComponent<PlayerManager>().RpcChangeActiveStatus(false);
+        //TODO UNCOMMENT
+        /*
         PlayerInfo hittedInfo = gameObject.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
         PlayerInfo hitterInfo =fromWho.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
         if (hittedInfo.team == hitterInfo.team)
@@ -32,10 +34,11 @@ public class PlayerHealth : NetworkBehaviour {
         {
             hitterInfo.damageToEnemy += damage;
         }
-
+        */
         if (hp <= 0)
         {
             CmdPlayerDie();
+            /*
             hittedInfo.deaths += 1;
             if (hittedInfo.team == hitterInfo.team)
             {
@@ -47,13 +50,13 @@ public class PlayerHealth : NetworkBehaviour {
             else
             {
                 hitterInfo.kills += 1;
-            }
+            }*/
         }
             
     }
 
 
-    [Command]
+
     public void CmdGetLife(int life)
     {
         hp += life;
@@ -69,7 +72,7 @@ public class PlayerHealth : NetworkBehaviour {
         RpcRefreshHp(hp);
     }
 
-    [ClientRpc]
+
     void RpcRefreshHp(int health)
     {
         RefreshHealth(health);
@@ -80,7 +83,7 @@ public class PlayerHealth : NetworkBehaviour {
         healthBar.GetComponent<HealthBarScript>().SetHealth(health);
     }
 
-    [Command]
+
     void CmdPlayerDie()
     {
         PlayerDie();
@@ -88,7 +91,7 @@ public class PlayerHealth : NetworkBehaviour {
         RpcPlayerDie();
     }
 
-    [ClientRpc]
+
     void RpcPlayerDie()
     {
        PlayerDie();

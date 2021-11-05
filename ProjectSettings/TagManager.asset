@@ -7,6 +7,8 @@ TagManager:
   - PartOfPlayer
   - Ground
   - Destroyer
+  - Chest
+  - NotJumpable
   layers:
   - Default
   - TransparentFX
@@ -18,7 +20,7 @@ TagManager:
   - Player
   - Chest
   - Bullet
-  - 
+  - Player Detector
   - 
   - 
   - 
