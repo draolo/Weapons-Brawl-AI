@@ -20,26 +20,31 @@ public class PlayerChestManager : MonoBehaviour {
 	
 	void Update () {
 
-            if (Input.GetButtonDown("Chest"))
-            {
-                RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, InteractionRadius, new Vector2(0, 0));
-                foreach (RaycastHit2D hit in hits)
-                {
-                    if (hit.collider != null && hit.collider.tag == "Chest")
-                    {
-                        hit.collider.gameObject.GetComponent<AbstractChest>().ClientPreInteract(this);
-                        interactionStart = true;
-                    }
-                }
-                
-            }
-            if(interactionStart && !waitingUser)
+    if (Input.GetButtonDown("Chest"))
+        {
+            TryToOpenChest();
+
+        }
+        if (interactionStart && !waitingUser)
             {
                 CmdInteract();
                 interactionStart = false;
             }
         
 	}
+
+    public void TryToOpenChest()
+    {
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, InteractionRadius, new Vector2(0, 0));
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider != null && hit.collider.tag == "Chest")
+            {
+                hit.collider.gameObject.GetComponent<AbstractChest>().ClientPreInteract(this);
+                interactionStart = true;
+            }
+        }
+    }
 
     public void AbortInteraction()
     {

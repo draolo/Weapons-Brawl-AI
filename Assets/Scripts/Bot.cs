@@ -57,7 +57,7 @@ public class Bot : Character
     }
 
 
-    bool IsOnGroundAndFitsPos(Vector2i pos)
+    public bool IsOnGroundAndFitsPos(Vector2i pos)
     {
         for (int y = pos.y; y < pos.y + mHeight; ++y)
         {

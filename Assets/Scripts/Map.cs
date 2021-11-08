@@ -258,7 +258,7 @@ public partial class Map : MonoBehaviour
 
     }
 
-    public void Start()
+    public void Awake()
     {
 
         Application.targetFrameRate = 60;
