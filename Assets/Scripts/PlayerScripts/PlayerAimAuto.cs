@@ -12,20 +12,10 @@ public class PlayerAimAuto : MonoBehaviour
     private float upperAngle = 85f;
     private float lowerAngle = 275f;
 
-    public GameObject FirePointPivot;
 
-    void Update()
-    {
-        TargetAim targetAim= GetComponent<TargetAim>();
-        Vector2 direction = targetAim.Aim();
-        if (direction.x < -999)
-        {
-            return;
-        }
-        float angle =Mathf.Rad2Deg*Mathf.Atan2(direction.y,direction.x);
-        
-        FirePointPivot.transform.eulerAngles=new Vector3(0f, 0f, angle);
-    }
+
+
+
 
 
     void OnDrawGizmos()

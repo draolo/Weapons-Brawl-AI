@@ -72,9 +72,10 @@ public class PlayerMovementOffline : MonoBehaviour {
 
     public void Jump() {
         if (isGrounded){
-            m_Rigidbody2D.velocity += jumpForce * Vector2.up;
-            m_Rigidbody2D.velocity =new Vector3(m_Rigidbody2D.velocity.x, Mathf.Min(m_Rigidbody2D.velocity.y, jumpForce));
-          
+            Debug.Log("jump");
+            m_Rigidbody2D.velocity =new Vector3(m_Rigidbody2D.velocity.x, jumpForce);
+            Debug.Log("jump force "+ m_Rigidbody2D.velocity);
+
         }
         jump = false;
     }

@@ -8,6 +8,10 @@ public class TargetAim : MonoBehaviour
     public Transform firePoint;
     public int speed=50;
 
+    public LayerMask projectileObstacle;
+
+    public GameObject FirePointPivot;
+
     public Vector2 Aim(bool lobbed=false)
     {
 
@@ -79,7 +83,7 @@ public class TargetAim : MonoBehaviour
             float xDistanceTarget = target.position.x - firePoint.position.x;
             if (Mathf.Abs(xDistanceTarget) < Mathf.Abs(xDistancePoint))
             {
-                hit = Physics2D.Linecast(beginPos, target.position, 1 << LayerMask.NameToLayer("Ground"));
+                hit = Physics2D.Linecast(beginPos, target.position,projectileObstacle);
                 if (hit.collider != null)
                 {
                     return hit.point;
@@ -88,7 +92,7 @@ public class TargetAim : MonoBehaviour
             }
             else
             {
-                hit = Physics2D.Linecast(beginPos, endPos, 1 << LayerMask.NameToLayer("Ground"));
+                hit = Physics2D.Linecast(beginPos, endPos, projectileObstacle);
                 if (hit.collider != null)
                 {
                     return hit.point;
@@ -96,7 +100,7 @@ public class TargetAim : MonoBehaviour
             }
             beginPos = endPos;
         }
-        hit = Physics2D.Linecast(beginPos, target.position, 1 << LayerMask.NameToLayer("Ground"));
+        hit = Physics2D.Linecast(beginPos, target.position, projectileObstacle);
         if (hit.collider != null)
         {
             return hit.point;
@@ -104,6 +108,20 @@ public class TargetAim : MonoBehaviour
 
         return new Vector2(-9999,-9999);
     }
+
+
+    public void SetAim(Vector2 direction)
+    {
+        if (direction.x < -999)
+        {
+            return;
+        }
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
+
+        FirePointPivot.transform.eulerAngles = new Vector3(0f, 0f, angle);
+    }
+
+    
 
     void OnDrawGizmos()
     {

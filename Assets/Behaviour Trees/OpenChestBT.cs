@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using CRBT;
 
-public class PlayerBT : MonoBehaviour
+public class OpenChestBT : MonoBehaviour
 {
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
 
     private BehaviorTree AI;
+    private Rigidbody2D _rigidbody;
     public Transform target;
     public Vector2 targetOld;
     public Bot bot;
@@ -19,6 +20,7 @@ public class PlayerBT : MonoBehaviour
     void Start()
     {
         playerChestManager = gameObject.GetComponent<PlayerChestManager>();
+        _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         bot = gameObject.GetComponent<Bot>();
 
         BTAction setPath = new BTAction(SearchAndSetPath);
@@ -28,12 +30,15 @@ public class PlayerBT : MonoBehaviour
 
         BTCondition proximityCheck = new BTCondition(NotCloseToTheTarget);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
+        BTCondition isMovinig = new BTCondition(IsItMoving);
         BTSelector pathVerifier = new BTSelector(new IBTTask[] {samePosition, setPath});
         BTSequence movingCycle = new BTSequence(new IBTTask[] { pathVerifier, proximityCheck});
         BTDecorator checkUntilFail = new BTDecoratorUntilFail(movingCycle);
+        BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
 
-        BTSequence s1 = new BTSequence(new IBTTask[] { setPath, startBot, checkUntilFail, open, stop });
+
+        BTSequence s1 = new BTSequence(new IBTTask[] { setPath, startBot, checkUntilFail, stop,waitMovementEnd, open });
 
 
         AI = new BehaviorTree(s1);
@@ -131,6 +136,11 @@ public class PlayerBT : MonoBehaviour
     {
         Debug.Log("V " + (targetOld == (Vector2)target.position));
         return targetOld== (Vector2)target.position;
+    }
+
+    public bool IsItMoving()
+    {
+        return (_rigidbody.velocity != new Vector2(0, 0));
     }
 
 }

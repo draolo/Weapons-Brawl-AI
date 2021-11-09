@@ -211,11 +211,6 @@ PrefabInstance:
     - {fileID: 114143131522151604, guid: 0d73f486c5432214ba615707ea59a882, type: 3}
     - {fileID: 114462298148015314, guid: 0d73f486c5432214ba615707ea59a882, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0d73f486c5432214ba615707ea59a882, type: 3}
---- !u!1 &390873237 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7456666564187390472, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-  m_PrefabInstance: {fileID: 1996411394}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &620802076 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7454375728683250628, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
@@ -339,6 +334,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2574781823019446578, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 6f9cdc6cea8f7cc4081e616518b98fe9, type: 2}
     - target: {fileID: 2574781823019446578, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_IsTrigger
       value: 0
@@ -745,7 +744,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePointRadius: 3.15
   speed: 10
-  FirePointPivot: {fileID: 390873237}
 --- !u!114 &1622671719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -761,6 +759,10 @@ MonoBehaviour:
   target: {fileID: 1799970733}
   firePoint: {fileID: 2017271734}
   speed: 50
+  projectileObstacle:
+    serializedVersion: 2
+    m_Bits: 0
+  FirePointPivot: {fileID: 0}
 --- !u!114 &1622671720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1103,6 +1105,26 @@ PrefabInstance:
     - target: {fileID: 239620180, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_SortingOrder
       value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622671714, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_Size.x
+      value: 1.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622671716, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 6f9cdc6cea8f7cc4081e616518b98fe9, type: 2}
+    - target: {fileID: 1622671716, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_EdgeRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622671716, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_Points.Array.data[0].x
+      value: -0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622671716, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_Points.Array.data[1].x
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 1992633518, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_Layer
