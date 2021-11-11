@@ -20,9 +20,11 @@ public class ShootBT : MonoBehaviour
     private Bot bot;
     private Rigidbody2D _rigidbody;
     private PlayerWeaponManager_Inventory shootingManager;
+    private PlayerMovementOffline playerMovementOffline;
     // Start is called before the first frame update
     void Start()
     {
+        playerMovementOffline = GetComponent<PlayerMovementOffline>();
         targetAim = GetComponent<TargetAim>();
         bot = gameObject.GetComponent<Bot>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
@@ -34,6 +36,7 @@ public class ShootBT : MonoBehaviour
         BTAction aim = new BTAction(SetAim);
         BTAction shoot = new BTAction(Shoot);
         BTAction shake = new BTAction(AimShaker);
+        BTAction faceTheTarget = new BTAction(FaceTheTarget);
 
         BTCondition couldSeeTheTarget = new BTCondition(LineOfSight);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
@@ -48,7 +51,7 @@ public class ShootBT : MonoBehaviour
         BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] {isGrounded, straightLine, emptyFireline });
         BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] {isGrounded, lobbedLine, emptyFireline});
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
-        BTSequence shootFarAway = new BTSequence(new IBTTask[] { stop,waitMovementEnd, isThereAFireLine,aim, shoot });
+        BTSequence shootFarAway = new BTSequence(new IBTTask[] { stop,waitMovementEnd, faceTheTarget, isThereAFireLine, aim, shoot });
 
 
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, setPath });
@@ -252,6 +255,14 @@ public class ShootBT : MonoBehaviour
     {
         Debug.Log("AIS: ground check: "+ bot.mOnGround);
         return bot.mOnGround;
+    }
+
+
+    public bool FaceTheTarget()
+    {
+        Vector2 dir = target.position - transform.position;
+        playerMovementOffline.faceTowards(dir.x);
+        return true;
     }
 
 }
