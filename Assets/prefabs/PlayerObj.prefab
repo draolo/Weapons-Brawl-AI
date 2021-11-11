@@ -253,7 +253,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -264,7 +264,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.96, y: 4.8}
+  m_Size: {x: 1.96, y: 4.6}
   m_EdgeRadius: 0
 --- !u!68 &1622671716
 EdgeCollider2D:
@@ -319,6 +319,37 @@ MonoBehaviour:
   mMaxJumpHeight: 7
   mWidth: 2
   mHeight: 5
+--- !u!114 &1622671713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456557633283913568}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69a4c1d47a3f7284cb4bcc3fd9d0cd86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aiTime: 0.2
+  beginWaitTime: 1
+  target: {fileID: 0}
+  targetOld: {x: 0, y: 0}
+  bot: {fileID: 1622671711}
+--- !u!114 &1622671717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456557633283913568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fc1a6dc5f88577498b5483a06db1176, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firePointRadius: 3.15
+  speed: 10
 --- !u!114 &1622671718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,78 +371,6 @@ MonoBehaviour:
   AxeSpeed: 10
   timeToRepairAfterAttack: 5
   canAttack: 1
---- !u!114 &7457381203073081213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7456557633283913568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 754eb22115bc1454b8e92d3db35763e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isGrounded: 0
-  isMoving: 0
-  jumpForce: 21
-  speed: 400
-  spriteObject: {fileID: 239620178}
-  GroundCheck: {fileID: 7456142584611326868}
-  anim: {fileID: 239620179}
-  horizontalMove: 0
-  jump: 0
---- !u!114 &1622671713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7456557633283913568}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69a4c1d47a3f7284cb4bcc3fd9d0cd86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  aiTime: 0.2
-  beginWaitTime: 1
-  target: {fileID: 0}
-  targetOld: {x: 0, y: 0}
-  bot: {fileID: 1622671711}
---- !u!114 &8061101785306295081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7456557633283913568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f94cc64c66161fe449bc689dc8817392, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  aiTime: 0.2
-  beginWaitTime: 1
-  target: {fileID: 0}
-  targetOld: {x: 0, y: 0}
-  projectileObstacle:
-    serializedVersion: 2
-    m_Bits: 64
-  shootingAngle: {x: 0, y: 0}
---- !u!114 &1622671717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7456557633283913568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fc1a6dc5f88577498b5483a06db1176, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePointRadius: 3.15
-  speed: 10
 --- !u!114 &1622671719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,6 +437,48 @@ MonoBehaviour:
   hp: 100
   maxHealth: 100
   healthBar: {fileID: 7456544974850684974}
+--- !u!114 &7457381203073081213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456557633283913568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 754eb22115bc1454b8e92d3db35763e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGrounded: 0
+  isMoving: 0
+  jumpForce: 21
+  speed: 400
+  spriteObject: {fileID: 239620178}
+  GroundCheck: {fileID: 7456142584611326868}
+  anim: {fileID: 239620179}
+  horizontalMove: 0
+  jump: 0
+  m_FacingRight: 1
+--- !u!114 &8061101785306295081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456557633283913568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f94cc64c66161fe449bc689dc8817392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aiTime: 0.2
+  beginWaitTime: 1
+  target: {fileID: 0}
+  targetOld: {x: 0, y: 0}
+  projectileObstacle:
+    serializedVersion: 2
+    m_Bits: 64
+  shootingAngle: {x: 0, y: 0}
 --- !u!1 &7457381201250275946
 GameObject:
   m_ObjectHideFlags: 0
