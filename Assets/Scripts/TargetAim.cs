@@ -127,7 +127,7 @@ public class TargetAim : MonoBehaviour
     {
         int halfOfpoints = 3;
         Gizmos.color = Color.green;
-        Vector2 angle = Aim();
+        Vector2 angle = Aim(false);
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
         Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT), GetHeightAtTime(angle, maxT));
         float step = maxT / halfOfpoints;

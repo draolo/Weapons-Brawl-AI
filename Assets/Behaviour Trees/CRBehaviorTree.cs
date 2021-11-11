@@ -183,6 +183,19 @@ namespace CRBT {
 		}		
 	}
 
+
+	public class BTDecoratorUntilSucces : BTDecorator
+	{
+
+		public BTDecoratorUntilSucces(IBTTask task) : base(task) {; }
+
+		override public int Run()
+		{
+			if (Child.Run() != 1) return -1;
+			return 1;
+		}
+	}
+
 	public class BTDecoratorInverter : BTDecorator {
 
 		public BTDecoratorInverter(IBTTask task) : base(task) { ; }
