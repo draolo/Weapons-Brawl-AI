@@ -246,6 +246,10 @@ public class Bot : Character
     void FixedUpdate()
     {
         BotUpdate();
+        if (Input.GetKeyUp(KeyCode.P))
+        {
+            freeRoam = !freeRoam;
+        }
     }
 
     public void BotUpdate()

@@ -15,7 +15,7 @@ public class PlayerMovementOffline : MonoBehaviour {
 
     public float horizontalMove;
     public bool jump;
-    private bool m_FacingRight = true;
+    public bool m_FacingRight = true;
 
     //private Vector3 m_Velocity = Vector3.zero; bored from the same warning
     private Rigidbody2D m_Rigidbody2D;
@@ -59,13 +59,14 @@ public class PlayerMovementOffline : MonoBehaviour {
         Vector2 targetVelocity = new Vector2(move, m_Rigidbody2D.velocity.y);
         m_Rigidbody2D.velocity = targetVelocity;
 
-        faceTowards(move);
+        FaceTowards(move);
     }
 
-    public void faceTowards(float move)
+    public void FaceTowards(float move)
     {
         if (move > 0 && !m_FacingRight)
         {
+            m_FacingRight = !m_FacingRight;
             CmdFlip();
         }
         else if (move < 0 && m_FacingRight)

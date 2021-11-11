@@ -261,7 +261,7 @@ public class ShootBT : MonoBehaviour
     public bool FaceTheTarget()
     {
         Vector2 dir = target.position - transform.position;
-        playerMovementOffline.faceTowards(dir.x);
+        playerMovementOffline.FaceTowards(dir.x);
         return true;
     }
 
