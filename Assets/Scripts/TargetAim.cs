@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TargetAim : MonoBehaviour
 {
-    public Transform target;
+    private Transform target;
     public Transform firePoint;
     public int speed=50;
 
@@ -122,7 +123,7 @@ public class TargetAim : MonoBehaviour
     }
 
     
-
+    /*
     void OnDrawGizmos()
     {
         int halfOfpoints = 3;
@@ -150,5 +151,10 @@ public class TargetAim : MonoBehaviour
             }
         }
         Gizmos.DrawLine(beginPos, target.position);
+    }
+    */
+    public void setTarget(Transform target)
+    {
+        this.target = target;
     }
 }

@@ -30,6 +30,8 @@ public class ShootBT : MonoBehaviour
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
 
+
+        BTAction setTarget = new BTAction(SetTarget);
         BTAction setPath = new BTAction(IsThereAPathToTheTarget);
         BTAction startBot = new BTAction(Move);
         BTAction stop = new BTAction(Stop);
@@ -76,7 +78,10 @@ public class ShootBT : MonoBehaviour
 
         BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { straightLine, aim, shoot });
 
-        BTSelector s1 = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
+        BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
+
+        BTSequence s1 = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
+
 
         AI = new BehaviorTree(s1);
 
@@ -262,6 +267,12 @@ public class ShootBT : MonoBehaviour
     {
         Vector2 dir = target.position - transform.position;
         playerMovementOffline.FaceTowards(dir.x);
+        return true;
+    }
+
+    public bool SetTarget()
+    {
+        targetAim.setTarget(target);
         return true;
     }
 

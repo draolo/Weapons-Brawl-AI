@@ -89,6 +89,7 @@ namespace Algorithms
         private bool                            mDebugFoundPath         = false;
         private byte                            mOpenNodeValue          = 1;
         private byte                            mCloseNodeValue         = 2;
+        private int                             mSafeMargin             = 2;
         
         //Promoted local variables to member variables to avoid recreation between calls
         private int                             mH                      = 0;
@@ -226,6 +227,26 @@ namespace Algorithms
             mStop = true;
         }
 
+        private byte  SafeGridGetter(int x, int y, int h)
+        {
+            if (x < 0 || x >= mMap.mWidth)
+            {
+                return 0;
+            }
+            if (y < 0 || y >= mMap.mHeight)
+            {
+                if (y < 0 - (h + mSafeMargin) || y > mMap.mHeight + mSafeMargin + h)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            return mGrid[x, y];
+        }
+
         public List<Vector2i> FindPath(Vector2i start, Vector2i end, int characterWidth, int characterHeight, short maxCharacterJumpHeight)
         {
             Debug.Log("start: " + start.x+":"+start.y);
@@ -241,8 +262,8 @@ namespace Algorithms
                     inSolidTile = false;
                     for (var w = 0; w < characterWidth; ++w)
                     {
-                        if (mGrid[end.x + w, end.y] == 0
-                            || mGrid[end.x + w, end.y + characterHeight - 1] == 0)
+                        if (SafeGridGetter(end.x + w, end.y,maxCharacterJumpHeight) == 0
+                            || SafeGridGetter(end.x + w, end.y + characterHeight - 1,maxCharacterJumpHeight) == 0)
                         {
                             inSolidTile = true;
                             break;
@@ -253,8 +274,8 @@ namespace Algorithms
                     {
                         for (var h = 1; h < characterHeight - 1; ++h)
                         {
-                            if (mGrid[end.x, end.y + h] == 0
-                                || mGrid[end.x + characterWidth - 1, end.y + h] == 0)
+                            if (SafeGridGetter(end.x, end.y + h,maxCharacterJumpHeight) == 0
+                                || SafeGridGetter(end.x + characterWidth - 1, end.y + h,maxCharacterJumpHeight) == 0)
                             {
                                 inSolidTile = true;
                                 break;
@@ -348,19 +369,19 @@ namespace Algorithms
 
                         for (var w = 0; w < characterWidth; ++w)
                         {
-                            if (mGrid[mNewLocationX + w, mNewLocationY] == 0
-                                || mGrid[mNewLocationX + w, mNewLocationY + characterHeight - 1] == 0)
+                            if (SafeGridGetter(mNewLocationX + w, mNewLocationY,maxCharacterJumpHeight) == 0
+                                || SafeGridGetter(mNewLocationX + w, mNewLocationY + characterHeight - 1,maxCharacterJumpHeight) == 0)
                                 goto CHILDREN_LOOP_END;
 
                             if (mMap.IsGround(mNewLocationX + w, mNewLocationY - 1))
                                 onGround = true;
-                            else if (mGrid[mNewLocationX + w, mNewLocationY + characterHeight] == 0)
+                            else if (SafeGridGetter(mNewLocationX + w, mNewLocationY + characterHeight,maxCharacterJumpHeight) == 0)
                                 atCeiling = true;
                         }
                         for (var h = 1; h < characterHeight - 1; ++h)
                         {
-                            if (mGrid[mNewLocationX, mNewLocationY + h] == 0
-                                || mGrid[mNewLocationX + characterWidth - 1, mNewLocationY + h] == 0)
+                            if (SafeGridGetter(mNewLocationX, mNewLocationY + h,maxCharacterJumpHeight) == 0
+                                || SafeGridGetter(mNewLocationX + characterWidth - 1, mNewLocationY + h,maxCharacterJumpHeight) == 0)
                                 goto CHILDREN_LOOP_END;
                         }
 						
@@ -408,7 +429,7 @@ namespace Algorithms
 						if (jumpLength >= maxCharacterJumpHeight * 2 && mNewLocationY > mLocationY)
 							continue;
 
-                        mNewG = nodes[mLocation.xy][mLocation.z].G + mGrid[mNewLocationX, mNewLocationY] + newJumpLength / 4;
+                        mNewG = nodes[mLocation.xy][mLocation.z].G + SafeGridGetter(mNewLocationX, mNewLocationY,maxCharacterJumpHeight) + newJumpLength / 4;
 
                         if (nodes[mNewLocation].Count > 0)
                         {
@@ -503,7 +524,7 @@ namespace Algorithms
                         
                         if ((mClose.Count == 0)
                             || (mMap.IsOneWayPlatform(fNode.x, fNode.y - 1))
-                            || (mGrid[fNode.x, fNode.y - 1] == 0 && mMap.IsOneWayPlatform(fPrevNode.x, fPrevNode.y - 1))
+                            || (SafeGridGetter(fNode.x, fNode.y - 1,maxCharacterJumpHeight) == 0 && mMap.IsOneWayPlatform(fPrevNode.x, fPrevNode.y - 1))
                             || (fNodeTmp.JumpLength == 3)
                             || (fNextNodeTmp.JumpLength != 0 && fNodeTmp.JumpLength == 0)                                                                                                       //mark jumps starts
                             || (fNodeTmp.JumpLength == 0 && fPrevNodeTmp.JumpLength != 0)                                                                                                       //mark landings

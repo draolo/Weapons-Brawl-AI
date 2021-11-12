@@ -17,10 +17,7 @@ public enum TileType
 [System.Serializable]
 public partial class Map : MonoBehaviour 
 {
-	/// <summary>
-	/// The map's position in world space. Bottom left corner.
-	/// </summary>
-	public Vector3 position;
+
 	
 	/// <summary>
 	/// The base tile sprite prefab that populates the map.
@@ -71,10 +68,10 @@ public partial class Map : MonoBehaviour
 
 	public TileType GetTile(int x, int y) 
 	{
-        if (x < 0 || x >= mWidth
-            || y < 0 || y >= mHeight)
-            return TileType.Block;
+        if (x < 0 || x >= mWidth ||  y < 0 || y >= mHeight) {           
+                return TileType.Block;
 
+        }
 		return tiles[x, y]; 
 	}
 
@@ -263,10 +260,6 @@ public partial class Map : MonoBehaviour
 
         Application.targetFrameRate = 60;
         
-
-        //set the position
-        position = transform.position;
-
         mHeight = tilemap.cellBounds.size.y;
         mWidth= tilemap.cellBounds.size.x;
         
@@ -296,21 +289,6 @@ public partial class Map : MonoBehaviour
                 }
             }
         }
-
-
-
-        for (int y = 0; y < mHeight; ++y)
-        {
-            tiles[1, y] = TileType.Block;
-            tiles[mWidth - 2, y] = TileType.Block;
-        }
-
-        for (int x = 0; x < mWidth; ++x)
-        {
-            tiles[x, 1] = TileType.Block;
-            tiles[x, mHeight - 2] = TileType.Block;
-        }
-
 
     }
 

@@ -16,8 +16,8 @@ public class Bot : Character
     public bool freeRoam;
 
 	public BotAction mCurrentAction = BotAction.None;
-	
-	public Vector2 mDestination;
+
+
 	
 	public int mCurrentNodeId = -1;
 
@@ -37,6 +37,10 @@ public class Bot : Character
         while (!(mMap.IsGround(mapPosInTile.x, mapPosInTile.y)))
         {
             --mapPosInTile.y;
+            if (mapPosInTile.y < 0)
+            {
+                return;
+            }
         }
         MoveTo(new Vector2i(mapPosInTile.x, mapPosInTile.y + 1));
     }
