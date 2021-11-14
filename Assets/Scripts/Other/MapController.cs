@@ -2,7 +2,7 @@
 using UnityEngine.Networking;
 using UnityEngine.Tilemaps;
 
-public class MapController : NetworkBehaviour {
+public class MapController : MonoBehaviour {
 
     public Tilemap map;
 
@@ -10,7 +10,7 @@ public class MapController : NetworkBehaviour {
         map = GetComponent<Tilemap>();
     }
 
-    [Command]  
+
     public void CmdDestroyTile(int x, int y, int z)
     {
         Vector3Int pos = new Vector3Int(x, y, z);
@@ -19,7 +19,6 @@ public class MapController : NetworkBehaviour {
     }
 
 
-    [ClientRpc]
     public void RpcDestroyTile(int x, int y, int z)
     {
         Vector3Int pos = new Vector3Int(x, y, z);

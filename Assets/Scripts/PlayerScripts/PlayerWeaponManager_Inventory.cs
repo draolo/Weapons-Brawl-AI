@@ -39,7 +39,6 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
         SwitchWeapon(0);
         throwingChargeBar.SetActive(false);
 
-        Axe = transform.Find("FirePointPivot/Axe").gameObject;
         FirePoint = transform.Find("FirePointPivot/FirePoint").gameObject;
         Pivot = transform.Find("FirePointPivot").gameObject;
         inventoryUI = FindObjectOfType<InventoryUI>();

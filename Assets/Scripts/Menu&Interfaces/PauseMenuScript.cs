@@ -33,10 +33,10 @@ public class PauseMenuScript : AbstractMenu
             menu.Close();
     }
 
+    //TODO REDO THIS FUNCTION
     public void LoadStartMenu()
     {
         MatchManager._instance.Reset();
-        Prototype.NetworkLobby.LobbyManager.s_Singleton.GoBackButton();
         //Prototype.NetworkLobby.LobbyManager.s_Singleton.gameObject.GetComponent<LobbyMyFeature>().LoadStartMenu();
     }
 }

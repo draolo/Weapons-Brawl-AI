@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-public class WallScript : NetworkBehaviour {
+public class WallScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -16,8 +16,7 @@ public class WallScript : NetworkBehaviour {
 		
 	}
 
-    
-    [ClientRpc]
+
     public void RpcSetup(float x, float y, float z)
     {
         Vector3 scale = new Vector3(x, y, z); 

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-public class SpawnPlayer : NetworkBehaviour
+public class SpawnPlayer : MonoBehaviour
 {
     public GameObject playerToSpawn;
     public GameObject mainCamera;
@@ -17,18 +17,16 @@ public class SpawnPlayer : NetworkBehaviour
         StartCoroutine("SpawnPlayerWithDelay");
     }
 
-    [Command]
+
     public void CmdSpawnPlayer()
     {
         player = (GameObject)Instantiate(playerToSpawn, transform);
-        NetworkServer.SpawnWithClientAuthority(player, connectionToClient);
         RpcSetController(player);
         this.gameObject.GetComponent<PlayerInfo>().status = PlayerInfo.Status.alive;
         RpcSetCameraFollow(player);
 
     }
 
-    [ClientRpc]
     public void RpcSetController(GameObject p)
     {
 
@@ -47,22 +45,20 @@ public class SpawnPlayer : NetworkBehaviour
     }
     
 
-    [ClientRpc]
+
     public void RpcSetCameraFollow(GameObject p)
     {
-        if (isLocalPlayer)
-        {
             Cinemachine.CinemachineVirtualCamera virtualController = virtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
             virtualController.m_Follow = p.transform;
             CameraController customCameraController = virtualController.gameObject.GetComponent<CameraController>();
             customCameraController.playerMovementManager = p.GetComponent<PlayerMovement>();
-        }
+
     }
 
     IEnumerator SpawnPlayerWithDelay()
     {
         yield return new WaitForSeconds(0.01f);
-        if (isLocalPlayer)
+        if (true) //TODO IS LOCAL PLAYER
         {
             CmdSpawnPlayer();
             mainCamera.SetActive(true);

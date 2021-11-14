@@ -5,13 +5,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System;
 
-public class GameManagerScript : NetworkBehaviour {
+public class GameManagerScript : MonoBehaviour {
 
     public MatchManager matchInfo;
 
     void Start()
     {
-        matchInfo = Prototype.NetworkLobby.LobbyManager.s_Singleton.transform.Find("MatchManager").GetComponent<MatchManager>();
+        matchInfo = FindObjectOfType<MatchManager>();
         matchInfo.waiting = matchInfo.turnDuration;
         matchInfo.gameIsOver = false;
        

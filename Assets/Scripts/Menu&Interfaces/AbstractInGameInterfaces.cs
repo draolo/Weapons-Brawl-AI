@@ -31,9 +31,6 @@ public class AbstractInGameInterfaces : MonoBehaviour
     {
         isActive = false;
         UI.SetActive(false);
-
-        GetComponent<ResourceUI>().isActive = true;
-        GetComponent<ResourceUI>().UI.SetActive(true);
     }
 
     public virtual void Open()

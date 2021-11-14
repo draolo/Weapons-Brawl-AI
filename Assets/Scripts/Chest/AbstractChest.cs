@@ -55,7 +55,7 @@ public abstract class AbstractChest : MonoBehaviour {
         if (player.CompareTag("Player") == false)
             return;
 
-        bool bol1 = player.GetComponent<NetworkIdentity>().hasAuthority;
+        bool bol1 = true; //todo is NOT a bot
         bool bol2 = IsInteractable(player.GetComponent<PlayerChestManager>());
 
         if ( bol1 && bol2 )
@@ -72,7 +72,7 @@ public abstract class AbstractChest : MonoBehaviour {
         if (player.CompareTag("Player") == false)
             return;
 
-        bool bol1 = player.GetComponent<NetworkIdentity>().hasAuthority;
+        bool bol1 = true; // TODO IS NOT A BOT
         bool bol2 = IsInteractable(player.GetComponent<PlayerChestManager>());
 
         if (bol1 && bol2)

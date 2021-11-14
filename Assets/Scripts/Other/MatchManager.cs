@@ -6,12 +6,10 @@ using UnityEngine.Networking;
 using System;
 
 //List of players in the match
-public class MatchManager : NetworkBehaviour
+public class MatchManager : MonoBehaviour
 {
 
-    [SyncVar]
     public Color turn;
-    [SyncVar]
     public float waiting = 30;
     public float turnDuration = 30;
     public static MatchManager _instance = null;
@@ -36,8 +34,6 @@ public class MatchManager : NetworkBehaviour
 
     private void Update()
     {
-        if (isServer && FindObjectOfType<Prototype.NetworkLobby.LobbyTopPanel>().isInGame)
-        {
             if (RedTeam.Count > 0  && BlueTeam.Count>0 && !gameIsOver) 
             {
                 gameIsStart = true;
@@ -71,11 +67,10 @@ public class MatchManager : NetworkBehaviour
                 ChangeTurn();
                 RpcChangeTurn(turn);
             }
-        }
+        
 
     }
 
-    [ClientRpc]
     private void RpcNotifyGameIsOver(bool redWin)
     {
         gameIsOver = true;
@@ -137,8 +132,6 @@ public class MatchManager : NetworkBehaviour
         return result;
     }
 
-    //TODO: very simple just for the prototype
-    [Server]
     private void ChangeTurn()
     {
         if (turn == Color.red)
@@ -252,8 +245,6 @@ public class MatchManager : NetworkBehaviour
     }
 
 
-
-    [ClientRpc]
     void RpcChangeTurn(Color color)
     {
         foreach (PlayerInfo p in _players)
@@ -267,7 +258,7 @@ public class MatchManager : NetworkBehaviour
                 SetPlayerTurn(p, false);
             }
 
-            if (p.hasAuthority && !gameIsOver)
+            if (true && !gameIsOver) 
             {
                 if(color == p.team)
                     MessageManager.Instance.PlayYourTurnAnimation();

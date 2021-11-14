@@ -4,43 +4,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerInfo : NetworkBehaviour {
+public class PlayerInfo : MonoBehaviour {
     public enum Status {dead, alive};
-    [SyncVar]
+
     public string pname;
-    [SyncVar]
+
     public Color team;
-    [SyncVar]
+
     public Status status;
-    [SyncVar]
+
     public GameObject physicalPlayer;
-    [SyncVar]
+
     public int kills=0;
-    [SyncVar]
+
     public int damageToEnemy = 0;
-    [SyncVar]
+
     public int resurrectedAlly = 0;
-    [SyncVar]
+
     public bool win = false;
-    [SyncVar]
+
     public int deaths = 0;
-    [SyncVar]
+
     public int damageToAlly = 0;
-    [SyncVar]
+
     public int allyEliminated = 0;
 
 
     // Use this for initialization
     void Start () {
         MatchManager._instance.AddPlayer(this);
-        if (isLocalPlayer)
+        if (true) //TODo islocal player
         {
             FindObjectOfType<EndGameScreemUI>().localPlayer = this;
         }
 	}
 	
 
-    [Command]
     internal void CmdResurrect(Vector3 position)
     {
         PlayerHealth ph= physicalPlayer.GetComponent<PlayerHealth>();
@@ -60,7 +59,7 @@ public class PlayerInfo : NetworkBehaviour {
         }
     }
 
-    [ClientRpc]
+
     public void RpcRestoreUser(float x, float y, float z)
     {
         Vector3 pos = new Vector3(x, y, z);

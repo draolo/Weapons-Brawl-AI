@@ -12,7 +12,7 @@ public class TimerScript : MonoBehaviour {
     private MatchManager matchInfo;
 
 	void Start () {
-        matchInfo = Prototype.NetworkLobby.LobbyManager.s_Singleton.transform.Find("MatchManager").GetComponent<MatchManager>();
+        matchInfo = FindObjectOfType<MatchManager>();
     }
 
     private void Update()

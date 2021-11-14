@@ -67,12 +67,14 @@ public class Character : MovingObject
         if (mPath != null && mPath.Count > 0)
         {
             lineRenderer.enabled = true;
-            lineRenderer.SetVertexCount(mPath.Count);
-            lineRenderer.SetWidth(.2f, .2f);
+            lineRenderer.positionCount=mPath.Count;
+            lineRenderer.startWidth = .2f;
+            lineRenderer.endWidth= .2f;
 
             for (var i = 0; i < mPath.Count; ++i)
             {
-                lineRenderer.SetColors(Color.red, Color.red);
+                lineRenderer.startColor=Color.red;
+                lineRenderer.endColor=Color.red;
                 Vector2 worldCellPosition = mMap.GetMapTilePosition(mPath[i].x, mPath[i].y);
                 lineRenderer.SetPosition(i, worldCellPosition);
             }

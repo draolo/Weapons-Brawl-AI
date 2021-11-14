@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerMovement : NetworkBehaviour {
+public class PlayerMovement : MonoBehaviour {
 
     public bool isGrounded = false;
     public bool isMoving = false;
@@ -24,13 +24,11 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     void Update () {
-        if (hasAuthority)
             horizontalMove = Input.GetAxisRaw("Horizontal") * speed;
     }
 
     void FixedUpdate(){
-        if (hasAuthority)
-        {
+
             if (horizontalMove != 0)
             {
                 isMoving = true;
@@ -47,7 +45,7 @@ public class PlayerMovement : NetworkBehaviour {
                 Jump();
                 isMoving = true;
             }
-        }
+        
 
     }
 
@@ -75,13 +73,13 @@ public class PlayerMovement : NetworkBehaviour {
         }  
     }
 
-    [Command]
+
     void CmdFlip()
     {
         RpcFlip();
     }
 
-    [ClientRpc]
+
     void RpcFlip()
     {
         Flip();
