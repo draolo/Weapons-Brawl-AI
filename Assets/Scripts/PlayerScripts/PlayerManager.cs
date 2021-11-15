@@ -31,13 +31,11 @@ public class PlayerManager : MonoBehaviour {
         ChangeActiveStatus(false);
     }
 
-    public void RpcChangeActiveStatus(bool active)
-    {
-        ChangeActiveStatus(active);
-    }
+
 
     public void ChangeActiveStatus(bool active)
     {
+        Debug.Log("Status fucked up");
         GetComponent<PlayerWeaponManager_Inventory>().canAttack = active;
         CmdActiveInTurn(active);
         isInTurn = active;

@@ -17,7 +17,7 @@ public class PlayerHealth : MonoBehaviour {
         hp -= damage;
         hp = Math.Max(0, hp);
         CmdRefreshHealth();
-        gameObject.GetComponent<PlayerManager>().RpcChangeActiveStatus(false);
+        gameObject.GetComponent<PlayerManager>().ChangeActiveStatus(false);
         //TODO UNCOMMENT
         /*
         PlayerInfo hittedInfo = gameObject.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();

@@ -292,6 +292,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+--- !u!1 &573312075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7457381203114020047, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+  m_PrefabInstance: {fileID: 290574340}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &573312076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573312075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e71537243258d94b850367c998381ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pname: 
+  team: {r: 0, g: 0, b: 1, a: 1}
+  status: 1
+  physicalPlayer: {fileID: 1160199297}
+  kills: 0
+  damageToEnemy: 0
+  resurrectedAlly: 0
+  win: 0
+  deaths: 0
+  damageToAlly: 0
+  allyEliminated: 0
 --- !u!4 &620802076 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7454375728683250628, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
@@ -491,6 +519,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1160199297 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7456557633283913568, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+  m_PrefabInstance: {fileID: 290574340}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1342043166 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1342043166, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
@@ -569,11 +602,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &1585217769 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-  m_PrefabInstance: {fileID: 290574340}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1622671711 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1622671711, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
@@ -792,90 +820,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 239620180, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 239620180, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 239620180, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1622671719, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 1585217769}
-    - target: {fileID: 1622671719, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: projectileObstacle.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i0
-      value: 113
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i1
-      value: 245
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i2
-      value: 162
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i3
-      value: 109
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i4
-      value: 245
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i5
-      value: 83
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i6
-      value: 24
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i7
-      value: 244
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i8
-      value: 89
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i9
-      value: 102
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i10
-      value: 214
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i11
-      value: 33
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i12
-      value: 255
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i13
-      value: 108
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i14
-      value: 224
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-      propertyPath: m_AssetId.i15
-      value: 52
-      objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_RootOrder
       value: 1

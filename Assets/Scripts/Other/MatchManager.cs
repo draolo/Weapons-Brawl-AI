@@ -20,7 +20,7 @@ public class MatchManager : MonoBehaviour
     public bool gameIsOver;
     public bool gameIsStart; 
 
-    public void Start()
+    public void Awake()
     {
         gameIsStart = false;
         _instance = this;
@@ -41,8 +41,11 @@ public class MatchManager : MonoBehaviour
             try
             {
 
-                if (_players.Count > 0 && AllPlayerHasEnded(this.turn))
-                    waiting = 0;
+            if (AllPlayerHasEnded(this.turn))
+            {
+                Debug.Log("waitom");
+                waiting = 0;
+            }
             }
             catch(Exception e)
             {
@@ -50,7 +53,7 @@ public class MatchManager : MonoBehaviour
                 print("Eccezione prevista, GO ahead, no problem" + e);
             }
 
-            waiting = waiting - Time.deltaTime;
+            waiting -= Time.deltaTime;
 
             if (waiting < 0)
             {
@@ -134,6 +137,7 @@ public class MatchManager : MonoBehaviour
 
     private void ChangeTurn()
     {
+        Debug.Log("color changed");
         if (turn == Color.red)
         {
             turn = Color.blue;
@@ -247,6 +251,8 @@ public class MatchManager : MonoBehaviour
 
     void RpcChangeTurn(Color color)
     {
+
+        
         foreach (PlayerInfo p in _players)
         {
             if (color == p.team)
@@ -257,14 +263,14 @@ public class MatchManager : MonoBehaviour
             {
                 SetPlayerTurn(p, false);
             }
-
-            if (true && !gameIsOver) 
+            /*
+            if (!gameIsOver) 
             {
                 if(color == p.team)
                     MessageManager.Instance.PlayYourTurnAnimation();
                 else
                     MessageManager.Instance.PlayEndTurnAnimation();
-            }
+            }*/
         }
     }
 
@@ -281,6 +287,7 @@ public class MatchManager : MonoBehaviour
 
         foreach (PlayerInfo player in _players)
         {
+            Debug.Log("red: " + Color.red);
             if (player.team == Color.red)
                 RedTeam.Add(player);
             else
