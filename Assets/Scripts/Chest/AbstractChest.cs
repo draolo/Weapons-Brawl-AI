@@ -7,11 +7,29 @@ using UnityEngine.Networking;
 
 public abstract class AbstractChest : MonoBehaviour {
 
+     public enum ChestType
+    {
+        Health,
+        Revive,
+        Upgrade
+    }
+
+
+    public ChestType type;
     public int level;
     public CircleCollider2D playerNextToRay;
     public SpriteRenderer PressRImg;
 
+
+    void Start()
+    {
+        MatchManager._instance.AddChest(this);
+    }
+
     internal abstract bool DoSomething(PlayerChestManager p);
+
+
+
 
     public virtual void ClientPreInteract(PlayerChestManager p)
     {
@@ -81,4 +99,8 @@ public abstract class AbstractChest : MonoBehaviour {
         }
     }
 
+    void OnDestroy()
+    {
+        MatchManager._instance.removeChest(this);
+    }
 }

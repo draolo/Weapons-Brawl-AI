@@ -158,6 +158,14 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1627063883, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: team.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1627063883, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: team.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7416129232836079526, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_AssetId.i0
       value: 113
@@ -240,11 +248,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 38.5
+      value: -11.3
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.2
+      value: -1.4
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.z
@@ -292,34 +300,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
---- !u!1 &573312075 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7457381203114020047, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-  m_PrefabInstance: {fileID: 290574340}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &573312076
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 573312075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e71537243258d94b850367c998381ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pname: 
-  team: {r: 0, g: 0, b: 1, a: 1}
-  status: 1
-  physicalPlayer: {fileID: 1160199297}
-  kills: 0
-  damageToEnemy: 0
-  resurrectedAlly: 0
-  win: 0
-  deaths: 0
-  damageToAlly: 0
-  allyEliminated: 0
 --- !u!4 &620802076 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7454375728683250628, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
@@ -519,11 +499,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1160199297 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7456557633283913568, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
-  m_PrefabInstance: {fileID: 290574340}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1342043166 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1342043166, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
@@ -595,7 +570,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1553391019}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.55, z: -10}
+  m_LocalPosition: {x: -2.9, y: -4.25, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 698159475}
@@ -725,7 +700,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677416477}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.55, z: -10}
+  m_LocalPosition: {x: -2.9, y: -4.25, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -826,11 +801,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2.9
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.7
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19688,6 +19663,9 @@ MonoBehaviour:
   waiting: 30
   turnDuration: 30
   _players: []
+  _lifeChest: []
+  _upgradeChest: []
+  _reviveChest: []
   RedTeam: []
   BlueTeam: []
   gameIsOver: 0

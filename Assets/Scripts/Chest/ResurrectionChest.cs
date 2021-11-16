@@ -5,6 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class ResurrectionChest : AbstractChest {
 
+    void Awake()
+    {
+        type = ChestType.Revive;
+    }
+
     public override void ClientPreInteract(PlayerChestManager p)
     {
         Color team = p.gameObject.GetComponent<PlayerManager>().GetTeam();

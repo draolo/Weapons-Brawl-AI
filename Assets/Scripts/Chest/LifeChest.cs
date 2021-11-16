@@ -7,8 +7,8 @@ public class LifeChest : AbstractChest {
 
 
 	// Use this for initialization
-	void Start () {
-		
+	void Awake () {
+		type=ChestType.Health;
 	}
 	
 	// Update is called once per frame
