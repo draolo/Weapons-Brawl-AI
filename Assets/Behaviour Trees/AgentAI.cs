@@ -7,29 +7,50 @@ using UnityEngine;
 public class AgentAI : MonoBehaviour
 {
     public OpenChestBT openBT;
+    public ShootBT shootBT;
     public List<Target<PlayerInfo>> availableTargets;
     public List<PlayerInfo> targetToRevive;
     public List<Target<AbstractChest>> availableHealthChest;
     public List<Target<AbstractChest>> availableReviveChest;
     public List<Target<AbstractChest>> availableUpgradeChest;
-    private bool isTeamRed;
+    public bool isTeamRed;
     public Bot bot;
     
     void Start()
     {
-        StartCoroutine(OpenClosestChest());
+        openBT = GetComponent<OpenChestBT>();
+        shootBT = GetComponent<ShootBT>();
     }
 
     public IEnumerator OpenClosestChest()
     {
         yield return new WaitForSeconds(1);
-        InizializeHealthChest();
-        FilterOutUnreachableHealthChest();
-        AbstractChest t = GetClosestHealthChest();
-        openBT.enabled = true;
-        openBT.target = t.transform;
+        InizializePlayerTarget();
+        FilterOutUnreachablePlayer();
+        PlayerInfo t = GetClosestEnemy();
+        shootBT.enabled = true;
+        shootBT.target = t.transform;
     }
 
+    private void Update()
+    {
+
+    }
+
+    public void InizializeAllyToRevive()
+    {
+        List<PlayerInfo> pinfoTarget;
+        if (!isTeamRed)
+        {
+            pinfoTarget = MatchManager._instance.BlueTeam;
+        }
+        else
+        {
+            pinfoTarget = MatchManager._instance.RedTeam;
+        }
+        var deadTargets = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.dead);
+        targetToRevive = deadTargets;
+    }
 
     public void InizializePlayerTarget()
     {
@@ -144,25 +165,53 @@ public class AgentAI : MonoBehaviour
     public PlayerInfo GetClosestEnemy()
     {
         availableTargets.Sort();
-        return availableTargets[0].obj;
+        if (availableTargets.Count() > 0)
+        {
+            return availableTargets[0].obj;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public AbstractChest GetClosestHealthChest()
     {
         availableHealthChest.Sort();
-        return availableHealthChest[0].obj;
+        if (availableHealthChest.Count() > 0)
+        {
+            return availableHealthChest[0].obj;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public AbstractChest GetClosestReviveChest()
     {
         availableReviveChest.Sort();
-        return availableReviveChest[0].obj;
+        if (availableReviveChest.Count() > 0)
+        {
+            return availableReviveChest[0].obj;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public AbstractChest GetClosestUpgradeChest()
     {
         availableUpgradeChest.Sort();
-        return availableUpgradeChest[0].obj;
+        if (availableUpgradeChest.Count > 0)
+        {
+            return availableUpgradeChest[0].obj;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public void FilterOutAlreadyTakenUpgrade()

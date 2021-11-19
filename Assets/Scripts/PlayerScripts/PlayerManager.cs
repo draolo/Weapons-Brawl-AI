@@ -35,7 +35,6 @@ public class PlayerManager : MonoBehaviour {
 
     public void ChangeActiveStatus(bool active)
     {
-        Debug.Log("Status fucked up");
         GetComponent<PlayerWeaponManager_Inventory>().canAttack = active;
         CmdActiveInTurn(active);
         isInTurn = active;
@@ -52,9 +51,8 @@ public class PlayerManager : MonoBehaviour {
 
     internal Color GetTeam()
     {
-        return Color.white;
-        // TODO REAL GET COLOR
-        //return controller.GetComponent<PlayerInfo>().team;
+
+        return controller.GetComponent<PlayerInfo>().team;
     }
 
     private GameObject GetGameObjectInRoot(string objname)
