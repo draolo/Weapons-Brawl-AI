@@ -8,12 +8,6 @@ public class TapManager : MonoBehaviour
     int lastMouseTileX = -1;
     int lastMouseTileY = -1;
 
-    void Awake()
-    {
-        player.mMap = map;
-        Debug.Log("setted");
-        player.BotInit();
-    }
 
 
     void Update()

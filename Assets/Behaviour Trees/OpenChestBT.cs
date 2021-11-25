@@ -14,10 +14,11 @@ public class OpenChestBT : MonoBehaviour
     public Vector2 targetOld;
     public Bot bot;
     private PlayerChestManager playerChestManager;
+    IBTTask root;
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         playerChestManager = gameObject.GetComponent<PlayerChestManager>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
@@ -28,21 +29,24 @@ public class OpenChestBT : MonoBehaviour
         BTAction stop = new BTAction(Stop);
         BTAction open = new BTAction(OpenTheChest);
 
+        BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath, startBot });
         BTCondition proximityCheck = new BTCondition(NotCloseToTheTarget);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
         BTCondition isMovinig = new BTCondition(IsItMoving);
-        BTSelector pathVerifier = new BTSelector(new IBTTask[] {samePosition, setPath});
-        BTSequence movingCycle = new BTSequence(new IBTTask[] { pathVerifier, proximityCheck});
+        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition,safeSetPath });
+        BTSequence movingCycle = new BTSequence(new IBTTask[] { pathVerifier, proximityCheck });
         BTDecorator checkUntilFail = new BTDecoratorUntilFail(movingCycle);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
 
 
-        BTSequence s1 = new BTSequence(new IBTTask[] { setPath, startBot, checkUntilFail, stop,waitMovementEnd, open });
+        root = new BTSequence(new IBTTask[] { safeSetPath, checkUntilFail, stop, waitMovementEnd, open });
 
 
-        AI = new BehaviorTree(s1);
 
+    }
+    void OnEnable() {
+        AI = new BehaviorTree(root);
         StartCoroutine(OpenChest());
     }
 
@@ -53,17 +57,15 @@ public class OpenChestBT : MonoBehaviour
         {
             yield return new WaitForSeconds(aiTime);
         }
+        this.enabled = false;
     }
 
 
     public bool SearchAndSetPath()
     {
         targetOld = target.position;
-        Debug.Log("path search");
         Vector2 something = bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        Debug.Log(bot.mMap);
         Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        Debug.Log(something);
         if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
         {
             if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
@@ -88,14 +90,13 @@ public class OpenChestBT : MonoBehaviour
             {
                 bot.mPath.Add(path[i]);
             }
-            Debug.Log("path search success");
 
             return true;
+            Debug.Log("chestBT: path search ok");
         }
         else
         {
-            Debug.Log("path search fail");
-
+            Debug.Log("chestBT: path search fali");
             return false;
         }
 
@@ -108,38 +109,43 @@ public class OpenChestBT : MonoBehaviour
         bot.ChangeAction(Bot.BotAction.MoveTo);
 
         bot.mFramesOfJumping = bot.GetJumpFramesForNode(0);
+        Debug.Log("chestBT: start moving");
         return true;
+
 
     }
 
     public bool Stop()
     {
-        Debug.Log("stop");
         bot.ChangeAction(Bot.BotAction.None);
+        Debug.Log("chestBT: stop moving");
         return true;
+
     }
 
     public bool OpenTheChest()
     {
-        Debug.Log("open");
         playerChestManager.TryToOpenChest();
+        Debug.Log("chestBT: open chest");
         return true;
     }
 
     public bool NotCloseToTheTarget()
     {
-        float distance= Vector2.Distance(transform.position,target.position);
+        Debug.Log("chestBT: target distance check");
+        float distance = Vector2.Distance(transform.position,target.position);
         return (distance > playerChestManager.InteractionRadius);
     }
 
     public bool TargetPositionEqual()
     {
-        Debug.Log("V " + (targetOld == (Vector2)target.position));
-        return targetOld== (Vector2)target.position;
+        Debug.Log("chestBT: target same position check");
+        return targetOld == (Vector2)target.position;
     }
 
     public bool IsItMoving()
     {
+        Debug.Log("chestBT: movement checking");
         return (_rigidbody.velocity != new Vector2(0, 0));
     }
 

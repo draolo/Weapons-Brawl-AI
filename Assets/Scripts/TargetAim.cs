@@ -15,7 +15,10 @@ public class TargetAim : MonoBehaviour
 
     public Vector2 Aim(bool lobbed=false)
     {
-
+        if (target == null)
+        {
+            return new Vector2(-9999, -9999);
+        }
         Vector2 g = Physics.gravity;
         float gravity = g.magnitude;
         Vector2 deltaVec =   target.position- transform.position;// calculate vector from target to start
@@ -123,9 +126,13 @@ public class TargetAim : MonoBehaviour
     }
 
     
-    /*
+    
     void OnDrawGizmos()
     {
+        if (target == null)
+        {
+            return;
+        }
         int halfOfpoints = 3;
         Gizmos.color = Color.green;
         Vector2 angle = Aim(false);
@@ -152,7 +159,7 @@ public class TargetAim : MonoBehaviour
         }
         Gizmos.DrawLine(beginPos, target.position);
     }
-    */
+    
     public void setTarget(Transform target)
     {
         this.target = target;

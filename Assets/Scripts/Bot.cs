@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Algorithms;
 using UnityEngine.UI;
+using System;
 
 public class Bot : Character
 {
@@ -45,8 +46,9 @@ public class Bot : Character
         MoveTo(new Vector2i(mapPosInTile.x, mapPosInTile.y + 1));
     }
 
-    public void BotInit()
+    public void Start()
     {
+        mMap = FindObjectOfType<Map>();
         mInputs = new bool[(int)KeyInput.Count];
         mPrevInputs = new bool[(int)KeyInput.Count];
 
@@ -85,7 +87,6 @@ public class Bot : Character
         mStuckFrames = 0;
         Vector2 something = mPosition - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
         Vector2i startTile = mMap.GetMapTileAtPoint(mPosition - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        Debug.Log(something);
         if (mOnGround && !IsOnGroundAndFitsPos(startTile))
         {
             if (IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
@@ -177,58 +178,80 @@ public class Bot : Character
 
     public void GetContext(out Vector2 prevDest, out Vector2 currentDest, out Vector2 nextDest, out bool destOnGround, out bool reachedX, out bool reachedY)
     {
-        prevDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId-1]);
-        currentDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId]);
-        nextDest = currentDest;
 
-        if (mPath.Count > mCurrentNodeId + 1)
-        {
-            nextDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId+1]); ;
-        }
-
-        destOnGround = false;
-        for (int x = mPath[mCurrentNodeId].x; x < mPath[mCurrentNodeId].x + mWidth; ++x)
-        {
-            if (mMap.IsGround(x, mPath[mCurrentNodeId].y - 1))
+            //   Debug.Log("context node id" + mCurrentNodeId + "path count " + mPath.Count);
+            if (mCurrentNodeId > 0)
             {
-                destOnGround = true;
-                break;
+                prevDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId - 1]);
             }
-        }
-
-        Vector2 pathPosition = (Vector2)transform.position - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        reachedX = ReachedNodeOnXAxis(pathPosition, prevDest, currentDest);
-        reachedY = ReachedNodeOnYAxis(pathPosition, prevDest, currentDest);
-
-        //snap the character if it reached the goal but overshot it by more than cBotMaxPositionError
-        if (reachedX && Mathf.Abs(pathPosition.x - currentDest.x) > Constants.cBotMaxPositionError && Mathf.Abs(pathPosition.x - currentDest.x) < Constants.cBotMaxPositionError*3.0f && !mPrevInputs[(int)KeyInput.GoRight] && !mPrevInputs[(int)KeyInput.GoLeft])
+            else
+            {
+                prevDest = transform.position;
+            }
+        try
         {
-            pathPosition.x = currentDest.x;
-            mPosition.x = pathPosition.x - Map.cTileSize * 0.5f + mAABB.HalfSizeX;
-            transform.position = mPosition;
+            currentDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId]);
+     
+            nextDest = currentDest;
+
+            if (mPath.Count > mCurrentNodeId + 1)
+            {
+                nextDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId + 1]); ;
+            }
+
+            destOnGround = false;
+            for (int x = mPath[mCurrentNodeId].x; x < mPath[mCurrentNodeId].x + mWidth; ++x)
+            {
+                if (mMap.IsGround(x, mPath[mCurrentNodeId].y - 1))
+                {
+                    destOnGround = true;
+                    break;
+                }
+            }
+
+            Vector2 pathPosition = (Vector2)transform.position - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
+            reachedX = ReachedNodeOnXAxis(pathPosition, prevDest, currentDest);
+            reachedY = ReachedNodeOnYAxis(pathPosition, prevDest, currentDest);
+
+            //snap the character if it reached the goal but overshot it by more than cBotMaxPositionError
+            if (reachedX && Mathf.Abs(pathPosition.x - currentDest.x) > Constants.cBotMaxPositionError && Mathf.Abs(pathPosition.x - currentDest.x) < Constants.cBotMaxPositionError * 3.0f && !mPrevInputs[(int)KeyInput.GoRight] && !mPrevInputs[(int)KeyInput.GoLeft])
+            {
+                pathPosition.x = currentDest.x;
+                mPosition.x = pathPosition.x - Map.cTileSize * 0.5f + mAABB.HalfSizeX;
+                transform.position = mPosition;
+            }
+
+            if (destOnGround && !mOnGround)
+                reachedY = false;
         }
-
-        if (destOnGround && !mOnGround)
+        catch (ArgumentOutOfRangeException dd)
+        {
+            Debug.Log("catched node id" + mCurrentNodeId + "path count " + mPath.Count);
+            Debug.Log(dd);
+            nextDest = currentDest= prevDest = new Vector2();
+            destOnGround = true;
+            reachedX = false;
             reachedY = false;
-    }
-
-    public void TestJumpValues()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            mFramesOfJumping = GetJumpFrameCount(1);
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            mFramesOfJumping = GetJumpFrameCount(2);
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            mFramesOfJumping = GetJumpFrameCount(3);
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-            mFramesOfJumping = GetJumpFrameCount(4);
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-            mFramesOfJumping = GetJumpFrameCount(5);
-        else if (Input.GetKeyDown(KeyCode.Alpha6))
-            mFramesOfJumping = GetJumpFrameCount(6);
-    }
-
-    public int GetJumpFramesForNode(int prevNodeId)
+        }
+        }
+        /*
+        public void TestJumpValues()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                mFramesOfJumping = GetJumpFrameCount(1);
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+                mFramesOfJumping = GetJumpFrameCount(2);
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+                mFramesOfJumping = GetJumpFrameCount(3);
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+                mFramesOfJumping = GetJumpFrameCount(4);
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+                mFramesOfJumping = GetJumpFrameCount(5);
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
+                mFramesOfJumping = GetJumpFrameCount(6);
+        }
+        */
+        public int GetJumpFramesForNode(int prevNodeId)
     {
         int currentNodeId = prevNodeId + 1;
 
@@ -278,7 +301,7 @@ public class Bot : Character
         {
             case BotAction.None:
 
-                TestJumpValues();
+                //TestJumpValues();
 
                 if (mFramesOfJumping > 0)
                 {
@@ -351,7 +374,16 @@ public class Bot : Character
                         if (ReachedNodeOnXAxis(pathPosition, currentDest, nextDest) && ReachedNodeOnYAxis(pathPosition, currentDest, nextDest))
                         {
                             mCurrentNodeId += 1;
-                            goto case BotAction.MoveTo;
+                            if (mCurrentNodeId >= mPath.Count)
+                            {
+                                mCurrentNodeId = -1;
+                                ChangeAction(BotAction.None);
+                        
+                            }
+                            else
+                            {
+                                goto case BotAction.MoveTo;
+                            }
                         }
                     }
                 }

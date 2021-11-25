@@ -196,7 +196,6 @@ public class MatchManager : MonoBehaviour
 
     private void ChangeTurn()
     {
-        Debug.Log("color changed");
         if (turn == Color.red)
         {
             turn = Color.blue;
@@ -346,7 +345,7 @@ public class MatchManager : MonoBehaviour
 
         foreach (PlayerInfo player in _players)
         {
-            Debug.Log("red: " + Color.red);
+           
             if (player.team == Color.red)
                 RedTeam.Add(player);
             else

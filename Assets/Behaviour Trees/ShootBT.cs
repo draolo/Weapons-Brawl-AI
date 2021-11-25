@@ -8,7 +8,7 @@ public class ShootBT : MonoBehaviour
 {
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
-
+    IBTTask root;
 
     private BehaviorTree AI;
 
@@ -22,7 +22,7 @@ public class ShootBT : MonoBehaviour
     private PlayerWeaponManager_Inventory shootingManager;
     private PlayerMovementOffline playerMovementOffline;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         playerMovementOffline = GetComponent<PlayerMovementOffline>();
         targetAim = GetComponent<TargetAim>();
@@ -54,9 +54,9 @@ public class ShootBT : MonoBehaviour
         BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] {isGrounded, lobbedLine, emptyFireline});
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
         BTSequence shootFarAway = new BTSequence(new IBTTask[] { stop,waitMovementEnd, faceTheTarget, isThereAFireLine, aim, shoot });
+        BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
 
-
-        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, setPath });
+        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
         BTDecorator notInLine = new BTDecoratorInverter(couldSeeTheTarget);
         BTDecorator notEmptyLine = new BTDecoratorInverter(isThereAFireLine);
         
@@ -70,7 +70,7 @@ public class ShootBT : MonoBehaviour
 
 
 
-        BTSequence getCloser = new BTSequence(new IBTTask[] { setPath, startBot, movingCycle, shootFarAway});
+        BTSequence getCloser = new BTSequence(new IBTTask[] {safeSetPath, startBot, movingCycle, shootFarAway});
 
 
 
@@ -80,11 +80,13 @@ public class ShootBT : MonoBehaviour
 
         BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
 
-        BTSequence s1 = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
+        root = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
 
+    }
 
-        AI = new BehaviorTree(s1);
-
+    void OnEnable()
+    {
+        AI = new BehaviorTree(root);
         StartCoroutine(ShootTarget());
     }
 
@@ -95,82 +97,67 @@ public class ShootBT : MonoBehaviour
         {
             yield return new WaitForSeconds(aiTime);
         }
+        this.enabled = false;
     }
 
     public bool LineOfSight()
     {
-        Debug.Log("AIS: test line of sight");
         RaycastHit2D hit = Physics2D.Linecast(transform.position, target.position, projectileObstacle );
         if (hit.collider == null)
         {
-            Debug.Log("AIS: test line of sight pass");
             return true;
         }
-        Debug.Log("AIS: test line of sight fail");
         return false;
     }
 
     public bool SetAim()
     {
-        Debug.Log("AIS: set aim");
         targetAim.SetAim(shootingAngle);
         return true;
     }
 
     public bool TestAndSetStraight()
     {
-        Debug.Log("AIS: test straight");
 
         Vector2 direction = targetAim.Aim();
         if (direction.x <= -999)
         {
-            Debug.Log("AIS: test straight fail");
             return false;
 
         }
-        Debug.Log("AIS: test straight pass");
         shootingAngle = direction;
         return true;
     }
 
     public bool EmptyFireLine()
     {
-        Debug.Log("AIS: test fire line");
 
         Vector2 impactPoint = targetAim.CollisionPredictionStupid(shootingAngle);
         if (impactPoint.x <= -999)
         {
-            Debug.Log("AIS: test fire line pass");
             return true;
 
         }
-        Debug.Log("AIS: test fire line fail");
         return false;
     }
 
     public bool TestAndSetLobbed()
     {
-        Debug.Log("AIS: test lobbed");
         Vector2 direction = targetAim.Aim(true);
         if (direction.x <= -999)
         {
-            Debug.Log("AIS: test lobbed fail");
             return false;
 
         }
         shootingAngle = direction;
-        Debug.Log("AIS: test lobbed pass");
         return true;
     }
 
     public bool IsThereAPathToTheTarget()
     {
-        Debug.Log("AIS: path searching");
         targetOld = target.position;
         Vector2 something = bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        Debug.Log(bot.mMap);
         Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        Debug.Log(something);
         if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
         {
             if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
@@ -195,13 +182,11 @@ public class ShootBT : MonoBehaviour
             {
                 bot.mPath.Add(path[i]);
             }
-            Debug.Log("AIS: path search success");
 
             return true;
         }
         else
         {
-            Debug.Log("AIS: path search fail");
 
             return false;
         }
@@ -210,14 +195,12 @@ public class ShootBT : MonoBehaviour
 
     public bool Stop()
     {
-        Debug.Log("AIS: stop moving");
         bot.ChangeAction(Bot.BotAction.None);
         return true;
     }
 
     public bool Move()
     {
-        Debug.Log("AIS: startmoving");
 
         bot.mCurrentNodeId = 1;
 
@@ -230,23 +213,19 @@ public class ShootBT : MonoBehaviour
 
     public bool TargetPositionEqual()
     {
-        Debug.Log("AIS: checkpos");
 
-        Debug.Log("V " + (targetOld == (Vector2)target.position));
         return targetOld == (Vector2)target.position;
     }
 
     public bool AimShaker()
     {
         //TODO
-        Debug.Log("AIS: aimshaking");
 
         return true;
     }
 
     public bool Shoot()
     {
-        Debug.Log("AIS: shooting");
         shootingManager.CmdAttack(100);
         return true;
     }
@@ -258,7 +237,6 @@ public class ShootBT : MonoBehaviour
 
     public bool IsItOnGround()
     {
-        Debug.Log("AIS: ground check: "+ bot.mOnGround);
         return bot.mOnGround;
     }
 

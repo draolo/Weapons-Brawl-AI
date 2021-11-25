@@ -26,7 +26,6 @@ public class PlayerCounter : MonoBehaviour {
         if (other.tag == "Player"&& (!inside.Contains(other.gameObject)))
         {
             inside.Add(other.gameObject);
-            Debug.Log("Something Inside");
             Color team=other.gameObject.GetComponent<PlayerManager>().GetTeam();
             if (!playerCounter.ContainsKey(team))
             {

@@ -12,10 +12,12 @@ public class PlayerChestManager : MonoBehaviour {
     public bool waitingUser=false;
 
     public bool interactionStart=false;
+    private bool bot;
 
     void Start () {
         waitingUser = false;
         interactionStart = false;
+        bot = gameObject.GetComponent<PlayerManager>().isABot;
 	}
 	
 	void Update () {
@@ -25,7 +27,9 @@ public class PlayerChestManager : MonoBehaviour {
             TryToOpenChest();
 
         }
-        if (interactionStart && !waitingUser)
+        
+        
+    if (interactionStart && (!waitingUser|| bot))
             {
                 CmdInteract();
                 interactionStart = false;
@@ -80,10 +84,5 @@ public class PlayerChestManager : MonoBehaviour {
     {
         gameObject.GetComponent<PlayerHealth>().CmdGetLife(life);
     }
-
-
-
-
-
 
 }

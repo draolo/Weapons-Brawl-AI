@@ -151,7 +151,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 10
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: d3ab217d5c40f9b4d8a0f1d0ebe8d43b, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -245,6 +245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1de1e31db04602643a87fe4597060efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 0
   level: 1
   playerNextToRay: {fileID: 58835112673808022}
   PressRImg: {fileID: 212637071336489424}

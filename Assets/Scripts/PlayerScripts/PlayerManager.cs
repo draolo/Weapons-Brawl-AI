@@ -12,6 +12,8 @@ public class PlayerManager : MonoBehaviour {
     public bool isInTurn;
     public List<MonoBehaviour> scriptToDisable;
 
+    public bool isABot=false;
+
     private void Start()
     {
 

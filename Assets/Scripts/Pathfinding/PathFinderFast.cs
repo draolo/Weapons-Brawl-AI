@@ -249,7 +249,6 @@ namespace Algorithms
 
         public List<Vector2i> FindPath(Vector2i start, Vector2i end, int characterWidth, int characterHeight, short maxCharacterJumpHeight)
         {
-            Debug.Log("start: " + start.x+":"+start.y);
             lock(this)
             {
                 while (touchedLocations.Count > 0)

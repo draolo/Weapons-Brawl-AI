@@ -8,7 +8,6 @@ public class Bullet1CarrotScript : AbstractBulletExplosive
     new void Start()
     {
         base.Start();
-        Debug.Log("speed"+speed);
         rb.velocity = transform.right * speed;
 
     }
