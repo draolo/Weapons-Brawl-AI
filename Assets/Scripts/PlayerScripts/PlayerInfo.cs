@@ -29,6 +29,10 @@ public class PlayerInfo : MonoBehaviour {
 
     public int allyEliminated = 0;
 
+    private void Awake()
+    {
+        transform.parent = null;
+    }
 
     // Use this for initialization
     void Start () {

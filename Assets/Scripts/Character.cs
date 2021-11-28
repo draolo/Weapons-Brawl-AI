@@ -60,29 +60,7 @@ public class Character : MovingObject
         }
     }
 
-    public LineRenderer lineRenderer;
-
-    protected void DrawPathLines()
-    {
-        if (mPath != null && mPath.Count > 0)
-        {
-            lineRenderer.enabled = true;
-            lineRenderer.positionCount=mPath.Count;
-            lineRenderer.startWidth = .2f;
-            lineRenderer.endWidth= .2f;
-
-            for (var i = 0; i < mPath.Count; ++i)
-            {
-                lineRenderer.startColor=Color.red;
-                lineRenderer.endColor=Color.red;
-                Vector2 worldCellPosition = mMap.GetMapTilePosition(mPath[i].x, mPath[i].y);
-                lineRenderer.SetPosition(i, worldCellPosition);
-            }
-        }
-        else
-            lineRenderer.enabled = false;
-    }
-
+   
     public void UpdatePrevInputs()
     {
         var count = (byte)KeyInput.Count;

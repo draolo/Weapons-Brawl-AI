@@ -19,14 +19,14 @@ public class PlayerHealth : MonoBehaviour {
         CmdRefreshHealth();
         gameObject.GetComponent<PlayerManager>().ChangeActiveStatus(false);
         //TODO UNCOMMENT
-        /*
+        
         PlayerInfo hittedInfo = gameObject.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
         PlayerInfo hitterInfo =fromWho.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
         if (hittedInfo.team == hitterInfo.team)
         {
             if (hitterInfo != hittedInfo)
             {
-                fromWho.GetComponent<PlayerManager>().RpcChangeActiveStatus(false);
+                fromWho.GetComponent<PlayerManager>().ChangeActiveStatus(false);
                 hitterInfo.damageToAlly += damage;
             }
         }
@@ -34,11 +34,11 @@ public class PlayerHealth : MonoBehaviour {
         {
             hitterInfo.damageToEnemy += damage;
         }
-        */
+        
         if (hp <= 0)
         {
             CmdPlayerDie();
-            /*
+            
             hittedInfo.deaths += 1;
             if (hittedInfo.team == hitterInfo.team)
             {
@@ -50,7 +50,7 @@ public class PlayerHealth : MonoBehaviour {
             else
             {
                 hitterInfo.kills += 1;
-            }*/
+            }
         }
             
     }

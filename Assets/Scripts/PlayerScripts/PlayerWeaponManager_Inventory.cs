@@ -43,7 +43,7 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
         Pivot = transform.Find("FirePointPivot").gameObject;
         inventoryUI = FindObjectOfType<InventoryUI>();
     }
-
+    
 
     protected void Update()
     {
@@ -57,8 +57,6 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
                 {
                     //CmdAttack(throwingChargeBar.GetComponent<ThrowingPowerBarScript>().Charge);
                     CmdAttack(100);
-
-                    //canAttack = false;
                     throwingChargeBar.SetActive(false);
                 }
             }
@@ -117,19 +115,6 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
             CurrentWeapon.gameObject.SetActive(active);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
     public void CmdSetActiveWeapon(bool active)
     {
         RpcSetActiveWeapon(active);
@@ -158,7 +143,12 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
     
     public void CmdAttack(int charge)
     {
+        if (!canAttack){
+            return;
+        }
         CurrentWeapon.Attack(charge);
+        canAttack = false;
+        StartCoroutine(gameObject.GetComponent<PlayerManager>().LockAfterSec(timeToRepairAfterAttack));
     }
 
     
@@ -184,11 +174,6 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour {
     void OnDisable()
     {
         throwingChargeBar.SetActive(false);
-    }
-
-    void OnEnable()
-    {
-        canAttack = true;
     }
 
 }

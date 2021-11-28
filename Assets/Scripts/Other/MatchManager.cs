@@ -91,6 +91,10 @@ public class MatchManager : MonoBehaviour
         waiting = turnDuration;
     }
 
+    private void Start()
+    {
+        RpcChangeTurn(turn);
+    }
 
     private void Update()
     {

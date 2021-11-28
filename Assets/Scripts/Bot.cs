@@ -124,7 +124,7 @@ public class Bot : Character
         }
 
         
-            DrawPathLines();
+           
     }
 
 

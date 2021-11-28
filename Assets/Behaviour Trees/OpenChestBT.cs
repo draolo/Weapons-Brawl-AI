@@ -50,13 +50,29 @@ public class OpenChestBT : MonoBehaviour
         StartCoroutine(OpenChest());
     }
 
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
     public IEnumerator OpenChest()
     {
         yield return new WaitForSeconds(beginWaitTime);
-        while (AI.Step())
+        bool step;
+        do
         {
             yield return new WaitForSeconds(aiTime);
-        }
+            try
+            {
+                step = AI.Step();
+            }
+            catch (MissingReferenceException mre)
+            {
+                Debug.Log(mre);
+                step = false;
+            }
+
+        } while (step);
         this.enabled = false;
     }
 
@@ -92,11 +108,9 @@ public class OpenChestBT : MonoBehaviour
             }
 
             return true;
-            Debug.Log("chestBT: path search ok");
         }
         else
         {
-            Debug.Log("chestBT: path search fali");
             return false;
         }
 
@@ -109,7 +123,7 @@ public class OpenChestBT : MonoBehaviour
         bot.ChangeAction(Bot.BotAction.MoveTo);
 
         bot.mFramesOfJumping = bot.GetJumpFramesForNode(0);
-        Debug.Log("chestBT: start moving");
+
         return true;
 
 
@@ -118,7 +132,7 @@ public class OpenChestBT : MonoBehaviour
     public bool Stop()
     {
         bot.ChangeAction(Bot.BotAction.None);
-        Debug.Log("chestBT: stop moving");
+
         return true;
 
     }
@@ -126,26 +140,22 @@ public class OpenChestBT : MonoBehaviour
     public bool OpenTheChest()
     {
         playerChestManager.TryToOpenChest();
-        Debug.Log("chestBT: open chest");
         return true;
     }
 
     public bool NotCloseToTheTarget()
     {
-        Debug.Log("chestBT: target distance check");
         float distance = Vector2.Distance(transform.position,target.position);
         return (distance > playerChestManager.InteractionRadius);
     }
 
     public bool TargetPositionEqual()
     {
-        Debug.Log("chestBT: target same position check");
         return targetOld == (Vector2)target.position;
     }
 
     public bool IsItMoving()
     {
-        Debug.Log("chestBT: movement checking");
         return (_rigidbody.velocity != new Vector2(0, 0));
     }
 

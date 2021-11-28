@@ -35,16 +35,10 @@ public class SpawnPlayer : MonoBehaviour
         playerManager.controller = gameObject;
         playerInfo.physicalPlayer = p;
         playerManager.ChangeActiveStatus(MatchManager._instance.turn == playerInfo.team);
-        //StartCoroutine(ChangeActiveStatusAfterSec(playerManager, playerInfo));
     }
 
-    IEnumerator ChangeActiveStatusAfterSec(PlayerManager playerManager, PlayerInfo playerInfo)
-    {
-        yield return new WaitForSeconds(1f);
-        playerManager.ChangeActiveStatus(MatchManager._instance.turn == playerInfo.team);
-    }
-    
 
+   
 
     public void RpcSetCameraFollow(GameObject p)
     {

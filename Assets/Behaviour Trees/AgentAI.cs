@@ -12,16 +12,14 @@ public class AgentAI : MonoBehaviour
 
     public bool scared;
 
-    private BehaviorTree AI;
-
     public bool isTeamRed;
     public Bot bot;
     public Transform target;
 
     private DecisionTree dt;
     private System.Random rand;
-
-
+    public int lowHealthHp = 20; 
+    
     public OpenChestBT openBT;
     public ShootBT shootBT;
     public List<Target<PlayerHealth>> reachableTargets;
@@ -32,12 +30,15 @@ public class AgentAI : MonoBehaviour
     public List<PlayerInfo> targetToRevive;
     private float reactionTime=0.5f;
     public int hpMargin= 15;
+    private PlayerHealth playerHealth; 
 
-    void Start()
+    void Awake()
     {
         rand = new System.Random();
         openBT = GetComponent<OpenChestBT>();
         shootBT = GetComponent<ShootBT>();
+        playerHealth = GetComponent<PlayerHealth>();
+        scared = rand.Next(2) == 0;
         DTAction health = new DTAction(GoForHealth);
         DTAction revive = new DTAction(GoForRevive);
         DTAction upgrade = new DTAction(GoForUpgrade);
@@ -99,12 +100,22 @@ public class AgentAI : MonoBehaviour
         dt = new DecisionTree(isThereAReachableEnemyThathCouldKill);
 
         isTeamRed = transform.parent.GetComponent<PlayerInfo>().team == Color.red;
+        
+    }
 
-
-
-
-
+    private void OnEnable()
+    {
+        shootBT.enabled = false;
+        openBT.enabled = false;
         StartCoroutine(PlayAI());
+    }
+
+    private void OnDisable()
+    {
+       shootBT.enabled = false;
+       openBT.enabled = false;
+       StopAllCoroutines();
+        
     }
 
 
@@ -116,8 +127,8 @@ public class AgentAI : MonoBehaviour
 
     private object CheckIfHealthIsFullOrThereIsAChest(object bundle)
     {
-        PlayerHealth ph = gameObject.GetComponent<PlayerHealth>();
-        if ( ph.hp + hpMargin  < ph.maxHealth)
+
+        if ( playerHealth.hp + hpMargin  < playerHealth.maxHealth)
         {
             SetUpAndFilterOutUnreachableHealthChest();
             return reachableHealthChest.Count > 0;
@@ -138,27 +149,28 @@ public class AgentAI : MonoBehaviour
         {
             return false;
         }
-
-        if (!scared)
-            {
-                return true;
-            }
         FilterPlayerWithLowerHp();
+        if ((availableTargets.Count <= 0)&&(!scared))
+        {
+            SetUpAndFilterUnreachablePlayer();
+        }        
         return availableTargets.Count > 0;
 
     }
 
-    private void FilterPlayerWithLowerHp()
+    private object FilterPlayerWithLowerHp()
     {
-        //TODO DO IT PROPERLY
-        return;
+        SetUpAndFilterUnreachablePlayer();
+        availableTargets = availableTargets.FindAll(e => e.obj.hp <= playerHealth.hp);
+        return availableTargets.Count>0;
     }
 
     private object ThereAreKillableEnemy(object bundle)
     {
-        //TODO DO IT PROPERLY
+        
         SetUpAndFilterUnreachablePlayer();
-        return false;
+        availableTargets = availableTargets.FindAll(e => e.obj.hp <= lowHealthHp);
+        return availableTargets.Count()>0;
     }
 
     private object ThereAreReachAbleEnemy(object bundle)
@@ -196,11 +208,17 @@ public class AgentAI : MonoBehaviour
         {
             if (!(shootBT.enabled || openBT.enabled))
             {
-                reachableHealthChest = null;
-                reachableReviveChest = null;
-                reachableUpgradeChest = null;
-                reachableTargets = null;
-                dt.walk();
+                try
+                {
+                    reachableHealthChest = null;
+                    reachableReviveChest = null;
+                    reachableUpgradeChest = null;
+                    reachableTargets = null;
+                    dt.walk();
+                }catch(MissingReferenceException mre)
+                {
+                    Debug.Log(mre);
+                }
             }
             yield return new WaitForSeconds(reactionTime);
         }
@@ -452,7 +470,7 @@ public class AgentAI : MonoBehaviour
     private void SetAllyToRevive()
     {
         //CHOOSE THE ON WITH THE HIGHER POITS
-        gameObject.GetComponent<PlayerChestManager>().SelectAllyToResurrect(targetToRevive[0].name);
+        gameObject.GetComponent<PlayerChestManager>().SelectAllyToResurrect(targetToRevive[0].pname);
     }
 
     public object GoForUpgrade(object o)

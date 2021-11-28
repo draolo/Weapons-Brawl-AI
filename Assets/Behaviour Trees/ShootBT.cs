@@ -90,13 +90,29 @@ public class ShootBT : MonoBehaviour
         StartCoroutine(ShootTarget());
     }
 
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
     public IEnumerator ShootTarget()
     {
         yield return new WaitForSeconds(beginWaitTime);
-        while (AI.Step())
+        bool step;
+        do
         {
+            try
+            {
+                step = AI.Step();
+            }
+            catch (MissingReferenceException mre)
+            {
+                Debug.Log(mre);
+                step = false;
+            }
             yield return new WaitForSeconds(aiTime);
-        }
+
+        } while (step);
         this.enabled = false;
     }
 
