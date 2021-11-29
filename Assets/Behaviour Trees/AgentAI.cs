@@ -30,7 +30,8 @@ public class AgentAI : MonoBehaviour
     public List<PlayerInfo> targetToRevive;
     private float reactionTime=0.5f;
     public int hpMargin= 15;
-    private PlayerHealth playerHealth; 
+    private PlayerHealth playerHealth;
+    private PlayerWeaponManager_Inventory inventory;
 
     void Awake()
     {
@@ -38,6 +39,7 @@ public class AgentAI : MonoBehaviour
         openBT = GetComponent<OpenChestBT>();
         shootBT = GetComponent<ShootBT>();
         playerHealth = GetComponent<PlayerHealth>();
+        inventory = GetComponent<PlayerWeaponManager_Inventory>();
         scared = rand.Next(2) == 0;
         DTAction health = new DTAction(GoForHealth);
         DTAction revive = new DTAction(GoForRevive);
@@ -324,6 +326,7 @@ public class AgentAI : MonoBehaviour
         {
             reachableUpgradeChest.Add(new Target<AbstractChest>(c));
         }
+        FilterOutAlreadyTakenUpgrade();
         return reachableUpgradeChest.Count() > 0;
 
         
@@ -510,7 +513,15 @@ public class AgentAI : MonoBehaviour
 
     public bool FilterOutAlreadyTakenUpgrade()
     {
-        throw new NotImplementedException();
+        reachableUpgradeChest= reachableUpgradeChest.FindAll(e => !DidIHaveThisUpgrade((WeaponChestScript)e.obj));
+        return reachableUpgradeChest.Count > 0;
+    }
+
+    private bool DidIHaveThisUpgrade(WeaponChestScript chest)
+    {
+        AbstractWeaponGeneric weapon= chest.Weapon.GetComponent<AbstractWeaponGeneric>();
+        List<AbstractWeaponGeneric> sameClassWeapon = inventory.Weapons.FindAll(e => e.GetType() == weapon.GetType());
+        return sameClassWeapon.Count>0;
     }
 
 
