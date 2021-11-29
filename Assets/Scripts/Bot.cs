@@ -31,6 +31,7 @@ public class Bot : Character
 	
 	
 	public const int cMaxStuckFrames = 20;
+    private bool jumpOnStuck= false;
 	
 	
     public void GoToPosition(Vector2i mapPosInTile)
@@ -400,11 +401,24 @@ public class Bot : Character
                 {
                     ++mStuckFrames;
                     if (mStuckFrames > cMaxStuckFrames)
-                        MoveTo(mPath[mPath.Count - 1]);
+                    {
+                        if (jumpOnStuck)
+                        {
+                            MoveTo(mPath[mPath.Count - 1]);
+                        }
+                        else
+                        {
+                            mInputs[(int)KeyInput.Jump] = true;
+                        }
+                    }
                 }
-                else
+                else { 
                     mStuckFrames = 0;
-
+                    if (jumpOnStuck &&(Mathf.Abs( mPosition.x - mOldPosition.x)>0.2f))
+                    {
+                        jumpOnStuck = false;
+                    }
+                }
                 break;
         }
         if(mInputs[(int)KeyInput.Jump]){

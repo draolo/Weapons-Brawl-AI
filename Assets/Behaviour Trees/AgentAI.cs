@@ -486,9 +486,23 @@ public class AgentAI : MonoBehaviour
         return null;
     }
 
+    private void InizializeTargetDistance()
+    {
+        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
+        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
+        {
+            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
+                startTile.x += 1;
+            else
+                startTile.x -= 1;
+        }
+        availableTargets = availableTargets.FindAll(e => { e.SetUpDistance(startTile, bot); return true; }) ;
+    }
+
     private object GoForEnemyLong(object bundle)
     {
         InizializePlayerTarget();
+        InizializeTargetDistance();
         SetClosestEnemy();
         StartShootingBT();
         return null;
