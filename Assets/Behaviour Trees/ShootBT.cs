@@ -21,6 +21,7 @@ public class ShootBT : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private PlayerWeaponManager_Inventory shootingManager;
     private PlayerMovementOffline playerMovementOffline;
+    private Vector2 impactPoint;
 
     // Start is called before the first frame update
     private void Awake()
@@ -38,6 +39,7 @@ public class ShootBT : MonoBehaviour
         BTAction aim = new BTAction(SetAim);
         BTAction shoot = new BTAction(Shoot);
         BTAction shake = new BTAction(AimShaker);
+        BTAction setUpWeapon = new BTAction(SetWeapon);
         BTAction faceTheTarget = new BTAction(FaceTheTarget);
 
         BTCondition targetAlive = new BTCondition(IsTargetAlive);
@@ -146,7 +148,7 @@ public class ShootBT : MonoBehaviour
 
     public bool EmptyFireLine()
     {
-        Vector2 impactPoint = targetAim.CollisionPredictionStupid(shootingAngle);
+        impactPoint = targetAim.CollisionPredictionStupid(shootingAngle);
         if (impactPoint.x <= -999)
         {
             return true;
@@ -260,5 +262,36 @@ public class ShootBT : MonoBehaviour
     public bool IsTargetAlive()
     {
         return targetInfo.status == PlayerInfo.Status.alive;
+    }
+
+    public bool SetWeapon()
+    {
+        EmptyFireLine();
+        float targetDistance = Vector2.Distance(transform.position, target.position);
+        float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
+        List<AbstractWeaponGeneric> availableWeapons = shootingManager.Weapons;
+        List<AbstractWeaponGeneric> longRangeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponBulletBased).IsAssignableFrom(w.GetType()));
+        List<AbstractWeaponGeneric> longRangeWeaponsThatDontHitMe = longRangeWeapons.FindAll(w => DoesIHitMyselfWithThisWeapon((AbstractWeaponBulletBased)w, impactPointDistance));
+        List<AbstractWeaponGeneric> meleeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponMelee).IsAssignableFrom(w.GetType()));
+        List<AbstractWeaponGeneric> meleeWeaponsThatHitTheTarget = meleeWeapons.FindAll(w => ((AbstractWeaponMelee)w).attackRange < targetDistance);
+        List<AbstractWeaponGeneric> suitableWeapons = new List<AbstractWeaponGeneric>();
+        suitableWeapons.AddRange(longRangeWeaponsThatDontHitMe);
+        suitableWeapons.AddRange(meleeWeaponsThatHitTheTarget);
+        if (suitableWeapons.Count > 0)
+        {
+            //choose the most damaging weapon from suitable weapon
+        }
+        else
+        {
+            //choose the less damaging long range weapon
+        }
+
+        return true;
+    }
+
+    private bool DoesIHitMyselfWithThisWeapon(AbstractWeaponBulletBased w, float impactPointDistance)
+    {
+        AbstractBulletExplosive bullet = w.bulletPrefab.GetComponent<AbstractBulletExplosive>();
+        return impactPointDistance > bullet.ExplosionRadius;
     }
 }

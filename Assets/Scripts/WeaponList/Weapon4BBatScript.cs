@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon4BBatScript : AbstractWeaponGeneric
+public class Weapon4BBatScript : AbstractWeaponMelee
 {
     public PlayerAnimationController AnimationController;
-
-    public float attackRange = 5;
-    public int damagePower = 20;
-    public LayerMask PlayerLayer;
 
     public float FlingIntensity = 10;
 
@@ -19,9 +15,8 @@ public class Weapon4BBatScript : AbstractWeaponGeneric
             AnimationController = Player.GetComponent<PlayerAnimationController>();
             AnimationController.BBatAnim = this.GetComponent<Animator>();
         }
-        
-        AnimationController.PlayBBatAnimation();
 
+        AnimationController.PlayBBatAnimation();
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(Player.transform.position, firePoint.right, attackRange, PlayerLayer);
 
@@ -32,7 +27,6 @@ public class Weapon4BBatScript : AbstractWeaponGeneric
             if (enemy && enemy.gameObject != Player.gameObject)
             {
                 enemy.CmdTakeDamage(damagePower, Player.gameObject);
-
 
                 Vector3 direction = (firePoint.right + Vector3.up) * FlingIntensity;
                 enemy.gameObject.GetComponent<PlayerManager>().CmdSetVelocity(direction.x, direction.y);

@@ -3,12 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon3PunchScript : AbstractWeaponGeneric
+public class Weapon3PunchScript : AbstractWeaponMelee
 {
-    public float attackRange;
-    public int damagePower;
-    public LayerMask PlayerLayer;
-
     public GameObject PunchGFX;
     public Animator anim;
     private bool GFXIsActive;
@@ -20,7 +16,7 @@ public class Weapon3PunchScript : AbstractWeaponGeneric
     {
         // Abilito l'oggetto PunchAnimation a seconda se lo sprite render di weapon3punch è abilitato o no
         RenderIsActive = GetComponent<SpriteRenderer>().enabled;
-        if(GFXIsActive != RenderIsActive)
+        if (GFXIsActive != RenderIsActive)
         {
             PunchGFX.SetActive(RenderIsActive);
             GFXIsActive = RenderIsActive;
@@ -46,6 +42,4 @@ public class Weapon3PunchScript : AbstractWeaponGeneric
             }
         }
     }
-
-
 }
