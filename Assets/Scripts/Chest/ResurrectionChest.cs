@@ -15,19 +15,21 @@ public class ResurrectionChest : AbstractChest {
         Color team = p.gameObject.GetComponent<PlayerManager>().GetTeam();
         List<PlayerInfo> deadAlly = MatchManager._instance.DeadPlayerList(team);
         ResurrectionMenuUI resurrectionMenu = GetGameObjectInRoot("Canvas").GetComponentInChildren<ResurrectionMenuUI>(true);
-
-        p.waitingUser = true;
-
-        resurrectionMenu.Open();
-
-        if (!IsInteractable(p)) // No dead ally
-            resurrectionMenu.SetSubTitle("No dead ally to resurrect");
-        else
-            resurrectionMenu.SetSubTitle("Select one ally to resurrect");
-
-        foreach (PlayerInfo ally in deadAlly)
+        if (!p.gameObject.GetComponent<PlayerManager>().isABot)
         {
-            resurrectionMenu.AddResurrectButton(ally.pname);
+            p.waitingUser = true;
+
+            resurrectionMenu.Open();
+
+            if (!IsInteractable(p)) // No dead ally
+                resurrectionMenu.SetSubTitle("No dead ally to resurrect");
+            else
+                resurrectionMenu.SetSubTitle("Select one ally to resurrect");
+
+            foreach (PlayerInfo ally in deadAlly)
+            {
+                resurrectionMenu.AddResurrectButton(ally.pname);
+            }
         }
     }
 
