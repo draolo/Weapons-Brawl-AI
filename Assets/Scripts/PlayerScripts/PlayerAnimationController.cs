@@ -4,18 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerAnimationController : MonoBehaviour {
-
+public class PlayerAnimationController : MonoBehaviour
+{
     public Animator PunchAnim;
     public Animator BBatAnim;
 
     public Animator anim;
-    public PlayerMovement mov;
+    public PlayerMovementOffline mov;
 
     private void Start()
     {
-        anim = GetComponent<Animator>();
-        mov= GetComponent<PlayerMovement>();
+        mov = GetComponent<PlayerMovementOffline>();
     }
 
     private void Update()
@@ -26,20 +25,19 @@ public class PlayerAnimationController : MonoBehaviour {
         }
     }
 
-
     public void PlayBBatAnimation()
     {
         StartCoroutine(PlayBBat());
     }
 
-    IEnumerator PlayBBat()
+    private IEnumerator PlayBBat()
     {
         CmdPlayBBat(true);
         yield return new WaitForSeconds(BBatAnim.GetCurrentAnimatorStateInfo(0).length);
         CmdPlayBBat(false);
     }
 
-    void CmdPlayBBat(bool yesno)
+    private void CmdPlayBBat(bool yesno)
     {
         RpcPlayBBat(yesno);
     }
@@ -51,26 +49,19 @@ public class PlayerAnimationController : MonoBehaviour {
         BBatAnim.SetBool("isAttacking", yesno);
     }
 
-
-
-
-
-
-
-
-
     public void PlayPunchAnimation()
     {
         StartCoroutine(PlayPunch());
     }
 
-    IEnumerator PlayPunch()
+    private IEnumerator PlayPunch()
     {
         CmdPlayPunch(true);
         yield return new WaitForSeconds(PunchAnim.GetCurrentAnimatorStateInfo(0).length);
         CmdPlayPunch(false);
     }
-    void CmdPlayPunch(bool yesno)
+
+    private void CmdPlayPunch(bool yesno)
     {
         RpcPlayPunch(yesno);
     }

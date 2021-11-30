@@ -6,8 +6,6 @@ public class Weapon4BBatScript : AbstractWeaponMelee
 {
     public PlayerAnimationController AnimationController;
 
-    public float FlingIntensity = 10;
-
     public override void Attack(int charge)
     {
         if (AnimationController == null)

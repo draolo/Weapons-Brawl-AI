@@ -52,7 +52,7 @@ public class ShootBT : MonoBehaviour
         BTCondition isGrounded = new BTCondition(IsItOnGround);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
-        BTSequence safeShoot = new BTSequence(new IBTTask[] { targetAlive, shoot });
+        BTSequence safeShoot = new BTSequence(new IBTTask[] { setUpWeapon, targetAlive, shoot });
         BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] { isGrounded, straightLine, emptyFireline });
         BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, emptyFireline });
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
@@ -271,27 +271,37 @@ public class ShootBT : MonoBehaviour
         float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
         List<AbstractWeaponGeneric> availableWeapons = shootingManager.Weapons;
         List<AbstractWeaponGeneric> longRangeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponBulletBased).IsAssignableFrom(w.GetType()));
-        List<AbstractWeaponGeneric> longRangeWeaponsThatDontHitMe = longRangeWeapons.FindAll(w => DoesIHitMyselfWithThisWeapon((AbstractWeaponBulletBased)w, impactPointDistance));
+        List<AbstractWeaponGeneric> longRangeWeaponsThatDontHitMe = longRangeWeapons.FindAll(w => !DoesIHitMyselfWithThisWeapon((AbstractWeaponBulletBased)w, impactPointDistance));
         List<AbstractWeaponGeneric> meleeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponMelee).IsAssignableFrom(w.GetType()));
-        List<AbstractWeaponGeneric> meleeWeaponsThatHitTheTarget = meleeWeapons.FindAll(w => ((AbstractWeaponMelee)w).attackRange < targetDistance);
+        List<AbstractWeaponGeneric> meleeWeaponsThatHitTheTarget = meleeWeapons.FindAll(w => ((AbstractWeaponMelee)w).attackRange > targetDistance);
         List<AbstractWeaponGeneric> suitableWeapons = new List<AbstractWeaponGeneric>();
         suitableWeapons.AddRange(longRangeWeaponsThatDontHitMe);
         suitableWeapons.AddRange(meleeWeaponsThatHitTheTarget);
+        AbstractWeaponGeneric bestWeapon;
         if (suitableWeapons.Count > 0)
         {
-            //choose the most damaging weapon from suitable weapon
+            suitableWeapons.Sort();
+            suitableWeapons.Reverse();
+            bestWeapon = suitableWeapons[0];
         }
         else
         {
-            //choose the less damaging long range weapon
+            longRangeWeapons.Sort();
+            bestWeapon = longRangeWeapons[0];
+        }
+        if (bestWeapon)
+        {
+            int index = availableWeapons.FindIndex(w => w.GetType() == bestWeapon.GetType());
+            shootingManager.SwitchWeapon(index);
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private bool DoesIHitMyselfWithThisWeapon(AbstractWeaponBulletBased w, float impactPointDistance)
     {
         AbstractBulletExplosive bullet = w.bulletPrefab.GetComponent<AbstractBulletExplosive>();
-        return impactPointDistance > bullet.ExplosionRadius;
+        return impactPointDistance <= bullet.ExplosionRadius;
     }
 }
