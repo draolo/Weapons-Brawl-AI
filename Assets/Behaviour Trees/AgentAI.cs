@@ -18,8 +18,8 @@ public class AgentAI : MonoBehaviour
 
     private DecisionTree dt;
     private System.Random rand;
-    public int lowHealthHp = 20; 
-    
+    public int lowHealthHp = 20;
+
     public OpenChestBT openBT;
     public ShootBT shootBT;
     public List<Target<PlayerHealth>> reachableTargets;
@@ -28,12 +28,12 @@ public class AgentAI : MonoBehaviour
     public List<Target<AbstractChest>> reachableUpgradeChest;
     public List<Target<PlayerHealth>> availableTargets;
     public List<PlayerInfo> targetToRevive;
-    private float reactionTime=0.5f;
-    public int hpMargin= 15;
+    private float reactionTime = 0.5f;
+    public int hpMargin = 15;
     private PlayerHealth playerHealth;
     private PlayerWeaponManager_Inventory inventory;
 
-    void Awake()
+    private void Awake()
     {
         rand = new System.Random();
         openBT = GetComponent<OpenChestBT>();
@@ -48,15 +48,15 @@ public class AgentAI : MonoBehaviour
         DTAction longEnemy = new DTAction(GoForEnemyLong);
 
         DTDecision isThereAreviveChestAndADeathAlly = new DTDecision(CheckForAllyAndReviveChest);
-        DTDecision isThereAreviveChestAndADeathAllyWithAKillableEnemy = new DTDecision (CheckForAllyAndReviveChest);
-        DTDecision isThereOnlyOneEnemy = new DTDecision (IsTheLastEnemy);
-        DTDecision isThereAReachableEnemy = new DTDecision(ThereAreReachAbleEnemy) ;
+        DTDecision isThereAreviveChestAndADeathAllyWithAKillableEnemy = new DTDecision(CheckForAllyAndReviveChest);
+        DTDecision isThereOnlyOneEnemy = new DTDecision(IsTheLastEnemy);
+        DTDecision isThereAReachableEnemy = new DTDecision(ThereAreReachAbleEnemy);
         DTDecision isThereAReachableEnemyAndAMissingUpgrade = new DTDecision(ThereAreReachAbleEnemy);
-        DTDecision isThereAReachableEnemyThathCouldKill = new DTDecision (ThereAreKillableEnemy);
+        DTDecision isThereAReachableEnemyThathCouldKill = new DTDecision(ThereAreKillableEnemy);
         DTDecision isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave = new DTDecision(CheckForLowerHpEnemyOrBravery);
-        DTDecision isThereAMissingReachbleUpgrade = new DTDecision (CheckForMissingUpgrade);
+        DTDecision isThereAMissingReachbleUpgrade = new DTDecision(CheckForMissingUpgrade);
         DTDecision isThereAReachbleHealthChestAndImNotFull = new DTDecision(CheckIfHealthIsFullOrThereIsAChest);
-        DTDecision randomBool = new DTDecision(RandomTF) ;
+        DTDecision randomBool = new DTDecision(RandomTF);
         DTDecision couldIDoBoth = new DTDecision(RandomTF); //TODO DO IT PROPERLY
         //0
         isThereAReachableEnemyThathCouldKill.AddLink(true, isThereOnlyOneEnemy);
@@ -76,8 +76,8 @@ public class AgentAI : MonoBehaviour
         isThereAMissingReachbleUpgrade.AddLink(false, isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave);
 
         //0.0.0.1
-        isThereAReachableEnemyAndAMissingUpgrade.AddLink(true,couldIDoBoth);
-        isThereAReachableEnemyAndAMissingUpgrade.AddLink(false,upgrade);
+        isThereAReachableEnemyAndAMissingUpgrade.AddLink(true, couldIDoBoth);
+        isThereAReachableEnemyAndAMissingUpgrade.AddLink(false, upgrade);
 
         //0.0.0.1.1
         couldIDoBoth.AddLink(true, upgrade);
@@ -92,8 +92,8 @@ public class AgentAI : MonoBehaviour
         isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave.AddLink(false, isThereAReachbleHealthChestAndImNotFull);
 
         //0.0.0.0.0
-        isThereAReachbleHealthChestAndImNotFull.AddLink(true,health);
-        isThereAReachbleHealthChestAndImNotFull.AddLink(false,isThereAReachableEnemy);
+        isThereAReachbleHealthChestAndImNotFull.AddLink(true, health);
+        isThereAReachbleHealthChestAndImNotFull.AddLink(false, isThereAReachableEnemy);
 
         //0.0.0.0.0.0
         isThereAReachableEnemy.AddLink(true, enemy);
@@ -102,7 +102,6 @@ public class AgentAI : MonoBehaviour
         dt = new DecisionTree(isThereAReachableEnemyThathCouldKill);
 
         isTeamRed = transform.parent.GetComponent<PlayerInfo>().team == Color.red;
-        
     }
 
     private void OnEnable()
@@ -114,13 +113,10 @@ public class AgentAI : MonoBehaviour
 
     private void OnDisable()
     {
-       shootBT.enabled = false;
-       openBT.enabled = false;
-       StopAllCoroutines();
-        
+        shootBT.enabled = false;
+        openBT.enabled = false;
+        StopAllCoroutines();
     }
-
-
 
     private object RandomTF(object bundle)
     {
@@ -129,8 +125,7 @@ public class AgentAI : MonoBehaviour
 
     private object CheckIfHealthIsFullOrThereIsAChest(object bundle)
     {
-
-        if ( playerHealth.hp + hpMargin  < playerHealth.maxHealth)
+        if (playerHealth.hp + hpMargin < playerHealth.maxHealth)
         {
             SetUpAndFilterOutUnreachableHealthChest();
             return reachableHealthChest.Count > 0;
@@ -152,27 +147,25 @@ public class AgentAI : MonoBehaviour
             return false;
         }
         FilterPlayerWithLowerHp();
-        if ((availableTargets.Count <= 0)&&(!scared))
+        if ((availableTargets.Count <= 0) && (!scared))
         {
             SetUpAndFilterUnreachablePlayer();
-        }        
+        }
         return availableTargets.Count > 0;
-
     }
 
     private object FilterPlayerWithLowerHp()
     {
         SetUpAndFilterUnreachablePlayer();
         availableTargets = availableTargets.FindAll(e => e.obj.hp <= playerHealth.hp);
-        return availableTargets.Count>0;
+        return availableTargets.Count > 0;
     }
 
     private object ThereAreKillableEnemy(object bundle)
     {
-        
         SetUpAndFilterUnreachablePlayer();
         availableTargets = availableTargets.FindAll(e => e.obj.hp <= lowHealthHp);
-        return availableTargets.Count()>0;
+        return availableTargets.Count() > 0;
     }
 
     private object ThereAreReachAbleEnemy(object bundle)
@@ -197,10 +190,8 @@ public class AgentAI : MonoBehaviour
                 return true;
             }
         }
-      
+
         return false;
-
-
     }
 
     public IEnumerator PlayAI()
@@ -217,7 +208,8 @@ public class AgentAI : MonoBehaviour
                     reachableUpgradeChest = null;
                     reachableTargets = null;
                     dt.walk();
-                }catch(MissingReferenceException mre)
+                }
+                catch (MissingReferenceException mre)
                 {
                     Debug.Log(mre);
                 }
@@ -225,7 +217,6 @@ public class AgentAI : MonoBehaviour
             yield return new WaitForSeconds(reactionTime);
         }
     }
-
 
     public bool InizializeAllyToRevive()
     {
@@ -254,15 +245,16 @@ public class AgentAI : MonoBehaviour
         {
             pinfoTarget = MatchManager._instance.RedTeam;
         }
-        var aliveTargets = pinfoTarget.FindAll(e => e.status== PlayerInfo.Status.alive);
+        var aliveTargets = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.alive);
         availableTargets = new List<Target<PlayerHealth>>();
-        
-        foreach(PlayerInfo p in aliveTargets ) {
+
+        foreach (PlayerInfo p in aliveTargets)
+        {
             availableTargets.Add(new Target<PlayerHealth>(p.GetComponentInChildren<PlayerHealth>()));
         }
         return availableTargets.Count() > 0;
     }
-   
+
     public void SetUpAndFilterUnreachablePlayer()
     {
         if (reachableTargets != null)
@@ -279,9 +271,8 @@ public class AgentAI : MonoBehaviour
             else
                 startTile.x -= 1;
         }
-        reachableTargets = availableTargets.FindAll(e => e.CalculatePath(startTile,bot));
+        reachableTargets = availableTargets.FindAll(e => e.CalculatePath(startTile, bot));
         availableTargets = new List<Target<PlayerHealth>>(reachableTargets);
-
     }
 
     public bool InizializeReviveChest()
@@ -295,7 +286,6 @@ public class AgentAI : MonoBehaviour
             reachableReviveChest.Add(new Target<AbstractChest>(c));
         }
         return reachableReviveChest.Count() > 0;
-
     }
 
     public void SetUpandFilterOutUnreachableReviveChest()
@@ -328,8 +318,6 @@ public class AgentAI : MonoBehaviour
         }
         FilterOutAlreadyTakenUpgrade();
         return reachableUpgradeChest.Count() > 0;
-
-        
     }
 
     public void SetUpAndFilterOutUnreachableUpgradeChest()
@@ -348,7 +336,6 @@ public class AgentAI : MonoBehaviour
                 startTile.x -= 1;
         }
         reachableUpgradeChest = reachableUpgradeChest.FindAll(e => e.CalculatePath(startTile, bot));
-
     }
 
     public bool InizializeHealthChest()
@@ -362,7 +349,6 @@ public class AgentAI : MonoBehaviour
             reachableHealthChest.Add(new Target<AbstractChest>(c));
         }
         return reachableHealthChest.Count() > 0;
-
     }
 
     public void SetUpAndFilterOutUnreachableHealthChest()
@@ -381,17 +367,14 @@ public class AgentAI : MonoBehaviour
                 startTile.x -= 1;
         }
         reachableHealthChest = reachableHealthChest.FindAll(e => e.CalculatePath(startTile, bot));
-
     }
-
-
 
     public bool SetClosestEnemy()
     {
         availableTargets.Sort();
         if (availableTargets.Count() > 0)
         {
-            target= availableTargets[0].obj.transform;
+            target = availableTargets[0].obj.transform;
             return true;
         }
         else
@@ -419,7 +402,7 @@ public class AgentAI : MonoBehaviour
         reachableReviveChest.Sort();
         if (reachableReviveChest.Count() > 0)
         {
-            target= reachableReviveChest[0].obj.transform;
+            target = reachableReviveChest[0].obj.transform;
             return true;
         }
         else
@@ -433,7 +416,7 @@ public class AgentAI : MonoBehaviour
         reachableUpgradeChest.Sort();
         if (reachableUpgradeChest.Count > 0)
         {
-            target= reachableUpgradeChest[0].obj.transform;
+            target = reachableUpgradeChest[0].obj.transform;
             return true;
         }
         else
@@ -444,14 +427,15 @@ public class AgentAI : MonoBehaviour
 
     public bool StartShootingBT()
     {
-        shootBT.enabled = true;
         shootBT.target = target;
+        shootBT.enabled = true;
         return true;
     }
+
     public bool StartOpenChestBT()
     {
-        openBT.enabled = true;
         openBT.target = target;
+        openBT.enabled = true;
         return true;
     }
 
@@ -482,6 +466,7 @@ public class AgentAI : MonoBehaviour
         StartOpenChestBT();
         return null;
     }
+
     public object GoForEnemy(object o)
     {
         SetClosestEnemy();
@@ -499,7 +484,7 @@ public class AgentAI : MonoBehaviour
             else
                 startTile.x -= 1;
         }
-        availableTargets = availableTargets.FindAll(e => { e.SetUpDistance(startTile, bot); return true; }) ;
+        availableTargets = availableTargets.FindAll(e => { e.SetUpDistance(startTile, bot); return true; });
     }
 
     private object GoForEnemyLong(object bundle)
@@ -513,16 +498,14 @@ public class AgentAI : MonoBehaviour
 
     public bool FilterOutAlreadyTakenUpgrade()
     {
-        reachableUpgradeChest= reachableUpgradeChest.FindAll(e => !DidIHaveThisUpgrade((WeaponChestScript)e.obj));
+        reachableUpgradeChest = reachableUpgradeChest.FindAll(e => !DidIHaveThisUpgrade((WeaponChestScript)e.obj));
         return reachableUpgradeChest.Count > 0;
     }
 
     private bool DidIHaveThisUpgrade(WeaponChestScript chest)
     {
-        AbstractWeaponGeneric weapon= chest.Weapon.GetComponent<AbstractWeaponGeneric>();
+        AbstractWeaponGeneric weapon = chest.Weapon.GetComponent<AbstractWeaponGeneric>();
         List<AbstractWeaponGeneric> sameClassWeapon = inventory.Weapons.FindAll(e => e.GetType() == weapon.GetType());
-        return sameClassWeapon.Count>0;
+        return sameClassWeapon.Count > 0;
     }
-
-
 }

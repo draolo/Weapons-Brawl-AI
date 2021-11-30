@@ -1,24 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using CRBT;
+using System.Collections;
+using UnityEngine;
 
 public class OpenChestBT : MonoBehaviour
 {
+    private BehaviorTree AI;
+    private IBTTask root;
+    private PlayerChestManager playerChestManager;
+    private Rigidbody2D _rigidbody;
+    public Bot bot;
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
-
-    private BehaviorTree AI;
-    private Rigidbody2D _rigidbody;
     public Transform target;
     public Vector2 targetOld;
-    public Bot bot;
-    private PlayerChestManager playerChestManager;
-    IBTTask root;
-
 
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
         playerChestManager = gameObject.GetComponent<PlayerChestManager>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
@@ -33,19 +30,16 @@ public class OpenChestBT : MonoBehaviour
         BTCondition proximityCheck = new BTCondition(NotCloseToTheTarget);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
         BTCondition isMovinig = new BTCondition(IsItMoving);
-        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition,safeSetPath });
+        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
         BTSequence movingCycle = new BTSequence(new IBTTask[] { pathVerifier, proximityCheck });
         BTDecorator checkUntilFail = new BTDecoratorUntilFail(movingCycle);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
-
-
         root = new BTSequence(new IBTTask[] { safeSetPath, checkUntilFail, stop, waitMovementEnd, open });
-
-
-
     }
-    void OnEnable() {
+
+    private void OnEnable()
+    {
         AI = new BehaviorTree(root);
         StartCoroutine(OpenChest());
     }
@@ -71,11 +65,9 @@ public class OpenChestBT : MonoBehaviour
                 Debug.Log(mre);
                 step = false;
             }
-
         } while (step);
         this.enabled = false;
     }
-
 
     public bool SearchAndSetPath()
     {
@@ -96,9 +88,6 @@ public class OpenChestBT : MonoBehaviour
                         Mathf.CeilToInt(bot.mHeight),
                         (short)bot.mMaxJumpHeight);
 
-
-        
-
         if (path != null && path.Count > 1)
         {
             bot.mPath.Clear();
@@ -113,7 +102,6 @@ public class OpenChestBT : MonoBehaviour
         {
             return false;
         }
-
     }
 
     public bool Move()
@@ -125,8 +113,6 @@ public class OpenChestBT : MonoBehaviour
         bot.mFramesOfJumping = bot.GetJumpFramesForNode(0);
 
         return true;
-
-
     }
 
     public bool Stop()
@@ -134,7 +120,6 @@ public class OpenChestBT : MonoBehaviour
         bot.ChangeAction(Bot.BotAction.None);
 
         return true;
-
     }
 
     public bool OpenTheChest()
@@ -145,7 +130,7 @@ public class OpenChestBT : MonoBehaviour
 
     public bool NotCloseToTheTarget()
     {
-        float distance = Vector2.Distance(transform.position,target.position);
+        float distance = Vector2.Distance(transform.position, target.position);
         return (distance > playerChestManager.InteractionRadius);
     }
 
@@ -158,5 +143,4 @@ public class OpenChestBT : MonoBehaviour
     {
         return (_rigidbody.velocity != new Vector2(0, 0));
     }
-
 }

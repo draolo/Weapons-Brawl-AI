@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using CRBT;
 
-
 public class ShootBT : MonoBehaviour
 {
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
-    IBTTask root;
+    private IBTTask root;
 
     private BehaviorTree AI;
 
     private TargetAim targetAim;
     public Transform target;
+    public PlayerInfo targetInfo;
     public Vector2 targetOld;
     public LayerMask projectileObstacle;
     public Vector2 shootingAngle;
@@ -21,15 +21,15 @@ public class ShootBT : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private PlayerWeaponManager_Inventory shootingManager;
     private PlayerMovementOffline playerMovementOffline;
+
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
         playerMovementOffline = GetComponent<PlayerMovementOffline>();
         targetAim = GetComponent<TargetAim>();
         bot = gameObject.GetComponent<Bot>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
-
 
         BTAction setTarget = new BTAction(SetTarget);
         BTAction setPath = new BTAction(IsThereAPathToTheTarget);
@@ -40,6 +40,7 @@ public class ShootBT : MonoBehaviour
         BTAction shake = new BTAction(AimShaker);
         BTAction faceTheTarget = new BTAction(FaceTheTarget);
 
+        BTCondition targetAlive = new BTCondition(IsTargetAlive);
         BTCondition couldSeeTheTarget = new BTCondition(LineOfSight);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
         BTCondition straightLine = new BTCondition(TestAndSetStraight);
@@ -49,43 +50,37 @@ public class ShootBT : MonoBehaviour
         BTCondition isGrounded = new BTCondition(IsItOnGround);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
-
-        BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] {isGrounded, straightLine, emptyFireline });
-        BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] {isGrounded, lobbedLine, emptyFireline});
+        BTSequence safeShoot = new BTSequence(new IBTTask[] { targetAlive, shoot });
+        BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] { isGrounded, straightLine, emptyFireline });
+        BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, emptyFireline });
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
-        BTSequence shootFarAway = new BTSequence(new IBTTask[] { stop,waitMovementEnd, faceTheTarget, isThereAFireLine, aim, shoot });
+        BTSequence shootFarAway = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, isThereAFireLine, aim, safeShoot });
         BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
 
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
         BTDecorator notInLine = new BTDecoratorInverter(couldSeeTheTarget);
         BTDecorator notEmptyLine = new BTDecoratorInverter(isThereAFireLine);
-        
-        BTSequence endMovementAndTest = new BTSequence(new IBTTask[] {isGrounded, stop, waitMovementEnd, notEmptyLine, startBot});
-        
 
-        BTSelector movementConditions = new BTSelector(new IBTTask[] { notInLine,notEmptyLine });
+        BTSequence endMovementAndTest = new BTSequence(new IBTTask[] { isGrounded, stop, waitMovementEnd, notEmptyLine, startBot });
 
-        
+        BTSelector movementConditions = new BTSelector(new IBTTask[] { notInLine, notEmptyLine });
+
         BTDecorator movingCycle = new BTDecoratorUntilFail(movementConditions);
 
+        BTSequence getCloser = new BTSequence(new IBTTask[] { safeSetPath, startBot, movingCycle, shootFarAway });
 
+        BTRandomSelector standardBehaviour = new BTRandomSelector(new IBTTask[] { shootFarAway, getCloser });
 
-        BTSequence getCloser = new BTSequence(new IBTTask[] {safeSetPath, startBot, movingCycle, shootFarAway});
-
-
-
-        BTRandomSelector standardBehaviour = new BTRandomSelector(new IBTTask[] {shootFarAway, getCloser});
-
-        BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { straightLine, aim, shoot });
+        BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { straightLine, aim, safeShoot });
 
         BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
 
         root = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
-
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
+        targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
         AI = new BehaviorTree(root);
         StartCoroutine(ShootTarget());
     }
@@ -103,7 +98,14 @@ public class ShootBT : MonoBehaviour
         {
             try
             {
-                step = AI.Step();
+                if (!IsTargetAlive())
+                {
+                    step = false;
+                }
+                else
+                {
+                    step = AI.Step();
+                }
             }
             catch (MissingReferenceException mre)
             {
@@ -111,14 +113,13 @@ public class ShootBT : MonoBehaviour
                 step = false;
             }
             yield return new WaitForSeconds(aiTime);
-
         } while (step);
         this.enabled = false;
     }
 
     public bool LineOfSight()
     {
-        RaycastHit2D hit = Physics2D.Linecast(transform.position, target.position, projectileObstacle );
+        RaycastHit2D hit = Physics2D.Linecast(transform.position, target.position, projectileObstacle);
         if (hit.collider == null)
         {
             return true;
@@ -134,12 +135,10 @@ public class ShootBT : MonoBehaviour
 
     public bool TestAndSetStraight()
     {
-
         Vector2 direction = targetAim.Aim();
         if (direction.x <= -999)
         {
             return false;
-
         }
         shootingAngle = direction;
         return true;
@@ -147,12 +146,10 @@ public class ShootBT : MonoBehaviour
 
     public bool EmptyFireLine()
     {
-
         Vector2 impactPoint = targetAim.CollisionPredictionStupid(shootingAngle);
         if (impactPoint.x <= -999)
         {
             return true;
-
         }
         return false;
     }
@@ -163,7 +160,6 @@ public class ShootBT : MonoBehaviour
         if (direction.x <= -999)
         {
             return false;
-
         }
         shootingAngle = direction;
         return true;
@@ -188,9 +184,6 @@ public class ShootBT : MonoBehaviour
                         Mathf.CeilToInt(bot.mHeight),
                         (short)bot.mMaxJumpHeight);
 
-
-
-
         if (path != null && path.Count > 1)
         {
             bot.mPath.Clear();
@@ -203,10 +196,8 @@ public class ShootBT : MonoBehaviour
         }
         else
         {
-
             return false;
         }
-
     }
 
     public bool Stop()
@@ -217,19 +208,16 @@ public class ShootBT : MonoBehaviour
 
     public bool Move()
     {
-
         bot.mCurrentNodeId = 1;
 
         bot.ChangeAction(Bot.BotAction.MoveTo);
 
         bot.mFramesOfJumping = bot.GetJumpFramesForNode(0);
         return true;
-
     }
 
     public bool TargetPositionEqual()
     {
-
         return targetOld == (Vector2)target.position;
     }
 
@@ -256,7 +244,6 @@ public class ShootBT : MonoBehaviour
         return bot.mOnGround;
     }
 
-
     public bool FaceTheTarget()
     {
         Vector2 dir = target.position - transform.position;
@@ -270,4 +257,8 @@ public class ShootBT : MonoBehaviour
         return true;
     }
 
+    public bool IsTargetAlive()
+    {
+        return targetInfo.status == PlayerInfo.Status.alive;
+    }
 }
