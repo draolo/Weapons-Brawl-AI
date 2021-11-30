@@ -9,7 +9,7 @@ public class PlayerAntiSlippery : MonoBehaviour {
 
     private void Update()
     {
-        if (Player.gameObject.GetComponent<PlayerMovement>().isActiveAndEnabled)
+        if (Player.gameObject.GetComponent<PlayerMovementOffline>().isActiveAndEnabled)
         {
             Player.sharedMaterial = Slippery;
         }
