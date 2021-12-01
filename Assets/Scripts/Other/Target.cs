@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Target<T>: IComparable<Target<T>> where T : MonoBehaviour  
+public class Target<T> : IComparable<Target<T>> where T : MonoBehaviour
 {
     public T obj;
     public List<Vector2i> path;
     public Transform transform;
     public float distance;
-    
+
     public Target(T o)
     {
         obj = o;
@@ -21,12 +21,13 @@ public class Target<T>: IComparable<Target<T>> where T : MonoBehaviour
     {
         Vector2i tilePos = bot.mMap.GetMapTileAtPoint(transform.position);
         Vector2 difference = (Vector2)startTile - (Vector2)tilePos;
-        distance = Mathf.Abs(difference.x) + Mathf.Abs(difference.y);
+        float vertical = difference.x > 0 ? 1.5f : 0.5f;
+        distance = Mathf.Abs(difference.x) + vertical * Mathf.Abs(difference.y);
     }
 
     public bool CalculatePath(Vector2i startTile, Bot bot)
     {
-        SetUpDistance(startTile,bot);
+        SetUpDistance(startTile, bot);
         Vector2i tilePos = bot.mMap.GetMapTileAtPoint(transform.position);
         path = bot.mMap.mPathFinder.FindPath(
                 startTile,

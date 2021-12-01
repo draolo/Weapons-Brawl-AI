@@ -82,9 +82,16 @@ public class ShootBT : MonoBehaviour
 
     private void OnEnable()
     {
-        targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
-        AI = new BehaviorTree(root);
-        StartCoroutine(ShootTarget());
+        try
+        {
+            targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
+            AI = new BehaviorTree(root);
+            StartCoroutine(ShootTarget());
+        }
+        catch (MissingReferenceException)
+        {
+            this.enabled = false;
+        }
     }
 
     private void OnDisable()
