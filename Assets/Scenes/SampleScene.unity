@@ -619,6 +619,30 @@ PrefabInstance:
       propertyPath: type
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7521262180587994510, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 7521262180684829796, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 7521262180694462598, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 7521262181158907695, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 7521262181580574578, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 7521262181957587091, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 7585299756306992672, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_Mass
       value: 40

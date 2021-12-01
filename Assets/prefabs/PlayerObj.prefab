@@ -1699,6 +1699,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7454312933549974306}
     - target: {fileID: 2074724763726055541, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}
+      propertyPath: PlayerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 2074724763726055541, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}
       propertyPath: AnimationController
       value: 
       objectReference: {fileID: 2824344417399717766}
