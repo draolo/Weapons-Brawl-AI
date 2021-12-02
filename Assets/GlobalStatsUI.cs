@@ -38,7 +38,7 @@ public class GlobalStatsUI : AbstractInGameInterfaces {
                 Transform KDRatio = row.transform.Find("KD");
                 Transform damage = row.transform.Find("Damage");
                 SetValue(name, p.pname);
-                SetValue(rank, p.getRank().ToString());
+                SetValue(rank, p.GetRank().ToString());
                 SetValue(score, p.GetPoints().ToString());
                 SetValue(KDRatio, p.KDRatio());
                 SetValue(damage, p.damageToEnemy.ToString());

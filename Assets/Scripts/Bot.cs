@@ -7,33 +7,29 @@ using System;
 
 public class Bot : Character
 {
-	public enum BotAction
-	{
-		None = 0,
-		MoveTo,
-	}
+    public enum BotAction
+    {
+        None = 0,
+        MoveTo,
+    }
 
     public PlayerMovementOffline movementHandler;
     public bool freeRoam;
 
-	public BotAction mCurrentAction = BotAction.None;
+    public BotAction mCurrentAction = BotAction.None;
 
+    public int mCurrentNodeId = -1;
 
-	
-	public int mCurrentNodeId = -1;
-
-	public int mFramesOfJumping = 0;
-	public int mStuckFrames = 0;
+    public int mFramesOfJumping = 0;
+    public int mStuckFrames = 0;
 
     public int mMaxJumpHeight = 5;
     public int mWidth;
     public int mHeight;
-	
-	
-	public const int cMaxStuckFrames = 20;
-    private bool jumpOnStuck= false;
-	
-	
+
+    public const int cMaxStuckFrames = 20;
+    private bool jumpOnStuck = false;
+
     public void GoToPosition(Vector2i mapPosInTile)
     {
         while (!(mMap.IsGround(mapPosInTile.x, mapPosInTile.y)))
@@ -56,13 +52,11 @@ public class Bot : Character
         //  mAudioSource = GetComponent<AudioSource>();
         mPosition = transform.position;
 
-        mAABB.HalfSize = new Vector2(0.5f*mWidth, 0.5f*mHeight);
-
+        mAABB.HalfSize = new Vector2(0.5f * mWidth, 0.5f * mHeight);
 
         //mAABBOffset.y = mAABB.HalfSizeY;
         //transform.localScale = new Vector3(mAABB.HalfSizeX / 8.0f, mAABB.HalfSizeY / 8.0f, 1.0f);
     }
-
 
     public bool IsOnGroundAndFitsPos(Vector2i pos)
     {
@@ -83,9 +77,11 @@ public class Bot : Character
 
         return false;
     }
+
     public void MoveTo(Vector2i destinationInTile)
     {
         mStuckFrames = 0;
+        jumpOnStuck = false;
         Vector2 something = mPosition - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
         Vector2i startTile = mMap.GetMapTileAtPoint(mPosition - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
         if (mOnGround && !IsOnGroundAndFitsPos(startTile))
@@ -96,11 +92,11 @@ public class Bot : Character
                 startTile.x -= 1;
         }
 
-        var path =  mMap.mPathFinder.FindPath(
-                        startTile, 
+        var path = mMap.mPathFinder.FindPath(
+                        startTile,
                         destinationInTile,
-                        Mathf.CeilToInt(mWidth), 
-                        Mathf.CeilToInt(mHeight), 
+                        Mathf.CeilToInt(mWidth),
+                        Mathf.CeilToInt(mHeight),
                         (short)mMaxJumpHeight);
 
         mPath.Clear();
@@ -122,20 +118,16 @@ public class Bot : Character
 
             if (mCurrentAction == BotAction.MoveTo)
                 mCurrentAction = BotAction.None;
+            gameObject.GetComponent<AgentAI>().enabled = true;
         }
-
-        
-           
     }
-
-
-
 
     public void ChangeAction(BotAction newAction)
     {
         mCurrentAction = newAction;
     }
-    int GetJumpFrameCount(int deltaY)
+
+    private int GetJumpFrameCount(int deltaY)
     {
         if (deltaY <= 0)
             return 0;
@@ -145,23 +137,27 @@ public class Bot : Character
             {
                 case 1:
                     return 1;
+
                 case 2:
                     return 2;
+
                 case 3:
                     return 6;
+
                 case 4:
                     return 9;
+
                 case 5:
                     return 15;
+
                 case 6:
                     return 21;
+
                 default:
                     return 30;
             }
         }
     }
-
-
 
     public bool ReachedNodeOnXAxis(Vector2 pathPosition, Vector2 prevDest, Vector2 currentDest)
     {
@@ -179,20 +175,19 @@ public class Bot : Character
 
     public void GetContext(out Vector2 prevDest, out Vector2 currentDest, out Vector2 nextDest, out bool destOnGround, out bool reachedX, out bool reachedY)
     {
-
-            //   Debug.Log("context node id" + mCurrentNodeId + "path count " + mPath.Count);
-            if (mCurrentNodeId > 0)
-            {
-                prevDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId - 1]);
-            }
-            else
-            {
-                prevDest = transform.position;
-            }
+        //   Debug.Log("context node id" + mCurrentNodeId + "path count " + mPath.Count);
+        if (mCurrentNodeId > 0)
+        {
+            prevDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId - 1]);
+        }
+        else
+        {
+            prevDest = transform.position;
+        }
         try
         {
             currentDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId]);
-     
+
             nextDest = currentDest;
 
             if (mPath.Count > mCurrentNodeId + 1)
@@ -229,30 +224,32 @@ public class Bot : Character
         {
             Debug.Log("catched node id" + mCurrentNodeId + "path count " + mPath.Count);
             Debug.Log(dd);
-            nextDest = currentDest= prevDest = new Vector2();
+            nextDest = currentDest = prevDest = new Vector2();
             destOnGround = true;
             reachedX = false;
             reachedY = false;
         }
-        }
-        /*
-        public void TestJumpValues()
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                mFramesOfJumping = GetJumpFrameCount(1);
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-                mFramesOfJumping = GetJumpFrameCount(2);
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-                mFramesOfJumping = GetJumpFrameCount(3);
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-                mFramesOfJumping = GetJumpFrameCount(4);
-            else if (Input.GetKeyDown(KeyCode.Alpha5))
-                mFramesOfJumping = GetJumpFrameCount(5);
-            else if (Input.GetKeyDown(KeyCode.Alpha6))
-                mFramesOfJumping = GetJumpFrameCount(6);
-        }
-        */
-        public int GetJumpFramesForNode(int prevNodeId)
+    }
+
+    /*
+    public void TestJumpValues()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            mFramesOfJumping = GetJumpFrameCount(1);
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+            mFramesOfJumping = GetJumpFrameCount(2);
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+            mFramesOfJumping = GetJumpFrameCount(3);
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+            mFramesOfJumping = GetJumpFrameCount(4);
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+            mFramesOfJumping = GetJumpFrameCount(5);
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+            mFramesOfJumping = GetJumpFrameCount(6);
+    }
+    */
+
+    public int GetJumpFramesForNode(int prevNodeId)
     {
         int currentNodeId = prevNodeId + 1;
 
@@ -271,7 +268,7 @@ public class Bot : Character
         return 0;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         BotUpdate();
         if (Input.GetKeyUp(KeyCode.P))
@@ -288,7 +285,7 @@ public class Bot : Character
         }
         mOnGround = movementHandler.isGrounded;
         //get the position of the bottom of the bot's aabb, this will be much more useful than the center of the sprite (mPosition)
-		int tileX, tileY;
+        int tileX, tileY;
         var position = transform.position;
         position.y -= mAABB.HalfSizeY;
         mInputs[(int)KeyInput.GoRight] = false;
@@ -297,7 +294,7 @@ public class Bot : Character
         mInputs[(int)KeyInput.GoDown] = false;
         mMap.GetMapTileAtPoint(position, out tileX, out tileY);
         //Debug.Log("Bottom at " + tileX + ":" + tileY);
-        
+
         switch (mCurrentAction)
         {
             case BotAction.None:
@@ -379,7 +376,6 @@ public class Bot : Character
                             {
                                 mCurrentNodeId = -1;
                                 ChangeAction(BotAction.None);
-                        
                             }
                             else
                             {
@@ -409,19 +405,22 @@ public class Bot : Character
                         else
                         {
                             mInputs[(int)KeyInput.Jump] = true;
+                            jumpOnStuck = true;
                         }
                     }
                 }
-                else { 
+                else
+                {
                     mStuckFrames = 0;
-                    if (jumpOnStuck &&(Mathf.Abs( mPosition.x - mOldPosition.x)>0.2f))
+                    if (jumpOnStuck && (Mathf.Abs(mPosition.x - mOldPosition.x) > 0.2f))
                     {
                         jumpOnStuck = false;
                     }
                 }
                 break;
         }
-        if(mInputs[(int)KeyInput.Jump]){
+        if (mInputs[(int)KeyInput.Jump])
+        {
             movementHandler.jump = true;
         }
         if (mInputs[(int)KeyInput.GoRight])
@@ -430,7 +429,7 @@ public class Bot : Character
         }
         if (mInputs[(int)KeyInput.GoLeft])
         {
-            movementHandler.horizontalMove =-movementHandler.speed;
+            movementHandler.horizontalMove = -movementHandler.speed;
         }
         if (!(mInputs[(int)KeyInput.GoRight] ^ mInputs[(int)KeyInput.GoLeft]))
         {

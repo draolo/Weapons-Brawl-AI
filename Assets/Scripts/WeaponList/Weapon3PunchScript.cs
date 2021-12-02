@@ -38,7 +38,7 @@ public class Weapon3PunchScript : AbstractWeaponMelee
 
             if (enemy && enemy.gameObject != Player.gameObject)
             {
-                enemy.CmdTakeDamage(damagePower, Player.gameObject);
+                enemy.TakeDamage(damagePower, Player.gameObject);
             }
         }
     }

@@ -39,7 +39,7 @@ public class ResurrectionMenuUI : AbstractInGameInterfaces {
         Text t = button.GetComponentInChildren<Text>();
         t.text = text;
         Button buttonComponenet = button.GetComponent<Button>();
-        buttonComponenet.onClick.AddListener(() => { p.SelectAllyToResurrect(text); this.Close(true); });
+        buttonComponenet.onClick.AddListener(() => { p.SetAllyToResurrectBot(text); this.Close(true); });
         button.transform.localScale = Vector3.one;
     }
 

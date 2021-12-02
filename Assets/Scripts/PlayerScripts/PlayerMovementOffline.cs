@@ -2,8 +2,8 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerMovementOffline : MonoBehaviour {
-
+public class PlayerMovementOffline : MonoBehaviour
+{
     public bool isGrounded = true;
     public bool isMoving = false;
     public float jumpForce = 18;
@@ -20,29 +20,31 @@ public class PlayerMovementOffline : MonoBehaviour {
     //private Vector3 m_Velocity = Vector3.zero; bored from the same warning
     private Rigidbody2D m_Rigidbody2D;
 
-
-
-    private void Start(){
+    private void Start()
+    {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * speed;
-        jump = Input.GetButtonDown("Jump")||jump;
+        jump = Input.GetButtonDown("Jump") || jump;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         PlayerMovement();
     }
-    public void PlayerMovement(){
-        
-        if (horizontalMove != 0){
-                isMoving = true;
-        }else
+
+    public void PlayerMovement()
+    {
+        if (horizontalMove != 0)
         {
-                isMoving = false;
+            isMoving = true;
+        }
+        else
+        {
+            isMoving = false;
         }
         Move(horizontalMove * Time.fixedDeltaTime);
         anim.SetFloat("Blend", Mathf.Abs(horizontalMove * 10));
@@ -51,7 +53,6 @@ public class PlayerMovementOffline : MonoBehaviour {
             Jump();
             isMoving = true;
         }
-
     }
 
     public void Move(float move)
@@ -76,27 +77,27 @@ public class PlayerMovementOffline : MonoBehaviour {
         }
     }
 
-    public void Jump() {
-        if (isGrounded){
-            m_Rigidbody2D.velocity =new Vector3(m_Rigidbody2D.velocity.x, jumpForce);
-
+    public void Jump()
+    {
+        if (isGrounded)
+        {
+            m_Rigidbody2D.velocity = new Vector3(m_Rigidbody2D.velocity.x, jumpForce);
         }
         jump = false;
     }
 
-    void CmdFlip()
+    private void CmdFlip()
     {
         RpcFlip();
     }
 
-    void RpcFlip()
+    private void RpcFlip()
     {
         Flip();
     }
 
-    void Flip() {
+    private void Flip()
+    {
         transform.Rotate(0f, 180f, 0f);
     }
-
-
 }

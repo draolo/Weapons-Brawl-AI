@@ -4,38 +4,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-
-public class PlayerChestManager : MonoBehaviour {
-
+public class PlayerChestManager : MonoBehaviour
+{
     public string allyToResurrect;
     public int InteractionRadius = 3;
-    public bool waitingUser=false;
+    public bool waitingUser = false;
 
-    public bool interactionStart=false;
+    public bool interactionStart = false;
     private bool bot;
 
-    void Start () {
+    private void Start()
+    {
         waitingUser = false;
         interactionStart = false;
         bot = gameObject.GetComponent<PlayerManager>().isABot;
-	}
-	
-	void Update () {
+    }
 
-    if (Input.GetButtonDown("Chest"))
+    private void Update()
+    {
+        if (Input.GetButtonDown("Chest"))
         {
             TryToOpenChest();
-
         }
-        
-        
-    if (interactionStart && (!waitingUser|| bot))
-            {
-                CmdInteract();
-                interactionStart = false;
-            }
-        
-	}
+
+        if (interactionStart && (!waitingUser || bot))
+        {
+            Interact();
+            interactionStart = false;
+        }
+    }
 
     public void TryToOpenChest()
     {
@@ -55,34 +52,31 @@ public class PlayerChestManager : MonoBehaviour {
         interactionStart = false;
     }
 
-
-    private void CmdInteract()
+    private void Interact()
     {
-
         RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, InteractionRadius, new Vector2(0, 0));
-        foreach(RaycastHit2D hit in hits){
+        foreach (RaycastHit2D hit in hits)
+        {
             if (hit.collider != null && hit.collider.tag == "Chest")
             {
                 hit.collider.gameObject.GetComponent<AbstractChest>().Interact(this);
             }
         }
-        
     }
 
-    public void CmdSetAllyToResurrect(string name)
+    public void SetAllyToResurrect(string name)
     {
         allyToResurrect = name;
     }
 
-    public void SelectAllyToResurrect(string name)
+    public void SetAllyToResurrectBot(string name)
     {
-        CmdSetAllyToResurrect(name);
+        SetAllyToResurrect(name);
         waitingUser = false;
     }
 
     public void LifeChest(int life)
     {
-        gameObject.GetComponent<PlayerHealth>().CmdGetLife(life);
+        gameObject.GetComponent<PlayerHealth>().GetLife(life);
     }
-
 }

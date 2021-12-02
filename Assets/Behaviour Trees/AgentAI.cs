@@ -106,6 +106,7 @@ public class AgentAI : MonoBehaviour
 
     private void OnEnable()
     {
+        StopAllCoroutines();
         shootBT.enabled = false;
         openBT.enabled = false;
         StartCoroutine(PlayAI());
@@ -457,7 +458,7 @@ public class AgentAI : MonoBehaviour
     private void SetAllyToRevive()
     {
         //CHOOSE THE ON WITH THE HIGHER POITS
-        gameObject.GetComponent<PlayerChestManager>().SelectAllyToResurrect(targetToRevive[0].pname);
+        gameObject.GetComponent<PlayerChestManager>().SetAllyToResurrectBot(targetToRevive[0].pname);
     }
 
     public object GoForUpgrade(object o)

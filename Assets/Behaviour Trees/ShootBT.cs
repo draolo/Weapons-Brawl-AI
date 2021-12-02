@@ -8,7 +8,6 @@ public class ShootBT : MonoBehaviour
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
     private IBTTask root;
-
     private BehaviorTree AI;
 
     private TargetAim targetAim;
@@ -82,6 +81,8 @@ public class ShootBT : MonoBehaviour
 
     private void OnEnable()
     {
+        StopAllCoroutines();
+        targetAim.enabled = true;
         try
         {
             targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
@@ -262,7 +263,7 @@ public class ShootBT : MonoBehaviour
 
     public bool SetTarget()
     {
-        targetAim.setTarget(target);
+        targetAim.SetTarget(target);
         return true;
     }
 
@@ -273,7 +274,12 @@ public class ShootBT : MonoBehaviour
 
     public bool SetWeapon()
     {
-        EmptyFireLine();
+        bool emptyFireLine = EmptyFireLine();
+        if (!emptyFireLine)
+        {
+            shootingManager.SwitchWeapon(0);
+            return true;
+        }
         float targetDistance = Vector2.Distance(transform.position, target.position);
         float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
         List<AbstractWeaponGeneric> availableWeapons = shootingManager.Weapons;

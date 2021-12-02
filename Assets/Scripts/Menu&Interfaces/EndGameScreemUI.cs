@@ -26,7 +26,7 @@ public class EndGameScreemUI : AbstractInGameInterfaces {
         SetValue(ResurrectedLabel, localPlayer.resurrectedAlly);
         SetValue(DamageLabel, localPlayer.damageToEnemy);
         SetValue(PointsLabel, localPlayer.GetPoints());
-        UI.transform.Find("Rank").Find("Rank").GetComponent<TextMeshProUGUI>().text=localPlayer.getRank()+"";
+        UI.transform.Find("Rank").Find("Rank").GetComponent<TextMeshProUGUI>().text=localPlayer.GetRank()+"";
         if (localPlayer.win)
         {
             winLose.GetComponent<TextMeshProUGUI>().text = "YOU WIN";

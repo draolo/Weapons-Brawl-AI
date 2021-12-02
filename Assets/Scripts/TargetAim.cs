@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class TargetAim : MonoBehaviour
 {
-    private Transform target;
+    public Transform target;
     public Transform firePoint;
-    public int speed=50;
+    public int speed = 50;
 
     public LayerMask projectileObstacle;
 
     public GameObject FirePointPivot;
 
-    public Vector2 Aim(bool lobbed=false)
+    public Vector2 Aim(bool lobbed = false)
     {
         if (target == null)
         {
@@ -21,31 +21,37 @@ public class TargetAim : MonoBehaviour
         }
         Vector2 g = Physics.gravity;
         float gravity = g.magnitude;
-        Vector2 deltaVec =   target.position- transform.position;// calculate vector from target to start
+        Vector2 deltaVec = target.position - transform.position;// calculate vector from target to start
         float delta = deltaVec.magnitude;
         float a = gravity * gravity;
-        float b = -4 * ( Vector2.Dot(g,deltaVec) + speed * speed);
+        float b = -4 * (Vector2.Dot(g, deltaVec) + speed * speed);
         float c = 4 * delta * delta;
-        if (4 * a * c > b * b) {
+        if (4 * a * c > b * b)
+        {
             return new Vector2(-9999, -9999); // check for no real solutions
         }
         float time0 = Mathf.Sqrt((-b + Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a)); // find candidate times
         float time1 = Mathf.Sqrt((-b - Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a));
-        float ttt=0;
-        if (time0 < 0) {  //find the time to target
+        float ttt = 0;
+        if (time0 < 0)
+        {  //find the time to target
             if (time1 < 0)
             {
-                return new Vector2(-9999,-9999);
+                return new Vector2(-9999, -9999);
             }
-            else {
+            else
+            {
                 ttt = time1;
             }
         }
-        else {
-            if (time1 < 0) {
+        else
+        {
+            if (time1 < 0)
+            {
                 ttt = time0;
             }
-            else {
+            else
+            {
                 if (!lobbed)
                 {
                     ttt = Mathf.Min(time0, time1);
@@ -56,11 +62,9 @@ public class TargetAim : MonoBehaviour
                 }
             }
         }
-        Vector2 aimTo= (2 * deltaVec - g* ttt*ttt) / (2 * speed * ttt); //# return the firing vector
+        Vector2 aimTo = (2 * deltaVec - g * ttt * ttt) / (2 * speed * ttt); //# return the firing vector
         return aimTo.normalized;
     }
-
-
 
     public float GetHeightAtTime(Vector2 angle, float time)
     {
@@ -72,7 +76,7 @@ public class TargetAim : MonoBehaviour
         return speed * time * angle.x + transform.position.x;
     }
 
-    public Vector2 CollisionPredictionStupid(Vector2 angle,int halfOfpoints=3)
+    public Vector2 CollisionPredictionStupid(Vector2 angle, int halfOfpoints = 3)
     {
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
         Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT), GetHeightAtTime(angle, maxT));
@@ -82,12 +86,12 @@ public class TargetAim : MonoBehaviour
         RaycastHit2D hit;
         for (int i = 1; i <= halfOfpoints * 2; i++)
         {
-            endPos =new Vector2(GetLengthAtTime(angle, step*i), GetHeightAtTime(angle, step*i));
+            endPos = new Vector2(GetLengthAtTime(angle, step * i), GetHeightAtTime(angle, step * i));
             float xDistancePoint = endPos.x - firePoint.position.x;
             float xDistanceTarget = target.position.x - firePoint.position.x;
             if (Mathf.Abs(xDistanceTarget) < Mathf.Abs(xDistancePoint))
             {
-                hit = Physics2D.Linecast(beginPos, target.position,projectileObstacle);
+                hit = Physics2D.Linecast(beginPos, target.position, projectileObstacle);
                 if (hit.collider != null)
                 {
                     return hit.point;
@@ -110,9 +114,8 @@ public class TargetAim : MonoBehaviour
             return hit.point;
         }
 
-        return new Vector2(-9999,-9999);
+        return new Vector2(-9999, -9999);
     }
-
 
     public void SetAim(Vector2 direction)
     {
@@ -125,9 +128,7 @@ public class TargetAim : MonoBehaviour
         FirePointPivot.transform.eulerAngles = new Vector3(0f, 0f, angle);
     }
 
-    
-    
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         if (target == null)
         {
@@ -159,8 +160,8 @@ public class TargetAim : MonoBehaviour
         }
         Gizmos.DrawLine(beginPos, target.position);
     }
-    
-    public void setTarget(Transform target)
+
+    public void SetTarget(Transform target)
     {
         this.target = target;
     }

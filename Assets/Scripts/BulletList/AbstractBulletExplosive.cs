@@ -118,7 +118,7 @@ public abstract class AbstractBulletExplosive : MonoBehaviour {
         {
             if (hitted.CompareTag("Player"))
             {
-                hitted.gameObject.GetComponent<PlayerHealth>().CmdTakeDamage(BulletPower, shootedBy);
+                hitted.gameObject.GetComponent<PlayerHealth>().TakeDamage(BulletPower, shootedBy);
             }
         }
     }

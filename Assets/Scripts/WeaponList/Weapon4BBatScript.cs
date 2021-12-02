@@ -24,10 +24,10 @@ public class Weapon4BBatScript : AbstractWeaponMelee
 
             if (enemy && enemy.gameObject != Player.gameObject)
             {
-                enemy.CmdTakeDamage(damagePower, Player.gameObject);
+                enemy.TakeDamage(damagePower, Player.gameObject);
 
                 Vector3 direction = (firePoint.right + Vector3.up) * FlingIntensity;
-                enemy.gameObject.GetComponent<PlayerManager>().CmdSetVelocity(direction.x, direction.y);
+                enemy.gameObject.GetComponent<PlayerManager>().SetVelocity(direction.x, direction.y);
             }
         }
     }

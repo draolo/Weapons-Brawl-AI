@@ -40,6 +40,7 @@ public class OpenChestBT : MonoBehaviour
 
     private void OnEnable()
     {
+        StopAllCoroutines();
         AI = new BehaviorTree(root);
         StartCoroutine(OpenChest());
     }

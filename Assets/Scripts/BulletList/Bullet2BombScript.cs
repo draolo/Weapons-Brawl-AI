@@ -28,7 +28,7 @@ public class Bullet2BombScript : AbstractBulletExplosive
             {
                 float vel = GetComponent<Rigidbody2D>().velocity.magnitude;
                 if (vel > 12)
-                    enemy.CmdTakeDamage(Mathf.CeilToInt(vel / 12), shootedBy);
+                    enemy.TakeDamage(Mathf.CeilToInt(vel / 12), shootedBy);
             }
         }
     }

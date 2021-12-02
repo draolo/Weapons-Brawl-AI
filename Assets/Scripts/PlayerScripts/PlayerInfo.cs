@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerInfo : MonoBehaviour {
-    public enum Status {dead, alive};
+public class PlayerInfo : MonoBehaviour
+{
+    public enum Status
+    { dead, alive };
 
     public string pname;
 
@@ -15,7 +17,7 @@ public class PlayerInfo : MonoBehaviour {
 
     public GameObject physicalPlayer;
 
-    public int kills=0;
+    public int kills = 0;
 
     public int damageToEnemy = 0;
 
@@ -35,20 +37,20 @@ public class PlayerInfo : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start () {
+    private void Start()
+    {
         MatchManager._instance.AddPlayer(this);
         if (true) //TODo islocal player
         {
             FindObjectOfType<EndGameScreemUI>().localPlayer = this;
         }
-	}
-	
+    }
 
-    internal void CmdResurrect(Vector3 position)
+    internal void Resurrect(Vector3 position)
     {
-        PlayerHealth ph= physicalPlayer.GetComponent<PlayerHealth>();
-        ph.CmdGetLife(ph.maxHealth);
-        RpcRestoreUser(position.x, position.y, position.z);
+        PlayerHealth ph = physicalPlayer.GetComponent<PlayerHealth>();
+        ph.GetLife(ph.maxHealth);
+        RestoreUser(position.x, position.y, position.z);
     }
 
     internal string KDRatio()
@@ -63,8 +65,7 @@ public class PlayerInfo : MonoBehaviour {
         }
     }
 
-
-    public void RpcRestoreUser(float x, float y, float z)
+    public void RestoreUser(float x, float y, float z)
     {
         Vector3 pos = new Vector3(x, y, z);
         physicalPlayer.transform.position = pos;
@@ -81,12 +82,12 @@ public class PlayerInfo : MonoBehaviour {
         points -= 20f * deaths;
         points -= 20f * allyEliminated;
         if (win)
-            points += 50/2;
+            points += 50 / 2;
         points = Mathf.Max(points, 0);
-        return Mathf.CeilToInt(points);       
+        return Mathf.CeilToInt(points);
     }
 
-    public char getRank()
+    public char GetRank()
     {
         int points = GetPoints();
         if (points >= 190 / 2)
