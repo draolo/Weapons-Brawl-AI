@@ -9,6 +9,7 @@ public class ProximtyChestAI : MonoBehaviour
     private PlayerChestManager chestManager;
     private PlayerWeaponManager_Inventory inventory;
     private PlayerHealth health;
+    private bool isTeamRed;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -42,6 +43,22 @@ public class ProximtyChestAI : MonoBehaviour
                     }
                     break;
                 }
+            case AbstractChest.ChestType.Revive:
+                {
+                    List<PlayerInfo> pinfoTarget;
+                    if (!isTeamRed)
+                    {
+                        pinfoTarget = MatchManager._instance.BlueTeam;
+                    }
+                    else
+                    {
+                        pinfoTarget = MatchManager._instance.RedTeam;
+                    }
+                    List<PlayerInfo> targetToRevive = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.dead);
+                    chestManager.SetAllyToResurrectBot(targetToRevive[0].pname);
+                    chestManager.TryToOpenChest();
+                    break;
+                }
             default:
                 {
                     break;
@@ -55,6 +72,7 @@ public class ProximtyChestAI : MonoBehaviour
         chestManager = player.GetComponent<PlayerChestManager>();
         inventory = player.GetComponent<PlayerWeaponManager_Inventory>();
         health = player.GetComponent<PlayerHealth>();
+        isTeamRed = transform.GetComponentInParent<PlayerInfo>().team == Color.red;
         circle.radius = chestManager.InteractionRadius;
     }
 }
