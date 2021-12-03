@@ -55,8 +55,11 @@ public class ProximtyChestAI : MonoBehaviour
                         pinfoTarget = MatchManager._instance.RedTeam;
                     }
                     List<PlayerInfo> targetToRevive = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.dead);
-                    chestManager.SetAllyToResurrectBot(targetToRevive[0].pname);
-                    chestManager.TryToOpenChest();
+                    if (targetToRevive.Count > 0)
+                    {
+                        chestManager.SetAllyToResurrectBot(targetToRevive[0].pname);
+                        chestManager.TryToOpenChest();
+                    }
                     break;
                 }
             default:

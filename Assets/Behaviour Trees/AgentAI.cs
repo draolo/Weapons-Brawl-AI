@@ -57,7 +57,7 @@ public class AgentAI : MonoBehaviour
         DTDecision isThereAMissingReachbleUpgrade = new DTDecision(CheckForMissingUpgrade);
         DTDecision isThereAReachbleHealthChestAndImNotFull = new DTDecision(CheckIfHealthIsFullOrThereIsAChest);
         DTDecision randomBool = new DTDecision(RandomTF);
-        DTDecision couldIDoBoth = new DTDecision(RandomTF); //TODO DO IT PROPERLY
+        DTDecision couldIDoBoth = new DTDecision(CouldIDoUpgradeAndEnemy);
         //0
         isThereAReachableEnemyThathCouldKill.AddLink(true, isThereOnlyOneEnemy);
         isThereAReachableEnemyThathCouldKill.AddLink(false, isThereAreviveChestAndADeathAlly);
@@ -508,5 +508,15 @@ public class AgentAI : MonoBehaviour
         AbstractWeaponGeneric weapon = chest.Weapon.GetComponent<AbstractWeaponGeneric>();
         List<AbstractWeaponGeneric> sameClassWeapon = inventory.Weapons.FindAll(e => e.GetType() == weapon.GetType());
         return sameClassWeapon.Count > 0;
+    }
+
+    public object CouldIDoUpgradeAndEnemy(object bundle)
+    {
+        //KISS no complex things, if we have a lot of time yes otherwise no
+        float marginTime = 5f;
+        float time = MatchManager._instance.waiting;
+        reachableUpgradeChest.Sort();
+        float d = reachableUpgradeChest[0].distance;
+        return d + marginTime < time;
     }
 }
