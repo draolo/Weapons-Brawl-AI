@@ -82,6 +82,7 @@ public class ShootBT : MonoBehaviour
     private void OnEnable()
     {
         StopAllCoroutines();
+        targetAim.target = target;
         targetAim.enabled = true;
         try
         {
@@ -98,6 +99,8 @@ public class ShootBT : MonoBehaviour
     private void OnDisable()
     {
         StopAllCoroutines();
+        target = null;
+        targetAim.target = null;
     }
 
     public IEnumerator ShootTarget()
@@ -156,8 +159,14 @@ public class ShootBT : MonoBehaviour
 
     public bool EmptyFireLine()
     {
-        impactPoint = targetAim.CollisionPredictionStupid(shootingAngle);
+        RaycastHit2D hitPoint = targetAim.CollisionPredictionStupid(shootingAngle);
+        impactPoint = hitPoint.point;
         if (impactPoint.x <= -999)
+        {
+            //very strange but we haven't hit nothing
+            return true;
+        }
+        if (hitPoint.collider.gameObject == target.gameObject)
         {
             return true;
         }
@@ -274,21 +283,25 @@ public class ShootBT : MonoBehaviour
 
     public bool SetWeapon()
     {
+        float targetDistance = Vector2.Distance(transform.position, target.position);
+        float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
+        bool meleeOnly = targetDistance < targetAim.firePointDistance;
         bool emptyFireLine = EmptyFireLine();
-        if (!emptyFireLine)
+        if (!emptyFireLine && !meleeOnly)
         {
             shootingManager.SwitchWeapon(0);
             return true;
         }
-        float targetDistance = Vector2.Distance(transform.position, target.position);
-        float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
         List<AbstractWeaponGeneric> availableWeapons = shootingManager.Weapons;
         List<AbstractWeaponGeneric> longRangeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponBulletBased).IsAssignableFrom(w.GetType()));
         List<AbstractWeaponGeneric> longRangeWeaponsThatDontHitMe = longRangeWeapons.FindAll(w => !DoesIHitMyselfWithThisWeapon((AbstractWeaponBulletBased)w, impactPointDistance));
         List<AbstractWeaponGeneric> meleeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponMelee).IsAssignableFrom(w.GetType()));
         List<AbstractWeaponGeneric> meleeWeaponsThatHitTheTarget = meleeWeapons.FindAll(w => ((AbstractWeaponMelee)w).attackRange > targetDistance);
         List<AbstractWeaponGeneric> suitableWeapons = new List<AbstractWeaponGeneric>();
-        suitableWeapons.AddRange(longRangeWeaponsThatDontHitMe);
+        if (!meleeOnly)
+        {
+            suitableWeapons.AddRange(longRangeWeaponsThatDontHitMe);
+        }
         suitableWeapons.AddRange(meleeWeaponsThatHitTheTarget);
         AbstractWeaponGeneric bestWeapon;
         if (suitableWeapons.Count > 0)

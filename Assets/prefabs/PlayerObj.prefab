@@ -1175,6 +1175,7 @@ MonoBehaviour:
   - {fileID: 1622671721}
   - {fileID: 1622671711}
   - {fileID: 1622671719}
+  - {fileID: 3474495201393336836}
   isABot: 0
 --- !u!114 &6531895918723534436
 MonoBehaviour:
@@ -1254,7 +1255,7 @@ MonoBehaviour:
   speed: 50
   projectileObstacle:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 448
   FirePointPivot: {fileID: 7456666564187390472}
 --- !u!114 &2824344417399717766
 MonoBehaviour:

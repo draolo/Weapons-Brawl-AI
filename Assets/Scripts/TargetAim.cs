@@ -8,10 +8,15 @@ public class TargetAim : MonoBehaviour
     public Transform target;
     public Transform firePoint;
     public int speed = 50;
-
+    public float firePointDistance;
     public LayerMask projectileObstacle;
 
     public GameObject FirePointPivot;
+
+    private void Awake()
+    {
+        firePointDistance = Vector2.Distance(firePoint.position, FirePointPivot.transform.position);
+    }
 
     public Vector2 Aim(bool lobbed = false)
     {
@@ -76,8 +81,10 @@ public class TargetAim : MonoBehaviour
         return speed * time * angle.x + transform.position.x;
     }
 
-    public Vector2 CollisionPredictionStupid(Vector2 angle, int halfOfpoints = 3)
+    public RaycastHit2D CollisionPredictionStupid(Vector2 angle, int halfOfpoints = 3)
     {
+        RaycastHit2D mock = new RaycastHit2D();
+        mock.point = new Vector2(-9999, -9999);
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
         Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT), GetHeightAtTime(angle, maxT));
         float step = maxT / halfOfpoints;
@@ -94,16 +101,16 @@ public class TargetAim : MonoBehaviour
                 hit = Physics2D.Linecast(beginPos, target.position, projectileObstacle);
                 if (hit.collider != null)
                 {
-                    return hit.point;
+                    return hit;
                 }
-                return new Vector2(-9999, -9999);
+                return mock;
             }
             else
             {
                 hit = Physics2D.Linecast(beginPos, endPos, projectileObstacle);
                 if (hit.collider != null)
                 {
-                    return hit.point;
+                    return hit;
                 }
             }
             beginPos = endPos;
@@ -111,10 +118,10 @@ public class TargetAim : MonoBehaviour
         hit = Physics2D.Linecast(beginPos, target.position, projectileObstacle);
         if (hit.collider != null)
         {
-            return hit.point;
+            return hit;
         }
 
-        return new Vector2(-9999, -9999);
+        return mock;
     }
 
     public void SetAim(Vector2 direction)

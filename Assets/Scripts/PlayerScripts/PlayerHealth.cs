@@ -16,7 +16,6 @@ public class PlayerHealth : MonoBehaviour
         hp = Math.Max(0, hp);
         RefreshHealth();
         gameObject.GetComponent<PlayerManager>().ChangeActiveStatus(false);
-        //TODO UNCOMMENT
 
         PlayerInfo hittedInfo = gameObject.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
         PlayerInfo hitterInfo = fromWho.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
@@ -66,6 +65,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void PlayerDie()
     {
+        this.gameObject.GetComponent<PlayerManager>().ChangeActiveStatus(false);
         this.gameObject.SetActive(false);
         this.gameObject.transform.position = new Vector3(0, 0);
         gameObject.GetComponent<PlayerManager>().PlayerDie();

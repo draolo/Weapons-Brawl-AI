@@ -16,6 +16,7 @@ public class AgentAI : MonoBehaviour
     public Bot bot;
     public Transform target;
 
+    private IDTNode root;
     private DecisionTree dt;
     private System.Random rand;
     public int lowHealthHp = 20;
@@ -99,7 +100,7 @@ public class AgentAI : MonoBehaviour
         isThereAReachableEnemy.AddLink(true, enemy);
         isThereAReachableEnemy.AddLink(false, longEnemy);
 
-        dt = new DecisionTree(isThereAReachableEnemyThathCouldKill);
+        root = isThereAReachableEnemyThathCouldKill;
 
         isTeamRed = transform.parent.GetComponent<PlayerInfo>().team == Color.red;
     }
@@ -109,6 +110,7 @@ public class AgentAI : MonoBehaviour
         StopAllCoroutines();
         shootBT.enabled = false;
         openBT.enabled = false;
+        dt = new DecisionTree(root);
         StartCoroutine(PlayAI());
     }
 
@@ -208,6 +210,7 @@ public class AgentAI : MonoBehaviour
                     reachableReviveChest = null;
                     reachableUpgradeChest = null;
                     reachableTargets = null;
+                    availableTargets = null;
                     dt.walk();
                 }
                 catch (MissingReferenceException mre)
@@ -470,6 +473,7 @@ public class AgentAI : MonoBehaviour
 
     public object GoForEnemy(object o)
     {
+        InizializeTargetDistance();
         SetClosestEnemy();
         StartShootingBT();
         return null;
