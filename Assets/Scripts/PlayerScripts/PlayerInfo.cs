@@ -51,6 +51,7 @@ public class PlayerInfo : MonoBehaviour
         PlayerHealth ph = physicalPlayer.GetComponent<PlayerHealth>();
         ph.GetLife(ph.maxHealth);
         RestoreUser(position.x, position.y, position.z);
+        physicalPlayer.GetComponent<PlayerManager>().ChangeActiveStatus(false);
     }
 
     internal string KDRatio()

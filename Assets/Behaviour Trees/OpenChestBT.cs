@@ -14,13 +14,15 @@ public class OpenChestBT : MonoBehaviour
     public Transform target;
     public Vector2 targetOld;
 
+    private AgentAI aiManager;
+
     // Start is called before the first frame update
     private void Awake()
     {
         playerChestManager = gameObject.GetComponent<PlayerChestManager>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         bot = gameObject.GetComponent<Bot>();
-
+        aiManager = gameObject.GetComponent<AgentAI>();
         BTAction setPath = new BTAction(SearchAndSetPath);
         BTAction startBot = new BTAction(Move);
         BTAction stop = new BTAction(Stop);
@@ -38,16 +40,17 @@ public class OpenChestBT : MonoBehaviour
         root = new BTSequence(new IBTTask[] { safeSetPath, checkUntilFail, stop, waitMovementEnd, open });
     }
 
-    private void OnEnable()
+    public void StartBehavior()
     {
         StopAllCoroutines();
         AI = new BehaviorTree(root);
         StartCoroutine(OpenChest());
     }
 
-    private void OnDisable()
+    public void StopBehavior()
     {
         StopAllCoroutines();
+        target = null;
     }
 
     public IEnumerator OpenChest()
@@ -67,7 +70,13 @@ public class OpenChestBT : MonoBehaviour
                 step = false;
             }
         } while (step);
-        this.enabled = false;
+        EndOfTask();
+    }
+
+    private void EndOfTask(bool completed = true)
+    {
+        StopBehavior();
+        aiManager.FindNewAction();
     }
 
     public bool SearchAndSetPath()

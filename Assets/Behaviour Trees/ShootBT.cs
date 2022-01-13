@@ -10,6 +10,8 @@ public class ShootBT : MonoBehaviour
     private IBTTask root;
     private BehaviorTree AI;
 
+    private AgentAI aiManager;
+
     private TargetAim targetAim;
     public Transform target;
     public PlayerInfo targetInfo;
@@ -30,6 +32,7 @@ public class ShootBT : MonoBehaviour
         bot = gameObject.GetComponent<Bot>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
+        aiManager = gameObject.GetComponent<AgentAI>();
 
         BTAction setTarget = new BTAction(SetTarget);
         BTAction setPath = new BTAction(IsThereAPathToTheTarget);
@@ -79,11 +82,11 @@ public class ShootBT : MonoBehaviour
         root = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
     }
 
-    private void OnEnable()
+    public void StartBehavior()
     {
         StopAllCoroutines();
         targetAim.target = target;
-        targetAim.enabled = true;
+
         try
         {
             targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
@@ -92,11 +95,17 @@ public class ShootBT : MonoBehaviour
         }
         catch (MissingReferenceException)
         {
-            this.enabled = false;
+            EndOfTask(false);
         }
     }
 
-    private void OnDisable()
+    private void EndOfTask(bool completed = true)
+    {
+        StopBehavior();
+        aiManager.FindNewAction();
+    }
+
+    public void StopBehavior()
     {
         StopAllCoroutines();
         target = null;
@@ -127,7 +136,7 @@ public class ShootBT : MonoBehaviour
             }
             yield return new WaitForSeconds(aiTime);
         } while (step);
-        this.enabled = false;
+        EndOfTask();
     }
 
     public bool LineOfSight()
@@ -167,6 +176,11 @@ public class ShootBT : MonoBehaviour
             return true;
         }
         if (hitPoint.collider.gameObject == target.gameObject)
+        {
+            return true;
+        }
+        float targetDistance = Vector2.Distance(transform.position, target.position);
+        if (targetDistance < targetAim.firePointDistance)
         {
             return true;
         }

@@ -118,7 +118,7 @@ public class Bot : Character
 
             if (mCurrentAction == BotAction.MoveTo)
                 mCurrentAction = BotAction.None;
-            gameObject.GetComponent<AgentAI>().enabled = true;
+            gameObject.GetComponent<AgentAI>().StopAndStart(); //todo find a better way
         }
     }
 

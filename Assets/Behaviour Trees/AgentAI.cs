@@ -11,7 +11,7 @@ public class AgentAI : MonoBehaviour
     public float beginWaitTime = 1f;
 
     public bool scared;
-
+    public bool waitingActionToEnd;
     public bool isTeamRed;
     public Bot bot;
     public Transform target;
@@ -107,18 +107,30 @@ public class AgentAI : MonoBehaviour
 
     private void OnEnable()
     {
+        StopAndStart();
+    }
+
+    public void StopAndStart()
+    {
         StopAllCoroutines();
-        shootBT.enabled = false;
-        openBT.enabled = false;
+        shootBT.StopBehavior();
+        openBT.StopBehavior();
+        waitingActionToEnd = false;
         dt = new DecisionTree(root);
         StartCoroutine(PlayAI());
     }
 
     private void OnDisable()
     {
-        shootBT.enabled = false;
-        openBT.enabled = false;
         StopAllCoroutines();
+        shootBT.StopBehavior();
+        openBT.StopBehavior();
+        waitingActionToEnd = false;
+    }
+
+    public void FindNewAction()
+    {
+        waitingActionToEnd = false;
     }
 
     private object RandomTF(object bundle)
@@ -202,7 +214,7 @@ public class AgentAI : MonoBehaviour
         yield return new WaitForSeconds(1);
         while (true)
         {
-            if (!(shootBT.enabled || openBT.enabled))
+            if (!waitingActionToEnd)  //todo find a new way
             {
                 try
                 {
@@ -432,14 +444,16 @@ public class AgentAI : MonoBehaviour
     public bool StartShootingBT()
     {
         shootBT.target = target;
-        shootBT.enabled = true;
+        shootBT.StartBehavior();
+        waitingActionToEnd = true;
         return true;
     }
 
     public bool StartOpenChestBT()
     {
         openBT.target = target;
-        openBT.enabled = true;
+        openBT.StartBehavior();
+        waitingActionToEnd = true;
         return true;
     }
 
