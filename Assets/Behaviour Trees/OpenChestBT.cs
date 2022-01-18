@@ -82,52 +82,18 @@ public class OpenChestBT : MonoBehaviour
     public bool SearchAndSetPath()
     {
         targetOld = target.position;
-        Vector2 something = bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        var path = bot.mMap.mPathFinder.FindPath(
-                        startTile,
-                        bot.mMap.GetMapTileAtPoint(target.position),
-                        Mathf.CeilToInt(bot.mWidth),
-                        Mathf.CeilToInt(bot.mHeight),
-                        (short)bot.mMaxJumpHeight);
-
-        if (path != null && path.Count > 1)
-        {
-            bot.mPath.Clear();
-            for (var i = path.Count - 1; i >= 0; --i)
-            {
-                bot.mPath.Add(path[i]);
-            }
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position));
     }
 
     public bool Move()
     {
-        bot.mCurrentNodeId = 1;
-
-        bot.ChangeAction(Bot.BotAction.MoveTo);
-
-        bot.mFramesOfJumping = bot.GetJumpFramesForNode(0);
-
+        bot.StartTheBot();
         return true;
     }
 
     public bool Stop()
     {
-        bot.ChangeAction(Bot.BotAction.None);
+        bot.StopTheBot();
 
         return true;
     }

@@ -19,7 +19,6 @@ public class Character : MovingObject
     [HideInInspector]
     public CharacterState mCurrentState = CharacterState.Stand;
 
-
     /// <summary>
     /// The number of frames passed from changing the state to jump.
     /// </summary>
@@ -28,13 +27,12 @@ public class Character : MovingObject
     protected bool[] mInputs;
     protected bool[] mPrevInputs;
 
-
-    public List<Vector2i> mPath = new List<Vector2i>();
+    protected List<Vector2i> mPath = new List<Vector2i>();
 
     /// <summary>
     /// Raises the draw gizmos event.
     /// </summary>
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         DrawMovingObjectGizmos();
 
@@ -49,18 +47,16 @@ public class Character : MovingObject
 
             for (var i = 1; i < mPath.Count; ++i)
             {
-
                 var end = mMap.GetMapTilePosition(mPath[i].x, mPath[i].y);
                 Gizmos.color = Color.blue;
                 Gizmos.DrawSphere(end, .2f);
                 Gizmos.color = Color.red;
-                Gizmos.DrawLine(start,end);
+                Gizmos.DrawLine(start, end);
                 start = end;
             }
         }
     }
 
-   
     public void UpdatePrevInputs()
     {
         var count = (byte)KeyInput.Count;
@@ -68,5 +64,4 @@ public class Character : MovingObject
         for (byte i = 0; i < count; ++i)
             mPrevInputs[i] = mInputs[i];
     }
-    
 }

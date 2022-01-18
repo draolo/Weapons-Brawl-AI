@@ -13,22 +13,22 @@ public class Bot : Character
         MoveTo,
     }
 
-    public PlayerMovementOffline movementHandler;
-    public bool freeRoam;
+    [SerializeField] private PlayerMovementOffline movementHandler;
+    [SerializeField] private bool freeRoam;
 
-    public BotAction mCurrentAction = BotAction.None;
+    private BotAction mCurrentAction = BotAction.None;
 
-    public int mCurrentNodeId = -1;
+    private int mCurrentNodeId = -1;
 
-    public int mFramesOfJumping = 0;
-    public int mStuckFrames = 0;
+    private int mFramesOfJumping = 0;
+    private int mStuckFrames = 0;
 
     public int mMaxJumpHeight = 5;
     public int mWidth;
     public int mHeight;
 
-    public const int cMaxStuckFrames = 20;
-    private bool jumpOnStuck = false;
+    [SerializeField] private const int cMaxStuckFrames = 20;
+    [SerializeField] private bool jumpOnStuck = false;
 
     public void GoToPosition(Vector2i mapPosInTile)
     {
@@ -74,7 +74,7 @@ public class Bot : Character
         return false;
     }
 
-    public void MoveTo(Vector2i destinationInTile)
+    public bool SearchAndSetPath(Vector2i destinationInTile)
     {
         mStuckFrames = 0;
         jumpOnStuck = false;
@@ -94,20 +94,52 @@ public class Bot : Character
                         Mathf.CeilToInt(mHeight),
                         (short)mMaxJumpHeight);
 
-        mCurrentAction = BotAction.None;
-        mCurrentNodeId = -1;
-        mPath.Clear();
-
         if (path != null && path.Count > 1)
         {
+            mCurrentAction = BotAction.None;
+            mCurrentNodeId = -1;
+            mPath.Clear();
             for (var i = path.Count - 1; i >= 0; --i)
                 mPath.Add(path[i]);
 
             mCurrentNodeId = 1;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-            ChangeAction(BotAction.MoveTo);
+    public void StartTheBot()
+    {
+        mCurrentNodeId = 1;
+        ChangeAction(BotAction.MoveTo);
+        mFramesOfJumping = GetJumpFramesForNode(0);
+    }
 
-            mFramesOfJumping = GetJumpFramesForNode(0);
+    public void StopTheBot()
+    {
+        mCurrentAction = BotAction.None;
+        mCurrentNodeId = -1;
+        mPath.Clear();
+    }
+
+    public void PauseTheMovement()
+    {
+        mCurrentAction = BotAction.None;
+    }
+
+    public void ResumeTheMovement()
+    {
+        mCurrentAction = BotAction.MoveTo;
+    }
+
+    public void MoveTo(Vector2i destinationInTile)
+    {
+        if (SearchAndSetPath(destinationInTile))
+        {
+            StartTheBot();
         }
         else
         {
@@ -115,7 +147,7 @@ public class Bot : Character
         }
     }
 
-    public void ChangeAction(BotAction newAction)
+    private void ChangeAction(BotAction newAction)
     {
         mCurrentAction = newAction;
     }
@@ -152,21 +184,21 @@ public class Bot : Character
         }
     }
 
-    public bool ReachedNodeOnXAxis(Vector2 pathPosition, Vector2 prevDest, Vector2 currentDest)
+    private bool ReachedNodeOnXAxis(Vector2 pathPosition, Vector2 prevDest, Vector2 currentDest)
     {
         return (prevDest.x <= currentDest.x && pathPosition.x >= currentDest.x)
             || (prevDest.x >= currentDest.x && pathPosition.x <= currentDest.x)
             || Mathf.Abs(pathPosition.x - currentDest.x) <= Constants.cBotMaxPositionError;
     }
 
-    public bool ReachedNodeOnYAxis(Vector2 pathPosition, Vector2 prevDest, Vector2 currentDest)
+    private bool ReachedNodeOnYAxis(Vector2 pathPosition, Vector2 prevDest, Vector2 currentDest)
     {
         return (prevDest.y <= currentDest.y && pathPosition.y >= currentDest.y)
             || (prevDest.y >= currentDest.y && pathPosition.y <= currentDest.y)
             || (Mathf.Abs(pathPosition.y - currentDest.y) <= Constants.cBotMaxPositionError);
     }
 
-    public void GetContext(out Vector2 prevDest, out Vector2 currentDest, out Vector2 nextDest, out bool destOnGround, out bool reachedX, out bool reachedY)
+    private void GetContext(out Vector2 prevDest, out Vector2 currentDest, out Vector2 nextDest, out bool destOnGround, out bool reachedX, out bool reachedY)
     {
         //   Debug.Log("context node id" + mCurrentNodeId + "path count " + mPath.Count);
         if (mCurrentNodeId > 0)
@@ -224,25 +256,7 @@ public class Bot : Character
         }
     }
 
-    /*
-    public void TestJumpValues()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            mFramesOfJumping = GetJumpFrameCount(1);
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            mFramesOfJumping = GetJumpFrameCount(2);
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            mFramesOfJumping = GetJumpFrameCount(3);
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-            mFramesOfJumping = GetJumpFrameCount(4);
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-            mFramesOfJumping = GetJumpFrameCount(5);
-        else if (Input.GetKeyDown(KeyCode.Alpha6))
-            mFramesOfJumping = GetJumpFrameCount(6);
-    }
-    */
-
-    public int GetJumpFramesForNode(int prevNodeId)
+    private int GetJumpFramesForNode(int prevNodeId)
     {
         int currentNodeId = prevNodeId + 1;
 
@@ -270,7 +284,7 @@ public class Bot : Character
         }
     }
 
-    public void BotUpdate()
+    private void BotUpdate()
     {
         if (freeRoam)
         {

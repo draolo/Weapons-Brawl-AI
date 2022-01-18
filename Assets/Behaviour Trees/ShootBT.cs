@@ -38,6 +38,9 @@ public class ShootBT : MonoBehaviour
         BTAction setPath = new BTAction(IsThereAPathToTheTarget);
         BTAction startBot = new BTAction(Move);
         BTAction stop = new BTAction(Stop);
+        BTAction pauseMovement = new BTAction(PauseMovement);
+        BTAction resumeMovement = new BTAction(ResumeMovement);
+
         BTAction aim = new BTAction(SetAim);
         BTAction shoot = new BTAction(Shoot);
         BTAction shake = new BTAction(AimShaker);
@@ -65,7 +68,7 @@ public class ShootBT : MonoBehaviour
         BTDecorator notInLine = new BTDecoratorInverter(couldSeeTheTarget);
         BTDecorator notEmptyLine = new BTDecoratorInverter(isThereAFireLine);
 
-        BTSequence endMovementAndTest = new BTSequence(new IBTTask[] { isGrounded, stop, waitMovementEnd, notEmptyLine, startBot });
+        //BTSequence endMovementAndTest = new BTSequence(new IBTTask[] { isGrounded, pauseMovement, waitMovementEnd, notEmptyLine, resumeMovement });
 
         BTSelector movementConditions = new BTSelector(new IBTTask[] { notInLine, notEmptyLine });
 
@@ -201,51 +204,30 @@ public class ShootBT : MonoBehaviour
     public bool IsThereAPathToTheTarget()
     {
         targetOld = target.position;
-        Vector2 something = bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        var path = bot.mMap.mPathFinder.FindPath(
-                        startTile,
-                        bot.mMap.GetMapTileAtPoint(target.position),
-                        Mathf.CeilToInt(bot.mWidth),
-                        Mathf.CeilToInt(bot.mHeight),
-                        (short)bot.mMaxJumpHeight);
-
-        if (path != null && path.Count > 1)
-        {
-            bot.mPath.Clear();
-            for (var i = path.Count - 1; i >= 0; --i)
-            {
-                bot.mPath.Add(path[i]);
-            }
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position));
     }
 
     public bool Stop()
     {
-        bot.ChangeAction(Bot.BotAction.None);
+        bot.StopTheBot();
+        return true;
+    }
+
+    public bool PauseMovement()
+    {
+        bot.PauseTheMovement();
+        return true;
+    }
+
+    public bool ResumeMovement()
+    {
+        bot.ResumeTheMovement();
         return true;
     }
 
     public bool Move()
     {
-        bot.mCurrentNodeId = 1;
-
-        bot.ChangeAction(Bot.BotAction.MoveTo);
-
-        bot.mFramesOfJumping = bot.GetJumpFramesForNode(0);
+        bot.StartTheBot();
         return true;
     }
 
