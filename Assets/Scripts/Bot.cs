@@ -46,16 +46,12 @@ public class Bot : Character
     public void Start()
     {
         mMap = FindObjectOfType<Map>();
+        mMap.mapModificationEvent.AddListener(UpdatePath);
         mInputs = new bool[(int)KeyInput.Count];
         mPrevInputs = new bool[(int)KeyInput.Count];
-
-        //  mAudioSource = GetComponent<AudioSource>();
         mPosition = transform.position;
 
         mAABB.HalfSize = new Vector2(0.5f * mWidth, 0.5f * mHeight);
-
-        //mAABBOffset.y = mAABB.HalfSizeY;
-        //transform.localScale = new Vector3(mAABB.HalfSizeX / 8.0f, mAABB.HalfSizeY / 8.0f, 1.0f);
     }
 
     public bool IsOnGroundAndFitsPos(Vector2i pos)
@@ -82,8 +78,7 @@ public class Bot : Character
     {
         mStuckFrames = 0;
         jumpOnStuck = false;
-        Vector2 something = mPosition - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f;
-        Vector2i startTile = mMap.GetMapTileAtPoint(mPosition - mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
+        Vector2i startTile = mMap.GetMapTileAtPoint(mPosition - mAABB.HalfSize + 0.5f * Map.cTileSize * Vector2.one);
         if (mOnGround && !IsOnGroundAndFitsPos(startTile))
         {
             if (IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
@@ -99,6 +94,8 @@ public class Bot : Character
                         Mathf.CeilToInt(mHeight),
                         (short)mMaxJumpHeight);
 
+        mCurrentAction = BotAction.None;
+        mCurrentNodeId = -1;
         mPath.Clear();
 
         if (path != null && path.Count > 1)
@@ -114,10 +111,6 @@ public class Bot : Character
         }
         else
         {
-            mCurrentNodeId = -1;
-
-            if (mCurrentAction == BotAction.MoveTo)
-                mCurrentAction = BotAction.None;
             gameObject.GetComponent<AgentAI>().StopAndStart(); //todo find a better way
         }
     }
@@ -400,7 +393,7 @@ public class Bot : Character
                     {
                         if (jumpOnStuck)
                         {
-                            MoveTo(mPath[mPath.Count - 1]);
+                            UpdatePath();
                         }
                         else
                         {
@@ -439,5 +432,13 @@ public class Bot : Character
         UpdatePrevInputs();
         mOldPosition = mPosition;
         mPosition = transform.position;
+    }
+
+    public void UpdatePath()
+    {
+        if (mPath != null && mPath.Count > 0)
+        {
+            MoveTo(mPath[mPath.Count - 1]);
+        }
     }
 }
