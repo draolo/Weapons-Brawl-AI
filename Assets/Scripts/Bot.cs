@@ -413,7 +413,22 @@ public class Bot : Character
                         }
                         else
                         {
+                            //if we are stucked jump
                             mInputs[(int)KeyInput.Jump] = true;
+                            if (currentDest.y < pathPosition.y)  //if i have to go down jump in the opposite direction of the destination, probably we have to go down but we are pressing against the wall
+                            {
+                                if (currentDest.x - pathPosition.x > Constants.cBotMaxPositionError)
+                                {
+                                    mInputs[(int)KeyInput.GoLeft] = true;
+                                    mInputs[(int)KeyInput.GoRight] = false;
+                                }
+                                else if (pathPosition.x - currentDest.x > Constants.cBotMaxPositionError)
+                                {
+                                    mInputs[(int)KeyInput.GoRight] = true;
+                                    mInputs[(int)KeyInput.GoLeft] = false;
+                                }
+                            }
+
                             jumpOnStuck = true;
                         }
                     }
