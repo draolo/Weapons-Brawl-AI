@@ -67,10 +67,18 @@ public class ShootBT : MonoBehaviour
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
         BTDecorator notInLine = new BTDecoratorInverter(couldSeeTheTarget);
         BTDecorator notEmptyLine = new BTDecoratorInverter(isThereAFireLine);
+        BTDecorator failPause = new BTDecoratorInverter(pauseMovement);
+        BTDecorator failResume = new BTDecoratorInverter(resumeMovement);
 
-        //BTSequence endMovementAndTest = new BTSequence(new IBTTask[] { isGrounded, pauseMovement, waitMovementEnd, notEmptyLine, resumeMovement });
+        BTSequence checkTarget = new BTSequence(new IBTTask[] { couldSeeTheTarget, isThereAFireLine });
 
-        BTSelector movementConditions = new BTSelector(new IBTTask[] { notInLine, notEmptyLine });
+        BTDecorator invertedTargetCheck = new BTDecoratorInverter(checkTarget);
+
+        BTDecorator waitUntilTargetLocked = new BTDecoratorUntilFail(invertedTargetCheck);
+
+        BTSequence endMovementAndTest = new BTSequence(new IBTTask[] { pauseMovement, waitMovementEnd, invertedTargetCheck, resumeMovement });
+
+        BTSequence movementConditions = new BTSequence(new IBTTask[] { waitUntilTargetLocked, endMovementAndTest });
 
         BTDecorator movingCycle = new BTDecoratorUntilFail(movementConditions);
 
@@ -78,7 +86,7 @@ public class ShootBT : MonoBehaviour
 
         BTRandomSelector standardBehaviour = new BTRandomSelector(new IBTTask[] { shootFarAway, getCloser });
 
-        BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { straightLine, aim, safeShoot });
+        BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { faceTheTarget, straightLine, aim, safeShoot });
 
         BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
 
