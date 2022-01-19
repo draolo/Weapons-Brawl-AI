@@ -43,13 +43,14 @@ public class OpenChestBT : MonoBehaviour
     public void StartBehavior()
     {
         StopAllCoroutines();
-        AI = new BehaviorTree(root);
+        AI = new BehaviorTree(root.GetCopy());
         StartCoroutine(OpenChest());
     }
 
     public void StopBehavior()
     {
         StopAllCoroutines();
+        bot.StopTheBot();
         target = null;
     }
 

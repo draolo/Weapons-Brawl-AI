@@ -76,8 +76,6 @@ public class Bot : Character
 
     public bool SearchAndSetPath(Vector2i destinationInTile)
     {
-        mStuckFrames = 0;
-        jumpOnStuck = false;
         Vector2i startTile = mMap.GetMapTileAtPoint(mPosition - mAABB.HalfSize + 0.5f * Map.cTileSize * Vector2.one);
         if (mOnGround && !IsOnGroundAndFitsPos(startTile))
         {
@@ -96,9 +94,7 @@ public class Bot : Character
 
         if (path != null && path.Count > 1)
         {
-            mCurrentAction = BotAction.None;
-            mCurrentNodeId = -1;
-            mPath.Clear();
+            StopTheBot();
             for (var i = path.Count - 1; i >= 0; --i)
                 mPath.Add(path[i]);
 
@@ -113,9 +109,14 @@ public class Bot : Character
 
     public void StartTheBot()
     {
-        mCurrentNodeId = 1;
-        ChangeAction(BotAction.MoveTo);
-        mFramesOfJumping = GetJumpFramesForNode(0);
+        if (mPath != null && mPath.Count > 1)
+        {
+            mCurrentNodeId = 1;
+            mStuckFrames = 0;
+            jumpOnStuck = false;
+            ChangeAction(BotAction.MoveTo);
+            mFramesOfJumping = GetJumpFramesForNode(0);
+        }
     }
 
     public void StopTheBot()
@@ -201,16 +202,17 @@ public class Bot : Character
     private void GetContext(out Vector2 prevDest, out Vector2 currentDest, out Vector2 nextDest, out bool destOnGround, out bool reachedX, out bool reachedY)
     {
         //   Debug.Log("context node id" + mCurrentNodeId + "path count " + mPath.Count);
-        if (mCurrentNodeId > 0)
-        {
-            prevDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId - 1]);
-        }
-        else
-        {
-            prevDest = transform.position;
-        }
         try
         {
+            if (mCurrentNodeId > 0)
+            {
+                prevDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId - 1]);
+            }
+            else
+            {
+                prevDest = transform.position;
+            }
+
             currentDest = mMap.GetMapTilePosition(mPath[mCurrentNodeId]);
 
             nextDest = currentDest;

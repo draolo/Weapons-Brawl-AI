@@ -101,7 +101,7 @@ public class ShootBT : MonoBehaviour
         try
         {
             targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
-            AI = new BehaviorTree(root);
+            AI = new BehaviorTree(root.GetCopy());
             StartCoroutine(ShootTarget());
         }
         catch (MissingReferenceException)
@@ -119,7 +119,9 @@ public class ShootBT : MonoBehaviour
     public void StopBehavior()
     {
         StopAllCoroutines();
+        bot.StopTheBot();
         target = null;
+        targetInfo = null;
         targetAim.target = null;
     }
 
@@ -287,10 +289,10 @@ public class ShootBT : MonoBehaviour
 
     public bool SetWeapon()
     {
+        bool emptyFireLine = EmptyFireLine();
         float targetDistance = Vector2.Distance(transform.position, target.position);
         float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
         bool meleeOnly = targetDistance < targetAim.firePointDistance;
-        bool emptyFireLine = EmptyFireLine();
         if (!emptyFireLine && !meleeOnly)
         {
             shootingManager.SwitchWeapon(0);

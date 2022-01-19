@@ -2,209 +2,262 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CRBT {
-	
-	public delegate bool BTCall();
+namespace CRBT
+{
+    public delegate bool BTCall();
 
-	public abstract class IBTTask {
-		//  0 -> fail
-		//  1 -> succes
-		// -1 -> call me again 
-		public abstract int Run();
-	}
-		
-	public class BTCondition : IBTTask {
+    public abstract class IBTTask
+    {
+        //  0 -> fail
+        //  1 -> succes
+        // -1 -> call me again
+        public abstract int Run();
 
-		public BTCall Condition;
+        public IBTTask GetCopy()
+        {
+            return (IBTTask)MemberwiseClone();
+        }
+    }
 
-		public BTCondition(BTCall call) { Condition = call; }
+    public class BTCondition : IBTTask
+    {
+        public BTCall Condition;
 
-		override public int Run() { return Condition() ? 1 : 0; }
-	}
+        public BTCondition(BTCall call)
+        { Condition = call; }
 
-	public class BTAction : IBTTask {
+        public override int Run()
+        { return Condition() ? 1 : 0; }
+    }
 
-		public BTCall Action;
+    public class BTAction : IBTTask
+    {
+        public BTCall Action;
 
-		public BTAction(BTCall call) { Action = call; }
+        public BTAction(BTCall call)
+        { Action = call; }
 
-		override public int Run() { return Action() ? 1 : 0; }
-	}
+        public override int Run()
+        { return Action() ? 1 : 0; }
+    }
 
-	public abstract class BTComposite : IBTTask {
+    public abstract class BTComposite : IBTTask
+    {
+        protected int index;
+        protected IBTTask[] children;
 
-		protected int index;
-		protected IBTTask[] children;
+        public BTComposite(IBTTask[] tasks)
+        {
+            children = tasks;
+            index = 0;
+        }
+    }
 
-		public BTComposite(IBTTask[] tasks) {
-			children = tasks;
-			index = 0;
-		}
-	}
+    public class BTSelector : BTComposite
+    {
+        public BTSelector(IBTTask[] tasks) : base(tasks)
+        {
+            ;
+        }
 
-	public class BTSelector : BTComposite {
+        public override int Run()
+        {
+            while (index < children.Length)
+            {
+                int v = children[index].Run();
+                if (v == -1) { return -1; }
+                if (v == 0) { index += 1; return -1; }
+                if (v == 1) { index = 0; return 1; }
+            }
+            // Otherwise the selector fails
+            index = 0;
+            return 0;
+        }
+    }
 
-		public BTSelector(IBTTask[] tasks) : base(tasks) { ; }
+    public class BTSequence : BTComposite
+    {
+        public BTSequence(IBTTask[] tasks) : base(tasks)
+        {
+            ;
+        }
 
-		override public int Run() {
-			while (index < children.Length) {
-				int v = children[index].Run();
-				if (v == -1) { return -1; }
-				if (v == 0) { index += 1; return -1; }
-				if (v == 1) { index = 0; return 1; }
-			}
-			// Otherwise the selector fails
-			index = 0;
-			return 0;
-		}
-	}
+        public override int Run()
+        {
+            while (index < children.Length)
+            {
+                int v = children[index].Run();
+                if (v == -1) { return -1; }
+                if (v == 0) { index = 0; return 0; }
+                if (v == 1) { index += 1; return -1; }
+            }
+            // Otherwise the selector succeed
+            index = 0;
+            return 1;
+        }
+    }
 
-	public class BTSequence : BTComposite {
+    public class BehaviorTree
+    {
+        public IBTTask root;
 
-		public BTSequence(IBTTask[] tasks) : base(tasks) { ; }
+        public BehaviorTree(IBTTask task)
+        { root = task; }
 
-		override public int Run() {
-			while (index < children.Length) {
-				int v = children[index].Run();
-				if (v == -1) { return -1; }
-				if (v == 0) { index = 0; return 0; }
-				if (v == 1) { index += 1; return -1; }
-			}
-			// Otherwise the selector succeed
-			index = 0;
-			return 1;
-		}
-	}
+        public bool Step()
+        {
+            return root.Run() < 0 ? true : false;
+        }
+    }
 
-	public class BehaviorTree {
+    public abstract class BTRandomComposite : BTComposite
+    {
+        public BTRandomComposite(IBTTask[] tasks) : base(tasks)
+        {
+            ;
+        }
 
-		public IBTTask root;
+        protected bool toShuffle = true;
 
-		public BehaviorTree(IBTTask task) { root = task; }
+        public void Shuffle()
+        {
+            if (toShuffle)
+            {
+                Random rnd = new Random();
+                children = children.OrderBy(x => rnd.Next()).ToArray();
+                toShuffle = false;
+            }
+        }
+    }
 
-		public bool Step() {
-			return root.Run() < 0 ? true : false;
-		}
-	}
+    public class BTRandomSelector : BTRandomComposite
+    {
+        public BTRandomSelector(IBTTask[] tasks) : base(tasks)
+        {
+            ;
+        }
 
-	public abstract class BTRandomComposite : BTComposite {
+        public override int Run()
+        {
+            Shuffle();
+            while (index < children.Length)
+            {
+                int v = children[index].Run();
+                if (v == -1) { return -1; }
+                if (v == 0) { index += 1; return -1; }
+                if (v == 1) { index = 0; toShuffle = true; return 1; }
+            }
+            index = 0;
+            toShuffle = true;
+            return 0;
+        }
+    }
 
-		public BTRandomComposite(IBTTask[] tasks) : base(tasks) { ; }
-		protected bool toShuffle = true;
+    public class BTRandomSequence : BTRandomComposite
+    {
+        public BTRandomSequence(IBTTask[] tasks) : base(tasks)
+        {
+            ;
+        }
 
-		public void Shuffle() {
-			if (toShuffle) {
-				Random rnd = new Random ();
-				children = children.OrderBy (x => rnd.Next ()).ToArray ();
-				toShuffle = false;
-			}
-		}
-	}
+        public override int Run()
+        {
+            Shuffle();
+            while (index < children.Length)
+            {
+                int v = children[index].Run();
+                if (v == -1) { return -1; }
+                if (v == 0) { index = 0; return 0; }
+                if (v == 1) { index += 1; toShuffle = true; return -1; }
+            }
+            index = 0;
+            toShuffle = true;
+            return 1;
+        }
+    }
 
-	public class BTRandomSelector : BTRandomComposite {
+    public abstract class BTDecorator : IBTTask
+    {
+        public IBTTask Child;
 
-		public BTRandomSelector(IBTTask[] tasks) : base(tasks) { ; }
-		
-		override public int Run() {
-			Shuffle ();
-			while (index < children.Length) {
-				int v = children[index].Run();
-				if (v == -1) { return -1; }
-				if (v == 0) { index += 1; return -1; }
-				if (v == 1) { index = 0; toShuffle = true; return 1; }
-			}
-			index = 0;
-			toShuffle = true;
-			return 0;
-		}
-	}
+        public BTDecorator(IBTTask task)
+        { Child = task; }
+    }
 
-	public class BTRandomSequence : BTRandomComposite {
+    public class BTDecoratorFilter : BTDecorator
+    {
+        private BTCall Condition;
 
-		public BTRandomSequence(IBTTask[] tasks) : base(tasks) { ; }
-		
-		override public int Run() {
-			Shuffle();
-			while (index < children.Length) {
-				int v = children[index].Run();
-				if (v == -1) { return -1; }
-				if (v == 0) { index = 0; return 0; }
-				if (v == 1) { index += 1; toShuffle = true; return -1; }
-			}
-			index = 0;
-			toShuffle = true;
-			return 1;
-		}
-	}
+        public BTDecoratorFilter(BTCall condition, IBTTask task) : base(task)
+        {
+            Condition = condition;
+        }
 
-	public abstract class BTDecorator : IBTTask {
+        public override int Run()
+        { return Condition() ? Child.Run() : 0; }
+    }
 
-		public IBTTask Child;
+    public class BTDecoratorLimit : BTDecorator
+    {
+        public int maxRepetitions;
+        public int count;
 
-		public BTDecorator(IBTTask task) { Child = task; }
-	}
+        public BTDecoratorLimit(int max, IBTTask task) : base(task)
+        {
+            maxRepetitions = max;
+            count = 0;
+        }
 
-	public class BTDecoratorFilter : BTDecorator {
+        public override int Run()
+        {
+            if (count >= maxRepetitions) return 0;
+            int v = Child.Run();
+            if (v != -1) count += 1;
+            return v;
+        }
+    }
 
-		private BTCall Condition;
+    public class BTDecoratorUntilFail : BTDecorator
+    {
+        public BTDecoratorUntilFail(IBTTask task) : base(task)
+        {
+            ;
+        }
 
-		public BTDecoratorFilter(BTCall condition, IBTTask task) : base(task) {
-			Condition = condition;
-		}
+        public override int Run()
+        {
+            if (Child.Run() != 0) return -1;
+            return 1;
+        }
+    }
 
-		override public int Run() { return Condition() ? Child.Run() : 0; }
-	}
+    public class BTDecoratorUntilSucces : BTDecorator
+    {
+        public BTDecoratorUntilSucces(IBTTask task) : base(task)
+        {
+            ;
+        }
 
-	public class BTDecoratorLimit : BTDecorator {
+        public override int Run()
+        {
+            if (Child.Run() != 1) return -1;
+            return 1;
+        }
+    }
 
-		public int maxRepetitions;
-		public int count;
+    public class BTDecoratorInverter : BTDecorator
+    {
+        public BTDecoratorInverter(IBTTask task) : base(task)
+        {
+            ;
+        }
 
-		public BTDecoratorLimit(int max, IBTTask task) : base(task) {
-			maxRepetitions = max;
-			count = 0;
-		}
-
-		override public int Run() {
-			if (count >= maxRepetitions) return 0;
-			int v = Child.Run();
-			if (v != -1) count += 1;
-			return v;
-		}
-	}
-
-	public class BTDecoratorUntilFail : BTDecorator {
-
-		public BTDecoratorUntilFail(IBTTask task) : base(task) { ; }
-
-		override public int Run() { 
-			if (Child.Run() != 0) return -1;
-			return 1;
-		}		
-	}
-
-
-	public class BTDecoratorUntilSucces : BTDecorator
-	{
-
-		public BTDecoratorUntilSucces(IBTTask task) : base(task) {; }
-
-		override public int Run()
-		{
-			if (Child.Run() != 1) return -1;
-			return 1;
-		}
-	}
-
-	public class BTDecoratorInverter : BTDecorator {
-
-		public BTDecoratorInverter(IBTTask task) : base(task) { ; }
-
-		override public int Run() { 
-			int v = Child.Run();
-			if (v == 1) return 0;
-			if (v == 0) return 1;
-			return v; // -1
-		}
-	}
+        public override int Run()
+        {
+            int v = Child.Run();
+            if (v == 1) return 0;
+            if (v == 0) return 1;
+            return v; // -1
+        }
+    }
 }
