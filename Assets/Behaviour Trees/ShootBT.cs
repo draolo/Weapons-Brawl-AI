@@ -36,6 +36,7 @@ public class ShootBT : MonoBehaviour
 
     private void CreateTree()
     {
+        //for advanced tree could be better to use a reset method that reset the index of BTComposite task
         BTAction setTarget = new BTAction(SetTarget);
         BTAction setPath = new BTAction(IsThereAPathToTheTarget);
         BTAction startBot = new BTAction(Move);
@@ -98,7 +99,7 @@ public class ShootBT : MonoBehaviour
 
     private void Log(string message)
     {
-        Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
+        //Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
     }
 
     public void StartBehavior()
