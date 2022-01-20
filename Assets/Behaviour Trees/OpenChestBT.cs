@@ -5,7 +5,6 @@ using UnityEngine;
 public class OpenChestBT : MonoBehaviour
 {
     private BehaviorTree AI;
-    private IBTTask root;
     private PlayerChestManager playerChestManager;
     private Rigidbody2D _rigidbody;
     public Bot bot;
@@ -23,6 +22,10 @@ public class OpenChestBT : MonoBehaviour
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         bot = gameObject.GetComponent<Bot>();
         aiManager = gameObject.GetComponent<AgentAI>();
+    }
+
+    private void CreateTree()
+    {
         BTAction setPath = new BTAction(SearchAndSetPath);
         BTAction startBot = new BTAction(Move);
         BTAction stop = new BTAction(Stop);
@@ -36,14 +39,14 @@ public class OpenChestBT : MonoBehaviour
         BTSequence movingCycle = new BTSequence(new IBTTask[] { pathVerifier, proximityCheck });
         BTDecorator checkUntilFail = new BTDecoratorUntilFail(movingCycle);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
-
-        root = new BTSequence(new IBTTask[] { safeSetPath, checkUntilFail, stop, waitMovementEnd, open });
+        IBTTask root = new BTSequence(new IBTTask[] { safeSetPath, checkUntilFail, stop, waitMovementEnd, open });
+        AI = new BehaviorTree(root);
     }
 
     public void StartBehavior()
     {
         StopAllCoroutines();
-        AI = new BehaviorTree(root.GetCopy());
+        CreateTree();
         StartCoroutine(OpenChest());
     }
 

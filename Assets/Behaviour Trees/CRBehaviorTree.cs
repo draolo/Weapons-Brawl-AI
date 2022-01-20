@@ -12,11 +12,6 @@ namespace CRBT
         //  1 -> succes
         // -1 -> call me again
         public abstract int Run();
-
-        public IBTTask GetCopy()
-        {
-            return (IBTTask)MemberwiseClone();
-        }
     }
 
     public class BTCondition : IBTTask

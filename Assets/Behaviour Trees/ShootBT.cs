@@ -7,7 +7,6 @@ public class ShootBT : MonoBehaviour
 {
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
-    private IBTTask root;
     private BehaviorTree AI;
 
     private AgentAI aiManager;
@@ -33,7 +32,10 @@ public class ShootBT : MonoBehaviour
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
         aiManager = gameObject.GetComponent<AgentAI>();
+    }
 
+    private void CreateTree()
+    {
         BTAction setTarget = new BTAction(SetTarget);
         BTAction setPath = new BTAction(IsThereAPathToTheTarget);
         BTAction startBot = new BTAction(Move);
@@ -89,19 +91,25 @@ public class ShootBT : MonoBehaviour
         BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { faceTheTarget, straightLine, aim, safeShoot });
 
         BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
+        IBTTask root = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
 
-        root = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
+        AI = new BehaviorTree(root);
+    }
+
+    private void Log(string message)
+    {
+        Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
     }
 
     public void StartBehavior()
     {
         StopAllCoroutines();
         targetAim.target = target;
-
+        Log("starting behavior");
         try
         {
             targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
-            AI = new BehaviorTree(root.GetCopy());
+            CreateTree();
             StartCoroutine(ShootTarget());
         }
         catch (MissingReferenceException)
@@ -112,12 +120,14 @@ public class ShootBT : MonoBehaviour
 
     private void EndOfTask(bool completed = true)
     {
+        Log("end of task");
         StopBehavior();
         aiManager.FindNewAction();
     }
 
     public void StopBehavior()
     {
+        Log("ending behavior");
         StopAllCoroutines();
         bot.StopTheBot();
         target = null;
@@ -127,6 +137,7 @@ public class ShootBT : MonoBehaviour
 
     public IEnumerator ShootTarget()
     {
+        Log("start coroutine");
         yield return new WaitForSeconds(beginWaitTime);
         bool step;
         do
@@ -136,6 +147,7 @@ public class ShootBT : MonoBehaviour
                 if (!IsTargetAlive())
                 {
                     step = false;
+                    Log("stopped coroutine due to target death");
                 }
                 else
                 {
@@ -144,6 +156,7 @@ public class ShootBT : MonoBehaviour
             }
             catch (MissingReferenceException mre)
             {
+                Log("stopped coroutine due to missing reference");
                 Debug.Log(mre);
                 step = false;
             }
@@ -154,100 +167,126 @@ public class ShootBT : MonoBehaviour
 
     public bool LineOfSight()
     {
+        Log("testing line of sight");
         RaycastHit2D hit = Physics2D.Linecast(transform.position, target.position, projectileObstacle);
         if (hit.collider == null)
         {
+            Log("success");
             return true;
         }
+        Log("fails");
         return false;
     }
 
     public bool SetAim()
     {
+        Log("setting aim" + shootingAngle);
         targetAim.SetAim(shootingAngle);
         return true;
     }
 
     public bool TestAndSetStraight()
     {
+        Log("test and set straight");
         Vector2 direction = targetAim.Aim();
         if (direction.x <= -999)
         {
+            Log("fail");
             return false;
         }
+        Log("success" + direction);
         shootingAngle = direction;
         return true;
     }
 
     public bool EmptyFireLine()
     {
+        Log("test if the fireline is empty " + shootingAngle);
         RaycastHit2D hitPoint = targetAim.CollisionPredictionStupid(shootingAngle);
         impactPoint = hitPoint.point;
         if (impactPoint.x <= -999)
         {
+            Log("success we hit nothing, is that a succes???");
             //very strange but we haven't hit nothing
             return true;
         }
         if (hitPoint.collider.gameObject == target.gameObject)
         {
+            Log("success we hit the target");
             return true;
         }
         float targetDistance = Vector2.Distance(transform.position, target.position);
         if (targetDistance < targetAim.firePointDistance)
         {
+            Log("success we are close to the target");
             return true;
         }
+        Log("fail");
         return false;
     }
 
     public bool TestAndSetLobbed()
     {
+        Log("test and set lobbed");
         Vector2 direction = targetAim.Aim(true);
         if (direction.x <= -999)
         {
+            Log("fail");
             return false;
         }
+        Log("success " + direction);
         shootingAngle = direction;
         return true;
     }
 
     public bool IsThereAPathToTheTarget()
     {
+        Log("search and set path to the target");
         targetOld = target.position;
-        return bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position));
+        bool res = bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position));
+        Log("result: " + res);
+        return res;
     }
 
     public bool Stop()
     {
+        Log("stopping the bot");
         bot.StopTheBot();
         return true;
     }
 
     public bool PauseMovement()
     {
+        Log("pause movent");
         bot.PauseTheMovement();
         return true;
     }
 
     public bool ResumeMovement()
     {
+        Log("resume movement");
         bot.ResumeTheMovement();
         return true;
     }
 
     public bool Move()
     {
+        Log("starting the bot");
         bot.StartTheBot();
         return true;
     }
 
     public bool TargetPositionEqual()
     {
-        return targetOld == (Vector2)target.position;
+        Log("testing if target is in the same position");
+        bool res = targetOld == (Vector2)target.position;
+        Log("result: " + res);
+        return res;
     }
 
     public bool AimShaker()
     {
+        Log("adding an error to the aim");
         //TODO
 
         return true;
@@ -255,22 +294,28 @@ public class ShootBT : MonoBehaviour
 
     public bool Shoot()
     {
+        Log("shooting");
         shootingManager.CmdAttack(100);
         return true;
     }
 
     public bool IsItMoving()
     {
-        return (_rigidbody.velocity != new Vector2(0, 0));
+        Log("checking if is moving");
+        bool res = (_rigidbody.velocity != new Vector2(0, 0));
+        Log("result: " + res);
+        return res;
     }
 
     public bool IsItOnGround()
     {
+        Log("checking if is on the ground");
         return bot.mOnGround;
     }
 
     public bool FaceTheTarget()
     {
+        Log("facing the target");
         Vector2 dir = target.position - transform.position;
         playerMovementOffline.FaceTowards(dir.x);
         return true;
@@ -278,17 +323,20 @@ public class ShootBT : MonoBehaviour
 
     public bool SetTarget()
     {
+        Log("setting the target");
         targetAim.SetTarget(target);
         return true;
     }
 
     public bool IsTargetAlive()
     {
+        Log("checking if target is alive");
         return targetInfo.status == PlayerInfo.Status.alive;
     }
 
     public bool SetWeapon()
     {
+        Log("setting the weapon");
         bool emptyFireLine = EmptyFireLine();
         float targetDistance = Vector2.Distance(transform.position, target.position);
         float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
@@ -327,13 +375,14 @@ public class ShootBT : MonoBehaviour
             shootingManager.SwitchWeapon(index);
             return true;
         }
-
+        Log("failed to set the weaopon, really????");
         return false;
     }
 
     private bool DoesIHitMyselfWithThisWeapon(AbstractWeaponBulletBased w, float impactPointDistance)
     {
+        float bias = 1;
         AbstractBulletExplosive bullet = w.bulletPrefab.GetComponent<AbstractBulletExplosive>();
-        return impactPointDistance <= bullet.ExplosionRadius;
+        return (impactPointDistance - bias) <= bullet.ExplosionRadius;
     }
 }
