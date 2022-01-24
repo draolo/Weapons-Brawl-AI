@@ -7,6 +7,7 @@ public class ShootBT : MonoBehaviour
 {
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
+    public float safeDistance = 8f;
     private BehaviorTree AI;
 
     private AgentAI aiManager;
@@ -21,7 +22,9 @@ public class ShootBT : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private PlayerWeaponManager_Inventory shootingManager;
     private PlayerMovementOffline playerMovementOffline;
+    private RaycastHit2D hitPoint;
     private Vector2 impactPoint;
+    private Vector2 safePlace = new Vector2(-9999, -9999);
 
     // Start is called before the first frame update
     private void Awake()
@@ -43,13 +46,18 @@ public class ShootBT : MonoBehaviour
         BTAction stop = new BTAction(Stop);
         BTAction pauseMovement = new BTAction(PauseMovement);
         BTAction resumeMovement = new BTAction(ResumeMovement);
+        BTAction setTheClosestPathToTheEnemy = new BTAction(SetClosestPathToTheTarget);
+        BTAction setPathToSafePlace = new BTAction(SetPathToASafePlaceToShoot);
 
         BTAction aim = new BTAction(SetAim);
         BTAction shoot = new BTAction(Shoot);
         BTAction shake = new BTAction(AimShaker);
         BTAction setUpWeapon = new BTAction(SetWeapon);
         BTAction faceTheTarget = new BTAction(FaceTheTarget);
+        BTAction setIfItIsAsafePlace = new BTAction(CheckAndSetSafePlace);
+        BTAction setImpactPoint = new BTAction(SetImpactPoint);
 
+        BTCondition testIfIHitMyself = new BTCondition(DoesTheShootHitMyself);
         BTCondition targetAlive = new BTCondition(IsTargetAlive);
         BTCondition couldSeeTheTarget = new BTCondition(LineOfSight);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
@@ -61,10 +69,11 @@ public class ShootBT : MonoBehaviour
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
         BTSequence safeShoot = new BTSequence(new IBTTask[] { setUpWeapon, targetAlive, shoot });
-        BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] { isGrounded, straightLine, emptyFireline });
-        BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, emptyFireline });
+
+        BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] { isGrounded, straightLine, setImpactPoint, setIfItIsAsafePlace, emptyFireline });
+        BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, emptyFireline });
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
-        BTSequence shootFarAway = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, isThereAFireLine, aim, safeShoot });
+        BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, isThereAFireLine, aim, safeShoot });
         BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
 
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
@@ -85,13 +94,44 @@ public class ShootBT : MonoBehaviour
 
         BTDecorator movingCycle = new BTDecoratorUntilFail(movementConditions);
 
-        BTSequence getCloser = new BTSequence(new IBTTask[] { safeSetPath, startBot, movingCycle, shootFarAway });
+        BTSequence getCloser = new BTSequence(new IBTTask[] { safeSetPath, startBot, movingCycle, shootWithEmptyFireLine });
 
-        BTRandomSelector standardBehaviour = new BTRandomSelector(new IBTTask[] { shootFarAway, getCloser });
+        BTRandomSelector standardBehaviour = new BTRandomSelector(new IBTTask[] { shootWithEmptyFireLine, getCloser });
 
-        BTSequence desperateBehaviour = new BTSequence(new IBTTask[] { faceTheTarget, straightLine, aim, safeShoot });
+        BTDecorator didINotHitMyself = new BTDecoratorInverter(testIfIHitMyself);
 
-        BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour });
+        BTSequence testIfIHitMyselfStraight = new BTSequence(new IBTTask[] { straightLine, setImpactPoint, setIfItIsAsafePlace, testIfIHitMyself });
+        BTSequence testIfIHitMyselfLobbed = new BTSequence(new IBTTask[] { lobbedLine, setImpactPoint, testIfIHitMyself });
+
+        BTSelector testLobbedAndStraigthShoot = new BTSelector(new IBTTask[] { testIfIHitMyselfStraight, testIfIHitMyselfLobbed });
+
+        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { faceTheTarget, testLobbedAndStraigthShoot, aim, safeShoot });
+
+        BTSequence stupidShoot = new BTSequence(new IBTTask[] { faceTheTarget, straightLine, aim, safeShoot });
+
+        BTDecorator invertedFirelineCheck = new BTDecoratorInverter(isThereAFireLine);
+
+        BTSequence checkLineOrMovement = new BTSequence(new IBTTask[] { invertedFirelineCheck, isMovinig });
+
+        BTDecorator waitUntilThereIsALineOrPathEnd = new BTDecoratorUntilFail(checkLineOrMovement);
+
+        BTSequence searchAndShootForward = new BTSequence(new IBTTask[] { waitUntilThereIsALineOrPathEnd, stop, waitMovementEnd, shootWithEmptyFireLine });
+
+        BTDecorator checkIfIHaventGotAline = new BTDecoratorInverter(testLobbedAndStraigthShoot);
+
+        BTSequence testLineAndMovementBackwards = new BTSequence(new IBTTask[] { checkIfIHaventGotAline, isMovinig });
+
+        BTDecorator moveUntilIDontShootMyself = new BTDecoratorUntilFail(testLineAndMovementBackwards);
+
+        BTSequence searchAndShootBackwards = new BTSequence(new IBTTask[] { setPathToSafePlace, startBot, moveUntilIDontShootMyself, stop, waitMovementEnd, shootWithoutHitMyself });
+
+        BTSelector searchLineAndShoot = new BTSelector(new IBTTask[] { searchAndShootForward, searchAndShootBackwards });
+
+        BTSequence desperateGetCloser = new BTSequence(new IBTTask[] { setTheClosestPathToTheEnemy, startBot, searchLineAndShoot });
+
+        BTRandomSelector desperateBehaviour = new BTRandomSelector(new IBTTask[] { shootWithoutHitMyself, desperateGetCloser });
+
+        BTSelector shootingStrategies = new BTSelector(new IBTTask[] { standardBehaviour, desperateBehaviour, stupidShoot });
         IBTTask root = new BTSequence(new IBTTask[] { setTarget, shootingStrategies });
 
         AI = new BehaviorTree(root);
@@ -200,11 +240,16 @@ public class ShootBT : MonoBehaviour
         return true;
     }
 
-    public bool EmptyFireLine()
+    public bool SetImpactPoint()
     {
         Log("test if the fireline is empty " + shootingAngle);
-        RaycastHit2D hitPoint = targetAim.CollisionPredictionStupid(shootingAngle);
+        hitPoint = targetAim.CollisionPredictionStupid(shootingAngle);
         impactPoint = hitPoint.point;
+        return true;
+    }
+
+    public bool EmptyFireLine()
+    {
         if (impactPoint.x <= -999)
         {
             Log("success we hit nothing, is that a succes???");
@@ -247,6 +292,41 @@ public class ShootBT : MonoBehaviour
         bool res = bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position));
         Log("result: " + res);
         return res;
+    }
+
+    public bool SetClosestPathToTheTarget()
+    {
+        Log("search and set path to the target");
+        targetOld = target.position;
+        bool res = bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position), true);
+        Log("result: " + res);
+        return res;
+    }
+
+    public bool SetPathToASafePlaceToShoot()
+    {
+        Log("search and set path to the target");
+        //targetOld = target.position;
+        bool res = bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(safePlace));
+        Log("result: " + res);
+        return res;
+    }
+
+    public bool DoesTheShootHitMyself()
+    {
+        return (Vector2.Distance(impactPoint, transform.position) < safeDistance);
+    }
+
+    public bool CheckAndSetSafePlace()
+    {
+        float distance = Vector2.Distance(impactPoint, _rigidbody.position);
+        Debug.Log("called check and set " + distance + "collided with" + hitPoint.collider.name);
+        if (distance > safeDistance)
+        {
+            Debug.Log("it is safe");
+            safePlace = _rigidbody.position;
+        }
+        return true;
     }
 
     public bool Stop()

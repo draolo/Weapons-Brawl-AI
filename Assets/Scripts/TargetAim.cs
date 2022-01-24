@@ -88,14 +88,15 @@ public class TargetAim : MonoBehaviour
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
         Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT), GetHeightAtTime(angle, maxT));
         float step = maxT / halfOfpoints;
-        Vector2 beginPos = firePoint.position;
+
+        Vector2 beginPos = (Vector2)transform.position + (firePointDistance * angle);
         Vector2 endPos;
         RaycastHit2D hit;
-        for (int i = 1; i <= halfOfpoints * 2; i++)
+        for (int i = 1; i < halfOfpoints * 2; i++)
         {
             endPos = new Vector2(GetLengthAtTime(angle, step * i), GetHeightAtTime(angle, step * i));
-            float xDistancePoint = endPos.x - firePoint.position.x;
-            float xDistanceTarget = target.position.x - firePoint.position.x;
+            float xDistancePoint = endPos.x - beginPos.x;
+            float xDistanceTarget = target.position.x - beginPos.x;
             if (Mathf.Abs(xDistanceTarget) < Mathf.Abs(xDistancePoint))
             {
                 hit = Physics2D.Linecast(beginPos, target.position, projectileObstacle);

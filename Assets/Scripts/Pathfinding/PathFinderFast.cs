@@ -576,7 +576,7 @@ namespace Algorithms
                     int best = -1;
                     foreach (int i in visitedNodes)
                     {
-                        if (i != (start.y << mGridXLog2) + start.x)
+                        if ((i != (start.y << mGridXLog2) + start.x) && (nodes[i][0].JumpLength == 0)) //if it's on the ground and it's not the first node
                         {
                             float h = nodes[i][0].F - nodes[i][0].G;
                             if (h < bestH)

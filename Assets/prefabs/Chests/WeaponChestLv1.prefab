@@ -414,13 +414,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
   info: {fileID: 11400000, guid: cbc42e7654efdfd469b585cecb1b6ffc, type: 2}
-  AnimationController: {fileID: 0}
   attackRange: 5
   damagePower: 25
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 256
   FlingIntensity: 20
+  AnimationController: {fileID: 0}
 --- !u!1 &1604294568582874
 GameObject:
   m_ObjectHideFlags: 0

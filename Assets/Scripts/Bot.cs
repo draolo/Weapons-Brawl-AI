@@ -472,4 +472,13 @@ public class Bot : Character
             MoveTo(mPath[mPath.Count - 1]);
         }
     }
+
+    /*
+    public void ReversePath()
+    {
+        if (mPath != null && mPath.Count > 0)
+        {
+            MoveTo(mPath[0]);
+        }
+    }*/
 }
