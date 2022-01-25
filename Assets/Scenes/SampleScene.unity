@@ -2013,7 +2013,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020047, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_Name
-      value: PlayerObj
+      value: PlayerObj (0)
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020047, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_IsActive

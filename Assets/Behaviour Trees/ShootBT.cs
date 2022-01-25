@@ -56,9 +56,10 @@ public class ShootBT : MonoBehaviour
         BTAction faceTheTarget = new BTAction(FaceTheTarget);
         BTAction setIfItIsAsafePlace = new BTAction(CheckAndSetSafePlace);
         BTAction setImpactPoint = new BTAction(SetImpactPoint);
+        BTAction stupid = new BTAction(LogStupidAction);
 
         BTCondition testIfIHitMyself = new BTCondition(DoesTheShootHitMyself);
-        BTCondition targetAlive = new BTCondition(IsTargetAlive);
+        // BTCondition targetAlive = new BTCondition(IsTargetAlive);
         BTCondition couldSeeTheTarget = new BTCondition(LineOfSight);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
         BTCondition straightLine = new BTCondition(TestAndSetStraight);
@@ -68,10 +69,10 @@ public class ShootBT : MonoBehaviour
         BTCondition isGrounded = new BTCondition(IsItOnGround);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
 
-        BTSequence safeShoot = new BTSequence(new IBTTask[] { setUpWeapon, targetAlive, shoot });
+        BTSequence safeShoot = new BTSequence(new IBTTask[] { setUpWeapon, shoot });
 
         BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] { isGrounded, straightLine, setImpactPoint, setIfItIsAsafePlace, emptyFireline });
-        BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, emptyFireline });
+        BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, setIfItIsAsafePlace, emptyFireline });
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
         BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, isThereAFireLine, aim, safeShoot });
         BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
@@ -100,14 +101,14 @@ public class ShootBT : MonoBehaviour
 
         BTDecorator didINotHitMyself = new BTDecoratorInverter(testIfIHitMyself);
 
-        BTSequence testIfIHitMyselfStraight = new BTSequence(new IBTTask[] { straightLine, setImpactPoint, setIfItIsAsafePlace, testIfIHitMyself });
-        BTSequence testIfIHitMyselfLobbed = new BTSequence(new IBTTask[] { lobbedLine, setImpactPoint, testIfIHitMyself });
+        BTSequence testIfIHitMyselfStraight = new BTSequence(new IBTTask[] { isGrounded, straightLine, setImpactPoint, setIfItIsAsafePlace, didINotHitMyself });
+        BTSequence testIfIHitMyselfLobbed = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, setIfItIsAsafePlace, didINotHitMyself });
 
         BTSelector testLobbedAndStraigthShoot = new BTSelector(new IBTTask[] { testIfIHitMyselfStraight, testIfIHitMyselfLobbed });
 
-        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { faceTheTarget, testLobbedAndStraigthShoot, aim, safeShoot });
+        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, testLobbedAndStraigthShoot, aim, safeShoot });
 
-        BTSequence stupidShoot = new BTSequence(new IBTTask[] { faceTheTarget, straightLine, aim, safeShoot });
+        BTSequence stupidShoot = new BTSequence(new IBTTask[] { stupid, faceTheTarget, straightLine, aim, safeShoot });
 
         BTDecorator invertedFirelineCheck = new BTDecoratorInverter(isThereAFireLine);
 
@@ -115,7 +116,7 @@ public class ShootBT : MonoBehaviour
 
         BTDecorator waitUntilThereIsALineOrPathEnd = new BTDecoratorUntilFail(checkLineOrMovement);
 
-        BTSequence searchAndShootForward = new BTSequence(new IBTTask[] { waitUntilThereIsALineOrPathEnd, stop, waitMovementEnd, shootWithEmptyFireLine });
+        BTSequence searchAndShootForward = new BTSequence(new IBTTask[] { waitUntilThereIsALineOrPathEnd, shootWithoutHitMyself });
 
         BTDecorator checkIfIHaventGotAline = new BTDecoratorInverter(testLobbedAndStraigthShoot);
 
@@ -123,7 +124,7 @@ public class ShootBT : MonoBehaviour
 
         BTDecorator moveUntilIDontShootMyself = new BTDecoratorUntilFail(testLineAndMovementBackwards);
 
-        BTSequence searchAndShootBackwards = new BTSequence(new IBTTask[] { setPathToSafePlace, startBot, moveUntilIDontShootMyself, stop, waitMovementEnd, shootWithoutHitMyself });
+        BTSequence searchAndShootBackwards = new BTSequence(new IBTTask[] { setPathToSafePlace, startBot, moveUntilIDontShootMyself, shootWithoutHitMyself });
 
         BTSelector searchLineAndShoot = new BTSelector(new IBTTask[] { searchAndShootForward, searchAndShootBackwards });
 
@@ -139,7 +140,7 @@ public class ShootBT : MonoBehaviour
 
     private void Log(string message)
     {
-        //Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
+        Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
     }
 
     public void StartBehavior()
@@ -236,7 +237,7 @@ public class ShootBT : MonoBehaviour
             return false;
         }
         Log("success" + direction);
-        shootingAngle = direction;
+        shootingAngle = direction.normalized;
         return true;
     }
 
@@ -281,7 +282,7 @@ public class ShootBT : MonoBehaviour
             return false;
         }
         Log("success " + direction);
-        shootingAngle = direction;
+        shootingAngle = direction.normalized;
         return true;
     }
 
@@ -296,7 +297,7 @@ public class ShootBT : MonoBehaviour
 
     public bool SetClosestPathToTheTarget()
     {
-        Log("search and set path to the target");
+        Log("search and set path close to the target");
         targetOld = target.position;
         bool res = bot.SearchAndSetPath(bot.mMap.GetMapTileAtPoint(target.position), true);
         Log("result: " + res);
@@ -314,17 +315,20 @@ public class ShootBT : MonoBehaviour
 
     public bool DoesTheShootHitMyself()
     {
-        return (Vector2.Distance(impactPoint, transform.position) < safeDistance);
+        Log("checking if i hit myself");
+        bool res = (Vector2.Distance(impactPoint, transform.position) < safeDistance);
+        Log("result " + res);
+        return res;
     }
 
     public bool CheckAndSetSafePlace()
     {
-        float distance = Vector2.Distance(impactPoint, _rigidbody.position);
+        float distance = Vector2.Distance(impactPoint, transform.position);
         Debug.Log("called check and set " + distance + "collided with" + hitPoint.collider.name);
         if (distance > safeDistance)
         {
             Debug.Log("it is safe");
-            safePlace = _rigidbody.position;
+            safePlace = transform.position;
         }
         return true;
     }
@@ -465,5 +469,11 @@ public class ShootBT : MonoBehaviour
         float bias = 1;
         AbstractBulletExplosive bullet = w.bulletPrefab.GetComponent<AbstractBulletExplosive>();
         return (impactPointDistance - bias) <= bullet.ExplosionRadius;
+    }
+
+    private bool LogStupidAction()
+    {
+        Log("supid");
+        return true;
     }
 }

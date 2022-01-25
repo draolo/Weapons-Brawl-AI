@@ -10,6 +10,7 @@ public class TargetAim : MonoBehaviour
     public int speed = 50;
     public float firePointDistance;
     public LayerMask projectileObstacle;
+    public Vector2 lastTest;
 
     public GameObject FirePointPivot;
 
@@ -83,6 +84,7 @@ public class TargetAim : MonoBehaviour
 
     public RaycastHit2D CollisionPredictionStupid(Vector2 angle, int halfOfpoints = 3)
     {
+        lastTest = angle;
         RaycastHit2D mock = new RaycastHit2D();
         mock.point = new Vector2(-9999, -9999);
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
@@ -142,6 +144,8 @@ public class TargetAim : MonoBehaviour
         {
             return;
         }
+        Gizmos.color = Color.white;
+        Gizmos.DrawSphere((Vector2)transform.position + (firePointDistance * lastTest), 1);
         int halfOfpoints = 3;
         Gizmos.color = Color.green;
         Vector2 angle = Aim(false);

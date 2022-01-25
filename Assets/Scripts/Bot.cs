@@ -74,6 +74,12 @@ public class Bot : Character
         return false;
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere((mPosition - mAABB.HalfSize + 0.5f * Map.cTileSize * Vector2.one), 1);
+    }
+
     public bool SearchAndSetPath(Vector2i destinationInTile, bool getCloserIfThereIsNoPath = false)
     {
         Vector2i startTile = mMap.GetMapTileAtPoint(mPosition - mAABB.HalfSize + 0.5f * Map.cTileSize * Vector2.one);
