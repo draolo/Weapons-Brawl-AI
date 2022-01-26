@@ -548,6 +548,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &721581000 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5677957834799587786, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+  m_PrefabInstance: {fileID: 724528823}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &724528823
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1600,7 +1605,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1070145467}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8811c1f00e6c5f640a9e4c07733e0ca9, type: 3}
   m_Name: 
@@ -10870,7 +10875,7 @@ MonoBehaviour:
   m_text: 30.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -20963,7 +20968,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702731c0b7dd0bb4ca5ea1ab00558049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  matchManager: {fileID: 0}
   matchInfo: {fileID: 0}
+  spawnPointContainer: {fileID: 721581000}
+  availableSpawnPoints: []
 --- !u!4 &8524350486631372709
 Transform:
   m_ObjectHideFlags: 0

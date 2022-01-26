@@ -8,7 +8,6 @@ using System;
 //List of players in the match
 public class MatchManager : MonoBehaviour
 {
-
     public Color turn;
     public float waiting = 30;
     public float turnDuration = 30;
@@ -20,21 +19,19 @@ public class MatchManager : MonoBehaviour
 
     public List<PlayerInfo> RedTeam = new List<PlayerInfo>();
 
-
     public List<PlayerInfo> BlueTeam = new List<PlayerInfo>();
     public bool gameIsOver;
     public bool gameIsStart;
-
 
     internal void AddChest(AbstractChest abstractChest)
     {
         switch (abstractChest.type)
         {
             case AbstractChest.ChestType.Health:
-            {
+                {
                     AddChestToList(_lifeChest, abstractChest);
                     break;
-            }
+                }
             case AbstractChest.ChestType.Revive:
                 {
                     AddChestToList(_reviveChest, abstractChest);
@@ -64,12 +61,12 @@ public class MatchManager : MonoBehaviour
         {
             case AbstractChest.ChestType.Health:
                 {
-                   _lifeChest.Remove(abstractChest);
+                    _lifeChest.Remove(abstractChest);
                     break;
                 }
             case AbstractChest.ChestType.Revive:
                 {
-                    _reviveChest.Remove( abstractChest);
+                    _reviveChest.Remove(abstractChest);
                     break;
                 }
             case AbstractChest.ChestType.Upgrade:
@@ -82,7 +79,6 @@ public class MatchManager : MonoBehaviour
         }
     }
 
-
     public void Awake()
     {
         gameIsStart = false;
@@ -93,48 +89,45 @@ public class MatchManager : MonoBehaviour
 
     private void Start()
     {
-        RpcChangeTurn(turn);
+        ChangeTurn(turn);
     }
 
     private void Update()
     {
-            if (RedTeam.Count > 0  && BlueTeam.Count>0 && !gameIsOver) 
-            {
-                gameIsStart = true;
-            }
-            try
-            {
-
+        if (RedTeam.Count > 0 && BlueTeam.Count > 0 && !gameIsOver)
+        {
+            gameIsStart = true;
+        }
+        try
+        {
             if (AllPlayerHasEnded(this.turn))
             {
                 waiting = 0;
             }
-            }
-            catch(Exception e)
+        }
+        catch (Exception e)
+        {
+            UpdateRedAndBlueTeams();
+            print("Eccezione prevista, GO ahead, no problem" + e);
+        }
+
+        waiting -= Time.deltaTime;
+
+        if (waiting < 0)
+        {
+            if (AllPlayerIsDead(turn) && gameIsStart)
             {
-                UpdateRedAndBlueTeams();
-                print("Eccezione prevista, GO ahead, no problem" + e);
+                bool redWin = false;
+                if (turn != Color.red)
+                    redWin = true;
+                RpcNotifyGameIsOver(redWin);
             }
 
-            waiting -= Time.deltaTime;
-
-            if (waiting < 0)
-            {
-                if (AllPlayerIsDead(turn) && gameIsStart)
-                {
-                    bool redWin = false;
-                    if (turn != Color.red)
-                        redWin = true;
-                    RpcNotifyGameIsOver(redWin);
-                }
-
-                UpdateRedAndBlueTeams();
-                waiting = turnDuration;
-                ChangeTurn();
-                RpcChangeTurn(turn);
-            }
-        
-
+            UpdateRedAndBlueTeams();
+            waiting = turnDuration;
+            ChangeTurn();
+            ChangeTurn(turn);
+        }
     }
 
     private void RpcNotifyGameIsOver(bool redWin)
@@ -151,7 +144,7 @@ public class MatchManager : MonoBehaviour
         }
         else
         {
-            if(localPlayer.team == Color.blue)
+            if (localPlayer.team == Color.blue)
                 localPlayer.win = true;
             else
                 localPlayer.win = false;
@@ -208,7 +201,6 @@ public class MatchManager : MonoBehaviour
         {
             turn = Color.red;
         }
-
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -310,11 +302,8 @@ public class MatchManager : MonoBehaviour
         return dead;
     }
 
-
-    void RpcChangeTurn(Color color)
+    private void ChangeTurn(Color color)
     {
-
-        
         foreach (PlayerInfo p in _players)
         {
             if (color == p.team)
@@ -326,7 +315,7 @@ public class MatchManager : MonoBehaviour
                 SetPlayerTurn(p, false);
             }
             /*
-            if (!gameIsOver) 
+            if (!gameIsOver)
             {
                 if(color == p.team)
                     MessageManager.Instance.PlayYourTurnAnimation();
@@ -349,16 +338,10 @@ public class MatchManager : MonoBehaviour
 
         foreach (PlayerInfo player in _players)
         {
-           
             if (player.team == Color.red)
                 RedTeam.Add(player);
             else
                 BlueTeam.Add(player);
         }
     }
-
-
-    
-
 }
-
