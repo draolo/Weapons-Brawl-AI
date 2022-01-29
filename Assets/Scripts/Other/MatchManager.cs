@@ -13,7 +13,7 @@ public class MatchManager : MonoBehaviour
 
     public List<Color> teams = new List<Color>(
     new Color[]{
-        Color.red,Color.blue, Color.green
+        Color.red,Color.blue
     });
 
     public Color blankColor = Color.white;
@@ -150,6 +150,7 @@ public class MatchManager : MonoBehaviour
     private void GameOver(Color Winner)
     {
         gameIsOver = true;
+        winner = Winner;
         EndGameScreemUI endScreen = FindObjectOfType<EndGameScreemUI>();
         foreach (PlayerInfo playerInfo in _players)
         {
@@ -202,6 +203,13 @@ public class MatchManager : MonoBehaviour
             isWaiting = true;
 
             waiting = inBetweenTime;
+            if (!gameIsOver && GameManagerScript._instance.localPlayers.ContainsKey(turn))
+            {
+                if (GameManagerScript._instance.localPlayers[turn].status == PlayerInfo.Status.alive)
+                {
+                    MessageManager.Instance.PlayEndTurnAnimation();
+                }
+            }
             turn = blankColor;
         }
         else
@@ -214,7 +222,15 @@ public class MatchManager : MonoBehaviour
                 waiting = turnDuration;
                 isWaiting = false;
             } while (AllPlayerAreDead(turn) && turnIndex != startIndex);
+            if (!gameIsOver && GameManagerScript._instance.localPlayers.ContainsKey(turn))
+            {
+                if (GameManagerScript._instance.localPlayers[turn].status == PlayerInfo.Status.alive)
+                {
+                    MessageManager.Instance.PlayYourTurnAnimation();
+                }
+            }
         }
+
         SetActivePlayers(turn);
     }
 
@@ -322,15 +338,6 @@ public class MatchManager : MonoBehaviour
         foreach (PlayerInfo p in _players)
         {
             SetPlayerTurn(p, (color == p.team));
-            //TODO REDO
-            /*
-            if (!gameIsOver)
-            {
-                if(color == p.team)
-                    MessageManager.Instance.PlayYourTurnAnimation();
-                else
-                    MessageManager.Instance.PlayEndTurnAnimation();
-            }*/
         }
     }
 
