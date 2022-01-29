@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GlobalStatsUI : AbstractInGameInterfaces {
-
+public class GlobalStatsUI : AbstractInGameInterfaces
+{
     public TextMeshProUGUI SingleScoreYouWinText;
     public TextMeshProUGUI GlobalScoreYouWinText;
 
@@ -17,11 +17,10 @@ public class GlobalStatsUI : AbstractInGameInterfaces {
 
         Transform red = UI.transform.Find("RedScore");
         Transform blue = UI.transform.Find("BlueScore");
-        List<PlayerInfo> redplayers = MatchManager._instance.RedTeam;
-        List<PlayerInfo> blueplayers = MatchManager._instance.BlueTeam;
+        List<PlayerInfo> redplayers = MatchManager._instance.teamMembers[Color.red];
+        List<PlayerInfo> blueplayers = MatchManager._instance.teamMembers[Color.blue];
         SetSquadInfo(red, redplayers);
         SetSquadInfo(blue, blueplayers);
-
     }
 
     private void SetSquadInfo(Transform table, List<PlayerInfo> players)
@@ -49,7 +48,6 @@ public class GlobalStatsUI : AbstractInGameInterfaces {
                 Debug.Log("exception " + e.ToString());
                 break;
             }
-
         }
     }
 

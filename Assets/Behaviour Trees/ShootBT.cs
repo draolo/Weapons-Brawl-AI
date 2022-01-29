@@ -140,7 +140,7 @@ public class ShootBT : MonoBehaviour
 
     private void Log(string message)
     {
-        Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
+        // Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
     }
 
     public void StartBehavior()
@@ -324,10 +324,10 @@ public class ShootBT : MonoBehaviour
     public bool CheckAndSetSafePlace()
     {
         float distance = Vector2.Distance(impactPoint, transform.position);
-        Debug.Log("called check and set " + distance + "collided with" + hitPoint.collider.name);
+        Log("called check and set " + distance);
         if (distance > safeDistance)
         {
-            Debug.Log("it is safe");
+            Log("it is safe");
             safePlace = transform.position;
         }
         return true;

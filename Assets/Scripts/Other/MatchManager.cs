@@ -4,24 +4,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using System;
+using Random = UnityEngine.Random;
 
 //List of players in the match
 public class MatchManager : MonoBehaviour
 {
     public Color turn;
+
+    public List<Color> teams = new List<Color>(
+    new Color[]{
+        Color.red,Color.blue, Color.green
+    });
+
+    public Color blankColor = Color.white;
+    public int numberOfTeams;
+    public int turnIndex = 0;
     public float waiting = 30;
     public float turnDuration = 30;
+    public float inBetweenTime = 5;
+    public bool isWaiting;
     public static MatchManager _instance = null;
     public List<PlayerInfo> _players = new List<PlayerInfo>();
     public List<AbstractChest> _lifeChest = new List<AbstractChest>();
     public List<AbstractChest> _upgradeChest = new List<AbstractChest>();
     public List<AbstractChest> _reviveChest = new List<AbstractChest>();
+    public Color winner;
 
-    public List<PlayerInfo> RedTeam = new List<PlayerInfo>();
+    public Dictionary<Color, List<PlayerInfo>> teamMembers = new Dictionary<Color, List<PlayerInfo>>();
 
-    public List<PlayerInfo> BlueTeam = new List<PlayerInfo>();
     public bool gameIsOver;
-    public bool gameIsStart;
+    public bool gameHasStart;
 
     internal void AddChest(AbstractChest abstractChest)
     {
@@ -55,7 +67,7 @@ public class MatchManager : MonoBehaviour
         list.Add(c);
     }
 
-    internal void removeChest(AbstractChest abstractChest)
+    internal void RemoveChest(AbstractChest abstractChest)
     {
         switch (abstractChest.type)
         {
@@ -81,22 +93,30 @@ public class MatchManager : MonoBehaviour
 
     public void Awake()
     {
-        gameIsStart = false;
+        gameHasStart = false;
+        isWaiting = false;
+        numberOfTeams = teams.Count;
+        turnIndex = Random.Range(0, numberOfTeams);
+
         _instance = this;
-        turn = Color.red;
-        waiting = turnDuration;
+        turn = blankColor;
+        waiting = 5;
+        foreach (Color c in teams)
+        {
+            teamMembers.Add(c, new List<PlayerInfo>());
+        }
     }
 
     private void Start()
     {
-        ChangeTurn(turn);
+        ChangeTurn();
     }
 
     private void Update()
     {
-        if (RedTeam.Count > 0 && BlueTeam.Count > 0 && !gameIsOver)
+        if (teamMembers[teams[0]].Count > 0 && !gameIsOver)
         {
-            gameIsStart = true;
+            gameHasStart = true;
         }
         try
         {
@@ -107,7 +127,7 @@ public class MatchManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            UpdateRedAndBlueTeams();
+            UpdateTeams();
             print("Eccezione prevista, GO ahead, no problem" + e);
         }
 
@@ -115,55 +135,38 @@ public class MatchManager : MonoBehaviour
 
         if (waiting < 0)
         {
-            if (AllPlayerIsDead(turn) && gameIsStart)
+            List<Color> availableTeams = teams.FindAll(c => !AllPlayerAreDead(c));
+            if (availableTeams.Count <= 1 && gameHasStart)
             {
-                bool redWin = false;
-                if (turn != Color.red)
-                    redWin = true;
-                RpcNotifyGameIsOver(redWin);
+                winner = availableTeams.Count > 0 ? availableTeams[0] : blankColor;
+                GameOver(winner);
             }
 
-            UpdateRedAndBlueTeams();
-            waiting = turnDuration;
+            UpdateTeams(); //if it works don't touch it, even if i don't remember why it's there, probably just to remove disconnected player in the OGD version of the game
             ChangeTurn();
-            ChangeTurn(turn);
         }
     }
 
-    private void RpcNotifyGameIsOver(bool redWin)
+    private void GameOver(Color Winner)
     {
         gameIsOver = true;
         EndGameScreemUI endScreen = FindObjectOfType<EndGameScreemUI>();
-        PlayerInfo localPlayer = endScreen.localPlayer;
-        if (redWin)
+        foreach (PlayerInfo playerInfo in _players)
         {
-            if (localPlayer.team == Color.red)
-                localPlayer.win = true;
-            else
-                localPlayer.win = false;
-        }
-        else
-        {
-            if (localPlayer.team == Color.blue)
-                localPlayer.win = true;
-            else
-                localPlayer.win = false;
+            playerInfo.win = (playerInfo.team == Winner);
         }
 
         if (!endScreen.isActive)
             endScreen.Open();
-        gameIsStart = false;
+        gameHasStart = false;
     }
 
-    private bool AllPlayerIsDead(Color turn)
+    private bool AllPlayerAreDead(Color team)
     {
         bool result = true;
         List<PlayerInfo> CurrentTeam;
 
-        if (turn == Color.red)
-            CurrentTeam = RedTeam;
-        else
-            CurrentTeam = BlueTeam;
+        CurrentTeam = teamMembers[team];
 
         foreach (PlayerInfo player in CurrentTeam)
             if (player.status == PlayerInfo.Status.alive)
@@ -174,13 +177,14 @@ public class MatchManager : MonoBehaviour
 
     private bool AllPlayerHasEnded(Color turn)
     {
+        if (isWaiting)
+        {
+            return false;
+        }
         bool result = true;
         List<PlayerInfo> CurrentTeam;
 
-        if (turn == Color.red)
-            CurrentTeam = RedTeam;
-        else
-            CurrentTeam = BlueTeam;
+        CurrentTeam = teamMembers[turn];
 
         foreach (PlayerInfo player in CurrentTeam)
         {
@@ -193,14 +197,25 @@ public class MatchManager : MonoBehaviour
 
     private void ChangeTurn()
     {
-        if (turn == Color.red)
+        if (isWaiting == false)
         {
-            turn = Color.blue;
+            isWaiting = true;
+
+            waiting = inBetweenTime;
+            turn = blankColor;
         }
         else
         {
-            turn = Color.red;
+            int startIndex = turnIndex;
+            do
+            {
+                turnIndex = ++turnIndex % numberOfTeams;
+                turn = teams[turnIndex];
+                waiting = turnDuration;
+                isWaiting = false;
+            } while (AllPlayerAreDead(turn) && turnIndex != startIndex);
         }
+        SetActivePlayers(turn);
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -209,13 +224,13 @@ public class MatchManager : MonoBehaviour
             return;
 
         _players.Add(player);
-        UpdateRedAndBlueTeams();
+        UpdateTeams();
     }
 
     public void RemovePlayer(PlayerInfo player)
     {
         _players.Remove(player);
-        UpdateRedAndBlueTeams();
+        UpdateTeams();
     }
 
     public int PlayerAliveNumber()
@@ -273,7 +288,7 @@ public class MatchManager : MonoBehaviour
     public void Reset()
     {
         _players = new List<PlayerInfo>();
-        UpdateRedAndBlueTeams();
+        UpdateTeams();
     }
 
     public List<PlayerInfo> DeadPlayerList()
@@ -302,18 +317,12 @@ public class MatchManager : MonoBehaviour
         return dead;
     }
 
-    private void ChangeTurn(Color color)
+    private void SetActivePlayers(Color color)
     {
         foreach (PlayerInfo p in _players)
         {
-            if (color == p.team)
-            {
-                SetPlayerTurn(p, true);
-            }
-            else
-            {
-                SetPlayerTurn(p, false);
-            }
+            SetPlayerTurn(p, (color == p.team));
+            //TODO REDO
             /*
             if (!gameIsOver)
             {
@@ -330,18 +339,19 @@ public class MatchManager : MonoBehaviour
         p.physicalPlayer.GetComponent<PlayerManager>().ChangeActiveStatus(active);
     }
 
-    private void UpdateRedAndBlueTeams()
+    private void UpdateTeams()
     {
-        RedTeam.Clear();
-        BlueTeam.Clear();
+        teamMembers = new Dictionary<Color, List<PlayerInfo>>();
+        foreach (Color c in teams)
+        {
+            teamMembers.Add(c, new List<PlayerInfo>());
+        }
+
         _players.RemoveAll(item => item == null);
 
         foreach (PlayerInfo player in _players)
         {
-            if (player.team == Color.red)
-                RedTeam.Add(player);
-            else
-                BlueTeam.Add(player);
+            teamMembers[player.team].Add(player);
         }
     }
 }

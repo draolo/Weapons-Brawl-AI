@@ -16,13 +16,19 @@ public class PauseMenuScript : AbstractMenu
     {
         if (Input.GetButtonDown("Pause"))
             OpenClosePauseMenu();
-
     }
 
     public void OpenClosePauseMenu()
     {
-        if(PauseMenuUI.activeSelf == false)
+        if (PauseMenuUI.activeSelf == false)
+        {
             CloseAllOtherMenu();
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
 
         PauseMenuUI.SetActive(!PauseMenuUI.activeSelf);
     }
@@ -33,13 +39,10 @@ public class PauseMenuScript : AbstractMenu
             menu.Close();
     }
 
-    //TODO REDO THIS FUNCTION
     public void LoadStartMenu()
     {
         MatchManager._instance.Reset();
-        //Prototype.NetworkLobby.LobbyManager.s_Singleton.gameObject.GetComponent<LobbyMyFeature>().LoadStartMenu();
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
     }
 }
-
-
-

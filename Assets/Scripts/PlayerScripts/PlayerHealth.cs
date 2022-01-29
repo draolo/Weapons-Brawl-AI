@@ -11,6 +11,10 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage, GameObject fromWho)
     {
+        if (hp <= 0)
+        {
+            return;
+        }
         damage = Math.Min(hp, damage);
         hp -= damage;
         hp = Math.Max(0, hp);

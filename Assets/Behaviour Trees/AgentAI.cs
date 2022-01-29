@@ -12,7 +12,7 @@ public class AgentAI : MonoBehaviour
 
     public bool scared;
     public bool waitingActionToEnd;
-    public bool isTeamRed;
+    public Color team;
     public Bot bot;
     public Transform target;
 
@@ -101,8 +101,11 @@ public class AgentAI : MonoBehaviour
         isThereAReachableEnemy.AddLink(false, longEnemy);
 
         root = isThereAReachableEnemyThathCouldKill;
+    }
 
-        isTeamRed = transform.parent.GetComponent<PlayerInfo>().team == Color.red;
+    private void Start()
+    {
+        team = transform.parent.GetComponent<PlayerInfo>().team;
     }
 
     private void OnEnable()
@@ -237,14 +240,9 @@ public class AgentAI : MonoBehaviour
     public bool InizializeAllyToRevive()
     {
         List<PlayerInfo> pinfoTarget;
-        if (!isTeamRed)
-        {
-            pinfoTarget = MatchManager._instance.BlueTeam;
-        }
-        else
-        {
-            pinfoTarget = MatchManager._instance.RedTeam;
-        }
+
+        pinfoTarget = MatchManager._instance.teamMembers[team];
+
         var deadTargets = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.dead);
         targetToRevive = deadTargets;
         return targetToRevive.Count() > 0;
@@ -252,14 +250,13 @@ public class AgentAI : MonoBehaviour
 
     public bool InizializePlayerTarget()
     {
-        List<PlayerInfo> pinfoTarget;
-        if (isTeamRed)
+        List<PlayerInfo> pinfoTarget = new List<PlayerInfo>();
+        foreach (Color color in MatchManager._instance.teams)
         {
-            pinfoTarget = MatchManager._instance.BlueTeam;
-        }
-        else
-        {
-            pinfoTarget = MatchManager._instance.RedTeam;
+            if (color != team)
+            {
+                pinfoTarget.AddRange(MatchManager._instance.teamMembers[color]);
+            }
         }
         var aliveTargets = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.alive);
         availableTargets = new List<Target<PlayerHealth>>();

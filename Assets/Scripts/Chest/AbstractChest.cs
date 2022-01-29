@@ -101,6 +101,6 @@ public abstract class AbstractChest : MonoBehaviour {
 
     void OnDestroy()
     {
-        MatchManager._instance.removeChest(this);
+        MatchManager._instance.RemoveChest(this);
     }
 }

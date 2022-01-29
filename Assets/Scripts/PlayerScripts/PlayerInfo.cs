@@ -40,10 +40,6 @@ public class PlayerInfo : MonoBehaviour
     private void Start()
     {
         MatchManager._instance.AddPlayer(this);
-        if (true) //TODo islocal player
-        {
-            FindObjectOfType<EndGameScreemUI>().localPlayer = this;
-        }
     }
 
     internal void Resurrect(Vector3 position)
@@ -62,7 +58,7 @@ public class PlayerInfo : MonoBehaviour
         }
         else
         {
-            return (kills / deaths).ToString("F2");
+            return ((float)kills / (float)deaths).ToString("F2");
         }
     }
 

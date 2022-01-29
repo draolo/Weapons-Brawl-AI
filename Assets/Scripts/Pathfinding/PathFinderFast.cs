@@ -586,11 +586,8 @@ namespace Algorithms
                             }
                         }
                     }
-                    Debug.Log("best h: " + bestH);
-                    Debug.Log("best : " + best);
                     if (best == -1)
                     {
-                        Debug.Log("no best node");
                         mStopped = true;
                         return null;
                     }
@@ -645,7 +642,6 @@ namespace Algorithms
                     mClose.Add(fNode);
 
                     mStopped = true;
-                    Debug.Log("returned alternative path " + mClose.Count);
                     return mClose;
                 }
 

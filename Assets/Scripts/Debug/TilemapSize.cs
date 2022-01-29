@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class TilemapSize : MonoBehaviour
 {
     // Start is called before the first frame update
+
     void Start()
     {
         Tilemap t= GetComponent<Tilemap>();
