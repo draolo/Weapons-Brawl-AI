@@ -158,7 +158,7 @@ public class MatchManager : MonoBehaviour
         }
 
         if (!endScreen.isActive)
-            endScreen.Open();
+            endScreen.ResetPlayerAndOpen();
         gameHasStart = false;
     }
 
@@ -214,6 +214,7 @@ public class MatchManager : MonoBehaviour
         }
         else
         {
+            //GameOver(Color.blue);
             int startIndex = turnIndex;
             do
             {

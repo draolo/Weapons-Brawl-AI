@@ -7,6 +7,8 @@ public class EndGameScreemUI : AbstractInGameInterfaces
 {
     public GlobalStatsUI globalStatsUI;
 
+    public PlayerInfo selectedPlayer = null;
+
     public override void Open()
     {
         if (globalStatsUI.isActive)
@@ -50,18 +52,22 @@ public class EndGameScreemUI : AbstractInGameInterfaces
         Transform winLose = UI.transform.Find("YouWinLoseText");
         if (localPlayer != null)
         {
+            if (selectedPlayer == null)
+            {
+                selectedPlayer = localPlayer;
+            }
             Transform statistics = UI.transform.Find("Statistics");
             Transform killLabel = statistics.transform.Find("Kill");
             Transform deathLabel = statistics.transform.Find("Death");
             Transform ResurrectedLabel = statistics.transform.Find("Resurrected");
             Transform DamageLabel = statistics.transform.Find("Damage");
             Transform PointsLabel = statistics.transform.Find("Total");
-            SetValue(killLabel, localPlayer.kills);
-            SetValue(deathLabel, localPlayer.deaths);
-            SetValue(ResurrectedLabel, localPlayer.resurrectedAlly);
-            SetValue(DamageLabel, localPlayer.damageToEnemy);
-            SetValue(PointsLabel, localPlayer.GetPoints());
-            UI.transform.Find("Rank").Find("Rank").GetComponent<TextMeshProUGUI>().text = localPlayer.GetRank() + "";
+            SetValue(killLabel, selectedPlayer.kills);
+            SetValue(deathLabel, selectedPlayer.deaths);
+            SetValue(ResurrectedLabel, selectedPlayer.resurrectedAlly);
+            SetValue(DamageLabel, selectedPlayer.damageToEnemy);
+            SetValue(PointsLabel, selectedPlayer.GetPoints());
+            UI.transform.Find("Rank").Find("Rank").GetComponent<TextMeshProUGUI>().text = selectedPlayer.GetRank() + "";
             if (localPlayers.Count == 1)
             {
                 if (localPlayer.win)
@@ -89,5 +95,11 @@ public class EndGameScreemUI : AbstractInGameInterfaces
         }
         Transform valueBox = box.Find("Value");
         valueBox.GetComponent<TextMeshProUGUI>().text = value.ToString();
+    }
+
+    public void ResetPlayerAndOpen()
+    {
+        selectedPlayer = null;
+        Open();
     }
 }

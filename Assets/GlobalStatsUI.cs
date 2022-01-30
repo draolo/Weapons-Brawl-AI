@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class GlobalStatsUI : AbstractInGameInterfaces
@@ -11,8 +12,15 @@ public class GlobalStatsUI : AbstractInGameInterfaces
     public TextMeshProUGUI GlobalScoreYouWinText;
     public GameObject rowObject;
     public RectTransform container;
+    private EndGameScreemUI endGameScreem;
     private float offset;
+    private List<GameObject> rows = new List<GameObject>();
     private float h;
+
+    private void Start()
+    {
+        endGameScreem = gameObject.GetComponent<EndGameScreemUI>();
+    }
 
     public override void Open()
     {
@@ -20,8 +28,15 @@ public class GlobalStatsUI : AbstractInGameInterfaces
 
         GlobalScoreYouWinText.text = SingleScoreYouWinText.text;
 
-        Transform red = UI.transform.Find("RedScore");
-        Transform blue = UI.transform.Find("BlueScore");
+        if (rows.Count != 0)
+        {
+            foreach (GameObject g in rows)
+            {
+                Destroy(g);
+            }
+        }
+        rows = new List<GameObject>();
+
         RectTransform rectTransform = rowObject.GetComponent<RectTransform>();
         h = rectTransform.rect.height;
         int numberOfPlayers = MatchManager._instance._players.Count;
@@ -43,6 +58,7 @@ public class GlobalStatsUI : AbstractInGameInterfaces
             {
                 GameObject row = Instantiate(rowObject, new Vector3(0, offset, 0), Quaternion.identity);
                 row.transform.SetParent(container.transform, false);
+                rows.Add(row);
                 Transform name = row.transform.Find("Name");
                 Transform rank = row.transform.Find("Rank");
                 Transform score = row.transform.Find("Score");
@@ -57,6 +73,10 @@ public class GlobalStatsUI : AbstractInGameInterfaces
                 Color c = p.team;
                 c.a = 50f / 255f;
                 img.color = c;
+                Button button = row.GetComponent<Button>();
+                UnityAction UA;
+                UA = new UnityAction(() => { endGameScreem.selectedPlayer = p; this.Close(); endGameScreem.Open(); });
+                button.onClick.AddListener(UA);
                 offset -= h;
             }
             catch (Exception e)
