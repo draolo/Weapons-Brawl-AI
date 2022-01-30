@@ -2268,6 +2268,26 @@ PrefabInstance:
       propertyPath: isTeamRed
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7457381201250275946, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7457381201250275947, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 7457381202865316920, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7457381202865316923, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: orthographic size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7457381202865317060, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.55
+      objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020040, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -2318,7 +2338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7457381203114020047, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8061101785306295081, guid: 71f5a26df55318f45966d621ff6ce034, type: 3}
       propertyPath: target
