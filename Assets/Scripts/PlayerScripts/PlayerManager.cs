@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
-    public GameObject controller;
-    public GameObject spriteObject;
+    public PlayerInfo controller;
+    public SpriteRenderer sprite;
 
     public bool isInTurn;
     public List<MonoBehaviour> scriptToDisable;
@@ -22,12 +22,15 @@ public class PlayerManager : MonoBehaviour
 
     private void SetSpriteColor()
     {
-        spriteObject.GetComponent<SpriteRenderer>().color = GetTeam();
+        sprite.color = GetTeam();
     }
 
     public IEnumerator LockAfterSec(int sec)
     {
-        TimerAfterAttackScript.SetTimer(sec);
+        if (!isABot)
+        {
+            TimerAfterAttackScript.SetTimer(sec);
+        }
         yield return new WaitForSeconds(sec);
         ChangeActiveStatus(false);
     }
@@ -44,12 +47,12 @@ public class PlayerManager : MonoBehaviour
 
     internal Color GetTeam()
     {
-        return controller.GetComponent<PlayerInfo>().team;
+        return controller.team;
     }
 
     public void PlayerDie()
     {
-        controller.GetComponent<PlayerInfo>().status = PlayerInfo.Status.dead;
+        controller.status = PlayerInfo.Status.dead;
     }
 
     public void SetVelocity(float velx, float vely)

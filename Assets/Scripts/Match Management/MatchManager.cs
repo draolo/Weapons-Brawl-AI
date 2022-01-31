@@ -10,6 +10,8 @@ using Random = UnityEngine.Random;
 public class MatchManager : MonoBehaviour
 {
     public Color turn;
+    private CameraController activeCamera;
+    [SerializeField] private CameraController freeRoamCamera;
 
     public List<Color> teams = new List<Color>(
     new Color[]{
@@ -96,6 +98,7 @@ public class MatchManager : MonoBehaviour
         gameHasStart = false;
         isWaiting = false;
         numberOfTeams = teams.Count;
+        activeCamera = freeRoamCamera;
         turnIndex = Random.Range(0, numberOfTeams);
 
         _instance = this;
@@ -223,12 +226,18 @@ public class MatchManager : MonoBehaviour
                 waiting = turnDuration;
                 isWaiting = false;
             } while (AllPlayerAreDead(turn) && turnIndex != startIndex);
-            if (!gameIsOver && GameManagerScript._instance.localPlayers.ContainsKey(turn))
+            if (!gameIsOver && (GameManagerScript._instance.localPlayers.ContainsKey(turn)) && (GameManagerScript._instance.localPlayers[turn].status == PlayerInfo.Status.alive))
             {
-                if (GameManagerScript._instance.localPlayers[turn].status == PlayerInfo.Status.alive)
-                {
-                    MessageManager.Instance.PlayYourTurnAnimation();
-                }
+                activeCamera.StopUsingCamera();
+                activeCamera = GameManagerScript._instance.localPlayers[turn].camera;
+                activeCamera.UseCamera();
+                MessageManager.Instance.PlayYourTurnAnimation();
+            }
+            else
+            {
+                activeCamera.StopUsingCamera();
+                activeCamera = freeRoamCamera;
+                activeCamera.UseCamera();
             }
         }
 

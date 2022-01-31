@@ -6,62 +6,61 @@ public class CameraController : MonoBehaviour
 {
     private Cinemachine.CinemachineVirtualCamera cam;
     private CinemachineCameraOffset offsetManager;
-    public PlayerMovement playerMovementManager;
+    [SerializeField] private PlayerMovementOffline playerMovementManager;
     //public GameObject player;                     //Public variable to store a reference to the player game object
-    
+
     private Vector3 offsetToReach;                  //the distance beetween what we are looking and the transform
-    private bool targetReach = true;                //have we reach our target offset?  
-    //private Func<float> GetCameraZoom;        
+    private bool targetReach = true;                //have we reach our target offset?
+
+    //private Func<float> GetCameraZoom;
     private bool isLooking = false;                 //are we looking around(flag)
+
     public float lookAroundSpeed = 100f;            //the speed of the camera when we look around
     private float zoom;                             //the target zoom to reach
-    public float beginZoom = 5f;                    //the initial camera zooom
+    public float beginZoom = 40f;                    //the initial camera zooom
     public float cameraZoomSpeed = 5f;              //the speed of the transaciton when the zoom chagne N.B. this will not increase the zoom amount
-    public float zoomChange = 20f;                  //the zoom change amount 
+    public float zoomChange = 20f;                  //the zoom change amount
     public float scrollBoost = 5f;                  //zooming with mouse scroll must be faster
     public float maxZoomIn = 5f;                    //the minimum bound for our zoom
     public float maxZoomOut = 100f;                 //the maximum bound for our zoom
     public float cameraComebackSpeed = 15f;         //the speed of the camera when come back form a look around action
-    public bool costantComebackSpeed=true;          //the comeback speed is costant or propotionated to the distance
+    public bool costantComebackSpeed = true;          //the comeback speed is costant or propotionated to the distance
     public float acceptableDinstanceToLag = 0.2f;   //as far as we are getting closer to the target but never able to reach the target when comeback speed is not constant we need to set a distance to say it's ok stop to coming closer
-    public bool automaticCameraComeback = false; 
-    void Start()
+    public bool automaticCameraComeback = false;
+    public bool keepOffesetOnStart = false;
+
+    private void Start()
     {
-        cam = transform.GetComponent<Cinemachine.CinemachineVirtualCamera>();
-        offsetManager = transform.GetComponent<CinemachineCameraOffset>();
+        playerMovementManager = GetComponent<PlayerMovementOffline>();
+        cam = gameObject.GetComponent<Cinemachine.CinemachineVirtualCamera>();
+        offsetManager = gameObject.GetComponent<CinemachineCameraOffset>();
         zoom = beginZoom;
         cam.m_Lens.OrthographicSize = beginZoom;
-
+        StopUsingCamera();
     }
 
-
-
-    void Update()
+    private void Update()
     {
-
     }
+
     // LateUpdate is called after Update each frame
-    void LateUpdate()
+    private void LateUpdate()
     {
-
         MovementHandler();
         ZoomHandler();
-
     }
 
     private void ZoomHandler()
     {
-
         KeyZoom();
         MouseZoom(Input.GetAxis("Zoom In"));
-        MouseZoom(Input.GetAxis("Zoom Out")*-1);
+        MouseZoom(Input.GetAxis("Zoom Out") * -1);
         zoom = Mathf.Clamp(zoom, maxZoomIn, maxZoomOut);
         float cameraZoomDifference = zoom - cam.m_Lens.OrthographicSize;
         cam.m_Lens.OrthographicSize += cameraZoomDifference * cameraZoomSpeed * Time.deltaTime;
-
     }
 
-    void KeyZoom()
+    private void KeyZoom()
     {
         if (Input.GetKey(KeyCode.KeypadPlus))
         {
@@ -72,12 +71,10 @@ public class CameraController : MonoBehaviour
         {
             zoom += zoomChange * Time.deltaTime;
             //Debug.Log(zoom);
-
         }
-
     }
 
-    void MouseZoom(float delta)
+    private void MouseZoom(float delta)
     {
         if (delta < 0)
         {
@@ -89,12 +86,10 @@ public class CameraController : MonoBehaviour
             zoom += zoomChange * Time.deltaTime * scrollBoost;
             //Debug.Log(zoom);
         }
-
     }
-    
+
     public void OnGUI()
     {
-
         if (Event.current.type == EventType.ScrollWheel)
         {
             MouseZoom(Event.current.delta.y);
@@ -103,10 +98,8 @@ public class CameraController : MonoBehaviour
 
     private void MovementHandler()
     {
-
         if (Input.GetButtonDown("Look Around"))
         {   //right mouse button is down so we are looking around
-
             isLooking = true;
         }
 
@@ -119,7 +112,7 @@ public class CameraController : MonoBehaviour
             isLooking = false;
         }
 
-        if (playerMovementManager!= null && playerMovementManager.isActiveAndEnabled && playerMovementManager.isMoving)
+        if (playerMovementManager != null && playerMovementManager.isActiveAndEnabled && playerMovementManager.isMoving)
         {   //we are moving, better reset the camera offset
             offsetManager.m_Offset = new Vector3(0, 0, 0);
         }
@@ -130,14 +123,13 @@ public class CameraController : MonoBehaviour
         }
         else if (!targetReach)
         {   //the camera isn't where it should be, lets get it back smoothly
-            ComebackBehaviour();   
+            ComebackBehaviour();
         }
 
         if (Input.GetButtonDown("Reset Camera Position"))
         {
             CameraComeback();
         }
-
     }
 
     private void CameraComeback()
@@ -152,14 +144,11 @@ public class CameraController : MonoBehaviour
         {
             offsetManager.m_Offset -= new Vector3(Input.GetAxisRaw("Mouse X") * Time.deltaTime * lookAroundSpeed,
                                         Input.GetAxisRaw("Mouse Y") * Time.deltaTime * lookAroundSpeed, 0.0f);
-            
         }
-       
     }
 
     private void ComebackBehaviour()
     {
-
         Vector3 actualOffset = offsetManager.m_Offset;
         Vector3 movingDir = (offsetToReach - actualOffset).normalized;
         Vector3 newOffset;
@@ -190,5 +179,19 @@ public class CameraController : MonoBehaviour
             targetReach = true;
         }
     }
-}
 
+    public void UseCamera()
+    {
+        if (!keepOffesetOnStart)
+        {
+            offsetManager.m_Offset = new Vector3(0f, 0f, 0f);
+        }
+
+        cam.Priority = 100;
+    }
+
+    public void StopUsingCamera()
+    {
+        cam.Priority = 0;
+    }
+}

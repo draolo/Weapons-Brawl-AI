@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,8 @@ public class PlayerInfo : MonoBehaviour
 
     public int allyEliminated = 0;
 
+    public CameraController camera;
+
     private void Awake()
     {
         transform.parent = null;
@@ -40,6 +43,7 @@ public class PlayerInfo : MonoBehaviour
     private void Start()
     {
         MatchManager._instance.AddPlayer(this);
+        camera = GetComponentInChildren<CameraController>();
     }
 
     internal void Resurrect(Vector3 position)

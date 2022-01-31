@@ -54,9 +54,9 @@ public class GameManagerScript : MonoBehaviour
             PlayerInfo info = player.GetComponent<PlayerInfo>();
             info.team = Color.red;
             info.status = PlayerInfo.Status.alive;
-            if (index < numberOfRedTeamRealPlayer)
+            if (i < numberOfRedTeamRealPlayer)
             {
-                info.pname = "RED PLAYER" + (numberOfRedTeamRealPlayer > 1 ? ("" + (index + 1)) : "");
+                info.pname = "RED PLAYER" + (numberOfRedTeamRealPlayer > 1 ? ("" + (i + 1)) : "");
                 localPlayers.Add(Color.red, info);
             }
             else
@@ -75,9 +75,9 @@ public class GameManagerScript : MonoBehaviour
             PlayerInfo info = player.GetComponent<PlayerInfo>();
             info.team = Color.blue;
             info.status = PlayerInfo.Status.alive;
-            if (index < numberOfBlueTeamRealPlayer)
+            if (i < numberOfBlueTeamRealPlayer)
             {
-                info.pname = "BLUE PLAYER" + (numberOfBlueTeamRealPlayer > 1 ? ("" + (index + 1)) : "");
+                info.pname = "BLUE PLAYER" + (numberOfBlueTeamRealPlayer > 1 ? ("" + (i + 1)) : "");
                 localPlayers.Add(Color.blue, info);
             }
             else

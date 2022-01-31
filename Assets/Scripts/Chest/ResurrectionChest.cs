@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ResurrectionChest : AbstractChest {
-
-    void Awake()
+public class ResurrectionChest : AbstractChest
+{
+    private void Awake()
     {
         type = ChestType.Revive;
     }
@@ -37,7 +37,7 @@ public class ResurrectionChest : AbstractChest {
     {
         Color team = p.gameObject.GetComponent<PlayerManager>().GetTeam();
         List<PlayerInfo> deadAlly = MatchManager._instance.DeadPlayerList(team);
-        foreach(PlayerInfo ally in deadAlly)
+        foreach (PlayerInfo ally in deadAlly)
         {
             if (ally.pname == p.allyToResurrect)
             {
@@ -45,7 +45,7 @@ public class ResurrectionChest : AbstractChest {
                 ally.transform.position = gameObject.transform.position;
                 ally.Resurrect(gameObject.transform.position);
                 p.allyToResurrect = null;
-                p.gameObject.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>().resurrectedAlly += 1;
+                p.gameObject.GetComponent<PlayerManager>().controller.resurrectedAlly += 1;
                 return true;
             }
         }
@@ -55,8 +55,7 @@ public class ResurrectionChest : AbstractChest {
     public override bool IsInteractable(PlayerChestManager p)
     {
         Color team = p.gameObject.GetComponent<PlayerManager>().GetTeam();
-        return base.IsInteractable(p) && (MatchManager._instance.PlayerDeadNumber(team)>0);
-
+        return base.IsInteractable(p) && (MatchManager._instance.PlayerDeadNumber(team) > 0);
     }
 
     private GameObject GetGameObjectInRoot(string objname)
@@ -67,5 +66,4 @@ public class ResurrectionChest : AbstractChest {
                 return obj;
         return null;
     }
-
 }

@@ -21,8 +21,8 @@ public class PlayerHealth : MonoBehaviour
         RefreshHealth();
         gameObject.GetComponent<PlayerManager>().ChangeActiveStatus(false);
 
-        PlayerInfo hittedInfo = gameObject.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
-        PlayerInfo hitterInfo = fromWho.GetComponent<PlayerManager>().controller.GetComponent<PlayerInfo>();
+        PlayerInfo hittedInfo = gameObject.GetComponent<PlayerManager>().controller;
+        PlayerInfo hitterInfo = fromWho.GetComponent<PlayerManager>().controller;
         if (hittedInfo.team == hitterInfo.team)
         {
             if (hitterInfo != hittedInfo)

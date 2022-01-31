@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-
 public class SpawnPlayer : MonoBehaviour
 {
     public GameObject playerToSpawn;
@@ -12,11 +11,10 @@ public class SpawnPlayer : MonoBehaviour
 
     private GameObject player;
 
-    void Start()
+    private void Start()
     {
         StartCoroutine("SpawnPlayerWithDelay");
     }
-
 
     public void CmdSpawnPlayer()
     {
@@ -24,32 +22,26 @@ public class SpawnPlayer : MonoBehaviour
         RpcSetController(player);
         this.gameObject.GetComponent<PlayerInfo>().status = PlayerInfo.Status.alive;
         RpcSetCameraFollow(player);
-
     }
 
     public void RpcSetController(GameObject p)
     {
-
         PlayerManager playerManager = p.GetComponent<PlayerManager>();
         PlayerInfo playerInfo = this.GetComponent<PlayerInfo>();
-        playerManager.controller = gameObject;
+        playerManager.controller = gameObject.GetComponent<PlayerInfo>();
         playerInfo.physicalPlayer = p;
         playerManager.ChangeActiveStatus(MatchManager._instance.turn == playerInfo.team);
     }
 
-
-   
-
     public void RpcSetCameraFollow(GameObject p)
     {
-            Cinemachine.CinemachineVirtualCamera virtualController = virtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
-            virtualController.m_Follow = p.transform;
-            CameraController customCameraController = virtualController.gameObject.GetComponent<CameraController>();
-            customCameraController.playerMovementManager = p.GetComponent<PlayerMovement>();
-
+        Cinemachine.CinemachineVirtualCamera virtualController = virtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
+        virtualController.m_Follow = p.transform;
+        CameraController customCameraController = virtualController.gameObject.GetComponent<CameraController>();
+        //customCameraController.playerMovementManager = p.GetComponent<PlayerMovement>();
     }
 
-    IEnumerator SpawnPlayerWithDelay()
+    private IEnumerator SpawnPlayerWithDelay()
     {
         yield return new WaitForSeconds(0.01f);
         if (true) //TODO IS LOCAL PLAYER
@@ -64,9 +56,4 @@ public class SpawnPlayer : MonoBehaviour
             virtualCamera.SetActive(false);
         }
     }
-
-
-
-
-
 }
