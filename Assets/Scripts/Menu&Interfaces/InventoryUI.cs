@@ -3,44 +3,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryUI : AbstractInGameInterfaces {
-
+public class InventoryUI : AbstractInGameInterfaces
+{
     public Transform itemsParent;
-    public GameObject Player;
     public GameObject SlotPrefab;
 
-    private PlayerWeaponManager_Inventory inventory;
+    public PlayerWeaponManager_Inventory inventory;
     private InventorySlot[] slots;
     private int Size = 0;
 
-    public void InitializeInventoryUI(GameObject player)
+    public void InitializeInventoryUI(PlayerWeaponManager_Inventory player)
     {
-        Player = player;
-        inventory = Player.GetComponent<PlayerWeaponManager_Inventory>();
-        inventory.onItemChangedCallBack += UpdateUI;
-
+        inventory = player;
         UpdateUI();
-    }
-
-    private void Update()
-    {
-        if (Input.GetButtonDown("Inventory"))
-            OpenClose();
     }
 
     public void UpdateUI()
     {
         int i = 0;
-        foreach(AbstractWeaponGeneric weapon in inventory.Weapons)
+        foreach (AbstractWeaponGeneric weapon in inventory.Weapons)
         {
             if (i >= Size)
-                addSlot();
+                AddSlot();
             slots[i].AddItem(weapon);
             i++;
         }
+        for (int j = i; j < Size; j++)
+        {
+            Destroy(slots[j].gameObject);
+        }
+        Size = i;
     }
 
-    public void addSlot()
+    public void AddSlot()
     {
         GameObject newSlot = Instantiate(SlotPrefab);
         newSlot.transform.SetParent(itemsParent);

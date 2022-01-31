@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4312708611440897243}
   - component: {fileID: 3502597893702549112}
   m_Layer: 7
-  m_Name: VirtualCam
+  m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Lens:
     FieldOfView: 40
     OrthographicSize: 10
-    NearClipPlane: 0.1
+    NearClipPlane: 0.001
     FarClipPlane: 5000
     Dutch: 0
     LensShift: {x: 0, y: 0}
@@ -108,6 +108,7 @@ MonoBehaviour:
   costantComebackSpeed: 1
   acceptableDinstanceToLag: 0.2
   automaticCameraComeback: 0
+  keepOffesetOnStart: 0
 --- !u!1 &2912706686955244827
 GameObject:
   m_ObjectHideFlags: 0

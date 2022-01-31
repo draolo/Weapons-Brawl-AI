@@ -10,10 +10,11 @@ public class ProximtyChestAI : MonoBehaviour
     private PlayerWeaponManager_Inventory inventory;
     private PlayerHealth health;
     private Color team;
+    private bool operative;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag.CompareTo("Chest") == 0)
+        if (operative && collision.tag.CompareTo("Chest") == 0)
         {
             AbstractChest chest = collision.gameObject.GetComponent<AbstractChest>();
             //TODO VERIFICA SE QUALCUNO SI è GIA' PRENOTATO LA CASSA
@@ -62,6 +63,16 @@ public class ProximtyChestAI : MonoBehaviour
                     break;
                 }
         }
+    }
+
+    private void OnEnable()
+    {
+        operative = true;
+    }
+
+    private void OnDisable()
+    {
+        operative = false;
     }
 
     // Start is called before the first frame update

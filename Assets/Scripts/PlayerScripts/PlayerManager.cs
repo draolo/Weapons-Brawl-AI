@@ -13,6 +13,8 @@ public class PlayerManager : MonoBehaviour
     public bool isInTurn;
     public List<MonoBehaviour> scriptToDisable;
 
+    public List<MonoBehaviour> AIOnlyScript;
+
     public bool isABot = false;
 
     private void Start()
@@ -42,6 +44,18 @@ public class PlayerManager : MonoBehaviour
         foreach (MonoBehaviour c in scriptToDisable)
         {
             c.enabled = active;
+        }
+        DisableAIScriptIfNotBot();
+    }
+
+    public void DisableAIScriptIfNotBot()
+    {
+        if (!isABot)
+        {
+            foreach (MonoBehaviour c in AIOnlyScript)
+            {
+                c.enabled = false;
+            }
         }
     }
 

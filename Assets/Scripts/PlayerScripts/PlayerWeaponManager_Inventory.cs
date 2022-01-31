@@ -28,6 +28,7 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour
     private GameObject Axe;
     private GameObject FirePoint;
     private GameObject Pivot;
+    private bool isABot;
 
     public void Add(AbstractWeaponGeneric weapon)
     {
@@ -45,33 +46,45 @@ public class PlayerWeaponManager_Inventory : MonoBehaviour
         FirePoint = transform.Find("FirePointPivot/FirePoint").gameObject;
         Pivot = transform.Find("FirePointPivot").gameObject;
         inventoryUI = FindObjectOfType<InventoryUI>();
+        isABot = GetComponent<PlayerManager>().isABot;
     }
 
-    //TODO restore
-    /*
     protected void Update()
     {
-            if (canAttack)
-            {
-                if (Input.GetButtonDown("Fire1"))
-                    throwingChargeBar.SetActive(true);
+        CmdSetActiveWeapon(true);
+    }
 
-                if (Input.GetButtonUp("Fire1"))
-                {
-                    //CmdAttack(throwingChargeBar.GetComponent<ThrowingPowerBarScript>().Charge);
-                    CmdAttack(100);
-                    throwingChargeBar.SetActive(false);
-                }
-            }
+    public void ShowChargeBar()
+    {
+        if (canAttack)
+        {
+            throwingChargeBar.GetComponent<ThrowingPowerBarScript>().Charge = 0;
+            throwingChargeBar.SetActive(true);
+        }
+    }
 
-            if (Input.GetButtonDown("Switch Right"))
-            {
-                int numberOfWeapons = Weapons.Count;
-                CmdSwitchWeapon((currentWeaponID+1)%numberOfWeapons);
-            }
+    public void HideBarAndShoot()
+    {
+        if (canAttack)
+        {
+            CmdAttack(throwingChargeBar.GetComponent<ThrowingPowerBarScript>().Charge);
+            throwingChargeBar.SetActive(false);
+        }
+    }
 
-                CmdSetActiveWeapon(true);
-    }*/
+    public void PreviousWeapon()
+    {
+        int numberOfWeapons = Weapons.Count;
+        int newWeapon = currentWeaponID - 1;
+        newWeapon = newWeapon < 0 ? numberOfWeapons - 1 : newWeapon;
+        CmdSwitchWeapon(newWeapon);
+    }
+
+    public void NextWeapon()
+    {
+        int numberOfWeapons = Weapons.Count;
+        CmdSwitchWeapon((currentWeaponID + 1) % numberOfWeapons);
+    }
 
     public void SwitchWeapon(int id)
     {

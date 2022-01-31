@@ -22,11 +22,6 @@ public class PlayerChestManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Chest"))
-        {
-            TryToOpenChest();
-        }
-
         if (interactionStart && (!waitingUser || bot))
         {
             Interact();

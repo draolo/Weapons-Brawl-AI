@@ -6,12 +6,20 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-public class ResurrectionMenuUI : AbstractInGameInterfaces {
-
+public class ResurrectionMenuUI : AbstractInGameInterfaces
+{
     public GameObject ResurrectButtonPrefab;
     public Transform ItemsParent;
     public PlayerChestManager p;
     public Text SubTitle;
+
+    private void Update()
+    {
+        if (p != null && !p.isActiveAndEnabled)
+        {
+            this.Close(false);
+        }
+    }
 
     public void Close(bool complete)
     {
@@ -31,7 +39,6 @@ public class ResurrectionMenuUI : AbstractInGameInterfaces {
         this.Close(false);
     }
 
-
     public void AddResurrectButton(string text)
     {
         GameObject button = Instantiate(ResurrectButtonPrefab);
@@ -43,9 +50,9 @@ public class ResurrectionMenuUI : AbstractInGameInterfaces {
         button.transform.localScale = Vector3.one;
     }
 
-    internal void InizializeInventoryUI(GameObject player)
+    internal void InizializeInventoryUI(PlayerChestManager player)
     {
-        p = player.GetComponent<PlayerChestManager>();
+        p = player;
     }
 
     public void SetSubTitle(string message)

@@ -18,7 +18,7 @@ public class ResurrectionChest : AbstractChest
         if (!p.gameObject.GetComponent<PlayerManager>().isABot)
         {
             p.waitingUser = true;
-
+            resurrectionMenu.InizializeInventoryUI(p);
             resurrectionMenu.Open();
 
             if (!IsInteractable(p)) // No dead ally

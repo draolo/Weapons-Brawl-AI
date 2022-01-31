@@ -955,6 +955,8 @@ GameObject:
   - component: {fileID: 2824344417399717766}
   - component: {fileID: 7416267220864894396}
   - component: {fileID: 2367837903740066651}
+  - component: {fileID: 817079295042196739}
+  - component: {fileID: 2903087125420496829}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -1171,6 +1173,13 @@ MonoBehaviour:
   - {fileID: 1622671711}
   - {fileID: 1622671719}
   - {fileID: 3474495201393336836}
+  - {fileID: 817079295042196739}
+  - {fileID: 2903087125420496829}
+  AIOnlyScript:
+  - {fileID: 6531895918723534436}
+  - {fileID: 1622671711}
+  - {fileID: 1622671719}
+  - {fileID: 3474495201393336836}
   isABot: 0
 --- !u!114 &6531895918723534436
 MonoBehaviour:
@@ -1299,6 +1308,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 7478634777727917736}
   Slippery: {fileID: 6200000, guid: 6f9cdc6cea8f7cc4081e616518b98fe9, type: 2}
+--- !u!114 &817079295042196739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456557633283913568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcdcaa22e099b634896a124f898dc154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2903087125420496829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456557633283913568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4495d4cc9204f7f4c82bfee09317f3ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firePointRadius: 3.15
+  speed: 10
+  dir: 0
+  FirePointPivot: {fileID: 7456666564187390472}
 --- !u!1 &7456644372078910722
 GameObject:
   m_ObjectHideFlags: 0
@@ -1330,6 +1367,28 @@ Transform:
   m_Father: {fileID: 7454113671669250302}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1139138102513162439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7457381201861769080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa7155796051b734daa718462081dc5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BindingMode: 5
+  m_FollowOffset: {x: 0, y: 0, z: -10}
+  m_XDamping: 1
+  m_YDamping: 1
+  m_ZDamping: 1
+  m_AngularDampingMode: 0
+  m_PitchDamping: 0
+  m_YawDamping: 0
+  m_RollDamping: 0
+  m_AngularDamping: 0
 --- !u!1 &7457381203114020047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1386,7 +1445,7 @@ MonoBehaviour:
   deaths: 0
   damageToAlly: 0
   allyEliminated: 0
-  camera: {fileID: 0}
+  m_camera: {fileID: 0}
 --- !u!1 &7457429974865478120
 GameObject:
   m_ObjectHideFlags: 0
@@ -1532,15 +1591,32 @@ PrefabInstance:
       propertyPath: m_LookAt
       value: 
       objectReference: {fileID: 7454312933549974306}
+    - target: {fileID: 2912706686341408790, guid: c956956385b041b45a944a235f3dad94, type: 3}
+      propertyPath: m_Lens.NearClipPlane
+      value: 0.001
+      objectReference: {fileID: 0}
     - target: {fileID: 3502597893702549112, guid: c956956385b041b45a944a235f3dad94, type: 3}
       propertyPath: playerMovementManager
       value: 
       objectReference: {fileID: 7457381203073081213}
+    - target: {fileID: 4312708611440897243, guid: c956956385b041b45a944a235f3dad94, type: 3}
+      propertyPath: m_ApplyAfter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312708611440897243, guid: c956956385b041b45a944a235f3dad94, type: 3}
+      propertyPath: m_PreserveComposition
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5697603274821003801, guid: c956956385b041b45a944a235f3dad94, type: 3}
       propertyPath: m_BindingMode
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 5697603274821003801, guid: c956956385b041b45a944a235f3dad94, type: 3}
+      propertyPath: m_FollowOffset.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 5697603274821003801, guid: c956956385b041b45a944a235f3dad94, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c956956385b041b45a944a235f3dad94, type: 3}
 --- !u!1 &7457381201250275946 stripped
 GameObject:
@@ -1550,6 +1626,11 @@ GameObject:
 --- !u!4 &7457381201250275947 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2912706686341408776, guid: c956956385b041b45a944a235f3dad94, type: 3}
+  m_PrefabInstance: {fileID: 5697603273724934755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7457381201861769080 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2912706686955244827, guid: c956956385b041b45a944a235f3dad94, type: 3}
   m_PrefabInstance: {fileID: 5697603273724934755}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8800245484815475833
@@ -1657,6 +1738,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}
+--- !u!95 &7361431000462714570 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2020373345824506547, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}
+  m_PrefabInstance: {fileID: 8800245484815475833}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7415760823261883394 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2074703164315076731, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}
@@ -1668,11 +1754,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380d477beb86b6a4c9afb19cefb8b6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!95 &7361431000462714570 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 2020373345824506547, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}
-  m_PrefabInstance: {fileID: 8800245484815475833}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7415783213000322060 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2074724763726055541, guid: 583198e1e84db5a4faf877487aa602a1, type: 3}

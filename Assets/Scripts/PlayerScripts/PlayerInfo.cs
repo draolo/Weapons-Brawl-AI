@@ -32,7 +32,7 @@ public class PlayerInfo : MonoBehaviour
 
     public int allyEliminated = 0;
 
-    public CameraController camera;
+    public CameraController m_camera;
 
     private void Awake()
     {
@@ -43,7 +43,7 @@ public class PlayerInfo : MonoBehaviour
     private void Start()
     {
         MatchManager._instance.AddPlayer(this);
-        camera = GetComponentInChildren<CameraController>();
+        m_camera = GetComponentInChildren<CameraController>();
     }
 
     internal void Resurrect(Vector3 position)

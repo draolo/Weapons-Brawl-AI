@@ -25,12 +25,6 @@ public class PlayerMovementOffline : MonoBehaviour
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
-    {
-        horizontalMove = Input.GetAxisRaw("Horizontal") * speed;
-        jump = Input.GetButtonDown("Jump") || jump;
-    }
-
     private void FixedUpdate()
     {
         PlayerMovement();

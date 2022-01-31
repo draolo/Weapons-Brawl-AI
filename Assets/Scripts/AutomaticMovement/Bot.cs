@@ -50,7 +50,7 @@ public class Bot : Character
         mInputs = new bool[(int)KeyInput.Count];
         mPrevInputs = new bool[(int)KeyInput.Count];
         mPosition = transform.position;
-
+        freeRoam = !GetComponent<PlayerManager>().isABot;
         mAABB.HalfSize = new Vector2(0.5f * mWidth, 0.5f * mHeight);
     }
 
@@ -286,10 +286,6 @@ public class Bot : Character
     private void FixedUpdate()
     {
         BotUpdate();
-        if (Input.GetKeyUp(KeyCode.P))
-        {
-            freeRoam = !freeRoam;
-        }
     }
 
     private void BotUpdate()

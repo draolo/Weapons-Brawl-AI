@@ -229,7 +229,7 @@ public class MatchManager : MonoBehaviour
             if (!gameIsOver && (GameManagerScript._instance.localPlayers.ContainsKey(turn)) && (GameManagerScript._instance.localPlayers[turn].status == PlayerInfo.Status.alive))
             {
                 activeCamera.StopUsingCamera();
-                activeCamera = GameManagerScript._instance.localPlayers[turn].camera;
+                activeCamera = GameManagerScript._instance.localPlayers[turn].m_camera;
                 activeCamera.UseCamera();
                 MessageManager.Instance.PlayYourTurnAnimation();
             }
