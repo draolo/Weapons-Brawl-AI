@@ -184,7 +184,7 @@ public class CameraController : MonoBehaviour
     {
         if (!keepOffesetOnStart)
         {
-            offsetManager.m_Offset = new Vector3(0f, 0f, 0f);
+            offsetManager.m_Offset = new Vector3(0f, 0f, -10f);
         }
 
         cam.Priority = 100;

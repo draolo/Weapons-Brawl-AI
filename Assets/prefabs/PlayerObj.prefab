@@ -1333,7 +1333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firePointRadius: 3.15
-  speed: 10
+  speed: 2
   dir: 0
   FirePointPivot: {fileID: 7456666564187390472}
 --- !u!1 &7456644372078910722
@@ -1549,7 +1549,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2912706686341408776, guid: c956956385b041b45a944a235f3dad94, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2912706686341408776, guid: c956956385b041b45a944a235f3dad94, type: 3}
       propertyPath: m_LocalRotation.w

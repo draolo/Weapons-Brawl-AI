@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class PlayerAim : MonoBehaviour
 {
     public float firePointRadius = 3.15f;
-    public float speed = 10;
+    public float speed = 1;
 
     private float upperAngle = 85f;
     private float lowerAngle = 275f;
