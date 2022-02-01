@@ -45,7 +45,14 @@ public class PlayerManager : MonoBehaviour
         {
             c.enabled = active;
         }
-        DisableAIScriptIfNotBot();
+        if (active)
+        {
+            DisableAIScriptIfNotBot();
+        }
+        else
+        {
+            StopOnLanding();
+        }
     }
 
     public void DisableAIScriptIfNotBot()
@@ -73,5 +80,31 @@ public class PlayerManager : MonoBehaviour
     {
         //print("Setting velocity of " + name + "to : velx= " + velx + " vely= " + vely);
         GetComponent<Rigidbody2D>().velocity = new Vector2(velx, vely);
+    }
+
+    public void StopOnLanding()
+    {
+        if (controller.status != PlayerInfo.Status.alive)
+        {
+            return;
+        }
+        PlayerMovementOffline movementManager = gameObject.GetComponent<PlayerMovementOffline>();
+        if (movementManager.isGrounded)
+        {
+            SetVelocity(0f, 0f);
+        }
+        else
+        {
+            StartCoroutine(WaitLandingAndLock(movementManager, 0.5f));
+        }
+    }
+
+    public IEnumerator WaitLandingAndLock(PlayerMovementOffline movementManager, float checkingInterval)
+    {
+        while (movementManager.isGrounded)
+        {
+            yield return new WaitForSeconds(checkingInterval);
+        }
+        SetVelocity(0f, 0f);
     }
 }
