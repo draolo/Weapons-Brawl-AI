@@ -30,7 +30,7 @@ public class Weapon3PunchScript : AbstractWeaponMelee
         //RaycastHit2D hitted = Physics2D.Raycast(firePoint.position, firePoint.right, attackRange, PlayerLayer);
         //Debug.DrawRay(new Vector3(firePoint.position.x, firePoint.position.y, 0), firePoint.right * attackRange, Color.yellow, 5f, true);
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, firePoint.right, attackRange, PlayerLayer);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(Player.transform.position, firePoint.right, attackRange, PlayerLayer);
 
         foreach (RaycastHit2D hit in hits)
         {
