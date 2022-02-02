@@ -33,7 +33,7 @@ public class PauseMenuScript : AbstractMenu
         PauseMenuUI.SetActive(!PauseMenuUI.activeSelf);
     }
 
-    private void CloseAllOtherMenu()
+    public void CloseAllOtherMenu()
     {
         foreach (AbstractInGameInterfaces menu in otherMenu)
             menu.Close();

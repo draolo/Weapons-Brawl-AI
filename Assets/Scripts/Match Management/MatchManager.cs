@@ -37,6 +37,8 @@ public class MatchManager : MonoBehaviour
     public bool gameIsOver;
     public bool gameHasStart;
 
+    private PauseMenuScript UIManager;
+
     internal void AddChest(AbstractChest abstractChest)
     {
         switch (abstractChest.type)
@@ -100,7 +102,7 @@ public class MatchManager : MonoBehaviour
         numberOfTeams = teams.Count;
         activeCamera = freeRoamCamera;
         turnIndex = Random.Range(0, numberOfTeams);
-
+        UIManager = FindObjectOfType<PauseMenuScript>();
         _instance = this;
         turn = blankColor;
         waiting = 5;
@@ -201,6 +203,7 @@ public class MatchManager : MonoBehaviour
 
     private void ChangeTurn()
     {
+        UIManager.CloseAllOtherMenu();
         if (isWaiting == false)
         {
             isWaiting = true;
