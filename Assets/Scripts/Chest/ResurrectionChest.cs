@@ -18,17 +18,19 @@ public class ResurrectionChest : AbstractChest
         if (!p.gameObject.GetComponent<PlayerManager>().isABot)
         {
             p.waitingUser = true;
-            resurrectionMenu.InizializeInventoryUI(p);
-            resurrectionMenu.Open();
-
-            if (!IsInteractable(p)) // No dead ally
-                resurrectionMenu.SetSubTitle("No dead ally to resurrect");
-            else
-                resurrectionMenu.SetSubTitle("Select one ally to resurrect");
-
-            foreach (PlayerInfo ally in deadAlly)
+            resurrectionMenu.InizializeResurrectionUI(p);
+            resurrectionMenu.OpenClose();
+            if (resurrectionMenu.isActive)
             {
-                resurrectionMenu.AddResurrectButton(ally.pname);
+                if (!IsInteractable(p)) // No dead ally
+                    resurrectionMenu.SetSubTitle("No dead ally to resurrect");
+                else
+                    resurrectionMenu.SetSubTitle("Select one ally to resurrect");
+
+                foreach (PlayerInfo ally in deadAlly)
+                {
+                    resurrectionMenu.AddResurrectButton(ally.pname);
+                }
             }
         }
     }

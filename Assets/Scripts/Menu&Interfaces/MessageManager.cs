@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MessageManager : MonoBehaviour {
-
+public class MessageManager : MonoBehaviour
+{
     public static MessageManager Instance;
 
     public GameObject YourTurnText;
@@ -12,7 +12,6 @@ public class MessageManager : MonoBehaviour {
     public GameObject EndTurnText;
     private Animator EndTurnTextAnimator;
 
-
     private void Start()
     {
         Instance = this;
@@ -20,15 +19,12 @@ public class MessageManager : MonoBehaviour {
         EndTurnTextAnimator = EndTurnText.GetComponent<Animator>();
     }
 
-
-
-
     public void PlayEndTurnAnimation()
     {
         StartCoroutine(PETAnim());
     }
 
-    IEnumerator PETAnim()
+    private IEnumerator PETAnim()
     {
         EndTurnText.SetActive(true);
         EndTurnTextAnimator.Play("Bump", -1, 0f);
@@ -36,23 +32,12 @@ public class MessageManager : MonoBehaviour {
         EndTurnText.SetActive(false);
     }
 
-
-
-
-
-
-
-
-
-
-
-
     public void PlayYourTurnAnimation()
     {
         StartCoroutine(PYTAnim());
     }
 
-    IEnumerator PYTAnim()
+    private IEnumerator PYTAnim()
     {
         YourTurnText.SetActive(true);
         YourTurnAnimator.Play("Bump", -1, 0f);

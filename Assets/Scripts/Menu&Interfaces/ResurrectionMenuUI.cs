@@ -50,7 +50,7 @@ public class ResurrectionMenuUI : AbstractInGameInterfaces
         button.transform.localScale = Vector3.one;
     }
 
-    internal void InizializeInventoryUI(PlayerChestManager player)
+    internal void InizializeResurrectionUI(PlayerChestManager player)
     {
         p = player;
     }
