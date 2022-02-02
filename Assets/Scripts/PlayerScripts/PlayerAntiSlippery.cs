@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAntiSlippery : MonoBehaviour {
-
-    public Rigidbody2D Player;
+public class PlayerAntiSlippery : MonoBehaviour
+{
+    public Rigidbody2D playerRB;
     public PhysicsMaterial2D Slippery;
 
     private void Update()
     {
-        if (Player.gameObject.GetComponent<PlayerMovementOffline>().isActiveAndEnabled)
+        if (playerRB.gameObject.GetComponent<PlayerMovementOffline>().enabled)
         {
-            Player.sharedMaterial = Slippery;
+            playerRB.sharedMaterial = Slippery;
         }
         else
         {
-            Player.sharedMaterial = null;
+            playerRB.sharedMaterial = null;
         }
     }
 }

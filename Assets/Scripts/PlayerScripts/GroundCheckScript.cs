@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GroundCheckScript : MonoBehaviour {
+public class GroundCheckScript : MonoBehaviour
+{
     private List<string> notGroundedOnTag;
-    public string[] ignoreTag = {"Destroyer"};
+    public string[] ignoreTag = { "Destroyer" };
     private PlayerMovementOffline movementScript;
 
     private void Start()
@@ -15,15 +16,15 @@ public class GroundCheckScript : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Ground")
-            {
+        if (collision.tag == "Ground")
+        {
             movementScript.isGrounded = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag=="Ground")
+        if (collision.tag == "Ground")
         {
             movementScript.isGrounded = false;
         }

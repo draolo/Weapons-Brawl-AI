@@ -5,12 +5,15 @@ using UnityEngine;
 public class MatchInfo : MonoBehaviour
 {
     public int playerPerTeam = 3;
-    public int realBluePlayer = 0;
-    public int realRedPlayer = 0;
+    public Dictionary<Color, int> numberOfRealPlayerPerTeam;
 
     // Start is called before the first frame update
     private void Start()
     {
+        numberOfRealPlayerPerTeam = new Dictionary<Color, int>();
+
+        numberOfRealPlayerPerTeam.Add(Color.red, 0);
+        numberOfRealPlayerPerTeam.Add(Color.blue, 0);
         DontDestroyOnLoad(gameObject);
     }
 }

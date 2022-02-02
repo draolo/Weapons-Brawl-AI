@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CRBT;
+using System;
 
 public class ShootBT : MonoBehaviour
 {
@@ -140,7 +141,7 @@ public class ShootBT : MonoBehaviour
 
     private void Log(string message)
     {
-        // Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
+        //Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
     }
 
     public void StartBehavior()
@@ -154,7 +155,7 @@ public class ShootBT : MonoBehaviour
             CreateTree();
             StartCoroutine(ShootTarget());
         }
-        catch (MissingReferenceException)
+        catch (Exception)
         {
             EndOfTask(false);
         }
@@ -380,7 +381,7 @@ public class ShootBT : MonoBehaviour
     public bool Shoot()
     {
         Log("shooting");
-        shootingManager.CmdAttack(100);
+        shootingManager.Attack(100);
         return true;
     }
 
@@ -473,7 +474,7 @@ public class ShootBT : MonoBehaviour
 
     private bool LogStupidAction()
     {
-        Log("supid");
+        Debug.Log(gameObject.transform.parent.gameObject.name + " supid");
         return true;
     }
 }

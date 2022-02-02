@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponChestScript : AbstractChest {
-
+public class WeaponChestScript : AbstractChest
+{
     public GameObject Weapon;
-    void Awake()
+
+    private void Awake()
     {
         type = ChestType.Upgrade;
     }
 
-    override
-    internal bool DoSomething(PlayerChestManager p)
+    internal override bool DoSomething(PlayerChestManager p)
     {
-        p.gameObject.GetComponent<PlayerWeaponManager_Inventory>().CmdAddWeapon(Weapon, p.gameObject);
+        p.gameObject.GetComponent<PlayerWeaponManager_Inventory>().AddWeapon(Weapon, p.gameObject);
         return true;
     }
 }

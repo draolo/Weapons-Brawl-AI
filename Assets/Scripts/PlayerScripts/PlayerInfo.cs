@@ -34,6 +34,8 @@ public class PlayerInfo : MonoBehaviour
 
     public CameraController m_camera;
 
+    public bool isAbot;
+
     private void Awake()
     {
         transform.parent = null;

@@ -13,24 +13,24 @@ public class MainMenuScript : AbstractMenu
 
     public void Play2p()
     {
-        matchInfo.realBluePlayer = 1;
-        matchInfo.realRedPlayer = 1;
+        matchInfo.numberOfRealPlayerPerTeam[Color.red] = 1;
+        matchInfo.numberOfRealPlayerPerTeam[Color.blue] = 1;
         matchInfo.playerPerTeam = 3;
         SceneManager.LoadScene(1);
     }
 
     public void Play1p()
     {
-        matchInfo.realBluePlayer = 1;
-        matchInfo.realRedPlayer = 0;
+        matchInfo.numberOfRealPlayerPerTeam[Color.red] = 0;
+        matchInfo.numberOfRealPlayerPerTeam[Color.blue] = 1;
         matchInfo.playerPerTeam = 3;
         SceneManager.LoadScene(1);
     }
 
     public void Play0p()
     {
-        matchInfo.realBluePlayer = 0;
-        matchInfo.realRedPlayer = 0;
+        matchInfo.numberOfRealPlayerPerTeam[Color.red] = 0;
+        matchInfo.numberOfRealPlayerPerTeam[Color.blue] = 0;
         matchInfo.playerPerTeam = 3;
         SceneManager.LoadScene(1);
     }

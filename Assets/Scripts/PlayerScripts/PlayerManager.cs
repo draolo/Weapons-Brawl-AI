@@ -89,19 +89,14 @@ public class PlayerManager : MonoBehaviour
             return;
         }
         PlayerMovementOffline movementManager = gameObject.GetComponent<PlayerMovementOffline>();
-        if (movementManager.isGrounded)
-        {
-            SetVelocity(0f, 0f);
-        }
-        else
-        {
-            StartCoroutine(WaitLandingAndLock(movementManager, 0.5f));
-        }
+
+        StartCoroutine(WaitLandingAndLock(movementManager, 0.2f));
     }
 
     public IEnumerator WaitLandingAndLock(PlayerMovementOffline movementManager, float checkingInterval)
     {
-        while (movementManager.isGrounded)
+        yield return new WaitForSeconds(checkingInterval);
+        while (!movementManager.isGrounded)
         {
             yield return new WaitForSeconds(checkingInterval);
         }

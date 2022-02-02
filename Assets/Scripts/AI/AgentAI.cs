@@ -47,6 +47,7 @@ public class AgentAI : MonoBehaviour
         DTAction upgrade = new DTAction(GoForUpgrade);
         DTAction enemy = new DTAction(GoForEnemy);
         DTAction longEnemy = new DTAction(GoForEnemyLong);
+        DTAction nothing = new DTAction(DoNothing);
 
         DTDecision isThereAreviveChestAndADeathAlly = new DTDecision(CheckForAllyAndReviveChest);
         DTDecision isThereAreviveChestAndADeathAllyWithAKillableEnemy = new DTDecision(CheckForAllyAndReviveChest);
@@ -59,6 +60,7 @@ public class AgentAI : MonoBehaviour
         DTDecision isThereAReachbleHealthChestAndImNotFull = new DTDecision(CheckIfHealthIsFullOrThereIsAChest);
         DTDecision randomBool = new DTDecision(RandomTF);
         DTDecision couldIDoBoth = new DTDecision(CouldIDoUpgradeAndEnemy);
+        DTDecision canAttack = new DTDecision(CanAttack);
         //0
         isThereAReachableEnemyThathCouldKill.AddLink(true, isThereOnlyOneEnemy);
         isThereAReachableEnemyThathCouldKill.AddLink(false, isThereAreviveChestAndADeathAlly);
@@ -98,7 +100,11 @@ public class AgentAI : MonoBehaviour
 
         //0.0.0.0.0.0
         isThereAReachableEnemy.AddLink(true, enemy);
-        isThereAReachableEnemy.AddLink(false, longEnemy);
+        isThereAReachableEnemy.AddLink(false, canAttack);
+
+        //0.0.0.0.0.0.0
+        canAttack.AddLink(true, longEnemy);
+        canAttack.AddLink(false, nothing);
 
         root = isThereAReachableEnemyThathCouldKill;
     }
@@ -188,6 +194,10 @@ public class AgentAI : MonoBehaviour
 
     private object ThereAreReachAbleEnemy(object bundle)
     {
+        if (!inventory.canAttack)
+        {
+            return false;
+        }
         SetUpAndFilterUnreachablePlayer();
         return reachableTargets.Count > 0;
     }
@@ -196,6 +206,11 @@ public class AgentAI : MonoBehaviour
     {
         InizializePlayerTarget();
         return (availableTargets.Count() == 1);
+    }
+
+    private object CanAttack(object bundle)
+    {
+        return inventory.canAttack;
     }
 
     private object CheckForAllyAndReviveChest(object bundle)
@@ -392,6 +407,7 @@ public class AgentAI : MonoBehaviour
         }
         else
         {
+            target = null;
             return false;
         }
     }
@@ -472,6 +488,12 @@ public class AgentAI : MonoBehaviour
     private void SetAllyToRevive()
     {
         //CHOOSE THE ON WITH THE HIGHER POITS
+        List<PlayerInfo> realPlayers = targetToRevive.FindAll((x) => !x.isAbot);
+        if (realPlayers.Count > 0)
+        {
+            targetToRevive = realPlayers;
+        }
+        targetToRevive.Sort((a, b) => b.GetPoints() - a.GetPoints());
         gameObject.GetComponent<PlayerChestManager>().SetAllyToResurrectBot(targetToRevive[0].pname);
     }
 
@@ -509,6 +531,11 @@ public class AgentAI : MonoBehaviour
         InizializeTargetDistance();
         SetClosestEnemy();
         StartShootingBT();
+        return null;
+    }
+
+    private object DoNothing(object bundle)
+    {
         return null;
     }
 

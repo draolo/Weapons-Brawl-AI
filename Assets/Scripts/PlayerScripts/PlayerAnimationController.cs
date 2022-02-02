@@ -27,22 +27,17 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void PlayBBatAnimation()
     {
-        StartCoroutine(PlayBBat());
+        StartCoroutine(PlayBBatCoroutine());
     }
 
-    private IEnumerator PlayBBat()
+    private IEnumerator PlayBBatCoroutine()
     {
-        CmdPlayBBat(true);
+        PlayBBat(true);
         yield return new WaitForSeconds(BBatAnim.GetCurrentAnimatorStateInfo(0).length);
-        CmdPlayBBat(false);
+        PlayBBat(false);
     }
 
-    private void CmdPlayBBat(bool yesno)
-    {
-        RpcPlayBBat(yesno);
-    }
-
-    private void RpcPlayBBat(bool yesno)
+    private void PlayBBat(bool yesno)
     {
         if (BBatAnim == null)
             BBatAnim = FindObjectOfType<Weapon4BBatScript>().gameObject.GetComponent<Animator>();
@@ -51,22 +46,17 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void PlayPunchAnimation()
     {
-        StartCoroutine(PlayPunch());
+        StartCoroutine(PlayPunchCoroutine());
     }
 
-    private IEnumerator PlayPunch()
+    private IEnumerator PlayPunchCoroutine()
     {
-        CmdPlayPunch(true);
+        PlayPunch(true);
         yield return new WaitForSeconds(PunchAnim.GetCurrentAnimatorStateInfo(0).length);
-        CmdPlayPunch(false);
+        PlayPunch(false);
     }
 
-    private void CmdPlayPunch(bool yesno)
-    {
-        RpcPlayPunch(yesno);
-    }
-
-    private void RpcPlayPunch(bool yesno)
+    private void PlayPunch(bool yesno)
     {
         PunchAnim.SetBool("isPunching", yesno);
     }

@@ -62,12 +62,12 @@ public class PlayerMovementOffline : MonoBehaviour
         if (move > 0 && !m_FacingRight)
         {
             m_FacingRight = !m_FacingRight;
-            CmdFlip();
+            Flip();
         }
         else if (move < 0 && m_FacingRight)
         {
             m_FacingRight = !m_FacingRight;
-            CmdFlip();
+            Flip();
         }
     }
 
@@ -78,16 +78,6 @@ public class PlayerMovementOffline : MonoBehaviour
             m_Rigidbody2D.velocity = new Vector3(m_Rigidbody2D.velocity.x, jumpForce);
         }
         jump = false;
-    }
-
-    private void CmdFlip()
-    {
-        RpcFlip();
-    }
-
-    private void RpcFlip()
-    {
-        Flip();
     }
 
     private void Flip()

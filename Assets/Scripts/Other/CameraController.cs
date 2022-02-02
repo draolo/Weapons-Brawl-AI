@@ -134,7 +134,7 @@ public class CameraController : MonoBehaviour
 
     private void CameraComeback()
     {
-        offsetToReach = new Vector3(0, 0, 0);
+        offsetToReach = new Vector3(0, 0, -10);
         targetReach = false;
     }
 

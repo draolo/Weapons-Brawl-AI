@@ -24,9 +24,9 @@ public abstract class AbstractBulletExplosive : MonoBehaviour
     {
         {
             DestroyMapCircle();
+            FlingWhoIsInsideTheExplosion();
             DamageWhoIsInsideTheExplosion();
-            FlingWhoIsInsideTheExplosionCallback();
-            ExplosionAnimationCallback();
+            ExplosionAnimation();
         }
     }
 
@@ -34,17 +34,6 @@ public abstract class AbstractBulletExplosive : MonoBehaviour
     {
         Vector3 position = gameObject.transform.position;
         map.DestroyCircle(position, ExplosionRadius);
-    }
-
-    private void FlingWhoIsInsideTheExplosionCallback()
-    {
-        //FlingWhoIsInsideTheExplosion();
-        RpcFlingWhoIsInsideTheExplosion(); //rpc are called also on the server
-    }
-
-    private void RpcFlingWhoIsInsideTheExplosion()
-    {
-        FlingWhoIsInsideTheExplosion();
     }
 
     private void FlingWhoIsInsideTheExplosion()
@@ -62,17 +51,6 @@ public abstract class AbstractBulletExplosive : MonoBehaviour
         }
     }
 
-    private void ExplosionAnimationCallback()
-    {
-        //ExplosionAnimation();
-        RpcExplosionAnimation(); //rpc are called also on the server
-    }
-
-    private void RpcExplosionAnimation()
-    {
-        ExplosionAnimation();
-    }
-
     private void ExplosionAnimation()
     {
         explosionEffect.transform.localScale = new Vector3(ExplosionRadius, ExplosionRadius, 0);
@@ -82,12 +60,18 @@ public abstract class AbstractBulletExplosive : MonoBehaviour
 
     private void DamageWhoIsInsideTheExplosion()
     {
+        List<PlayerHealth> hittedTaget = new List<PlayerHealth>();
         Collider2D[] hittedList = Physics2D.OverlapCircleAll(transform.position, ExplosionRadius);
         foreach (Collider2D hitted in hittedList)
         {
             if (hitted.CompareTag("Player"))
             {
-                hitted.gameObject.GetComponent<PlayerHealth>().TakeDamage(BulletPower, shootedBy);
+                PlayerHealth playerHealth = hitted.gameObject.GetComponent<PlayerHealth>();
+                if (!hittedTaget.Contains(playerHealth))
+                {
+                    hittedTaget.Add(playerHealth);
+                    playerHealth.TakeDamage(BulletPower, shootedBy);
+                }
             }
         }
     }
