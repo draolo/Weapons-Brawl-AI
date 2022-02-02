@@ -62,6 +62,7 @@ public class GameManagerScript : MonoBehaviour
             availableSpawnPoints.RemoveAt(index);
             GameObject player = (GameObject)Instantiate(playerObj, transform);
             PlayerInfo info = player.GetComponent<PlayerInfo>();
+            PlayerManager playerManager = player.GetComponentInChildren<PlayerManager>();
             info.team = c;
             info.status = PlayerInfo.Status.alive;
             if (i < nOfRealPlayers[c])
@@ -73,10 +74,11 @@ public class GameManagerScript : MonoBehaviour
             else
             {
                 info.pname = "BOT " + (++botCounter);
-                player.GetComponentInChildren<PlayerManager>().isABot = true;
+                playerManager.isABot = true;
                 info.isAbot = true;
             }
             player.name = info.pname;
+            playerManager.ChangeActiveStatus(false);
         }
     }
 
