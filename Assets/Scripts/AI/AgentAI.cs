@@ -51,6 +51,8 @@ public class AgentAI : MonoBehaviour
         DTAction revive = new DTAction(GoForRevive);
         DTAction upgrade = new DTAction(GoForUpgrade);
         DTAction enemy = new DTAction(GoForEnemy);
+        DTAction kill = new DTAction(GoToKill);
+        DTAction lowerHealthEnemy = new DTAction(GoForEnemyWithLowerHP);
         DTAction longEnemy = new DTAction(GoForEnemyLong);
         DTAction nothing = new DTAction(DoNothing);
 
@@ -60,7 +62,8 @@ public class AgentAI : MonoBehaviour
         DTDecision isThereAReachableEnemy = new DTDecision(ThereAreReachAbleEnemy);
         DTDecision isThereAReachableEnemyAndAMissingUpgrade = new DTDecision(ThereAreReachAbleEnemy);
         DTDecision isThereAReachableEnemyThathCouldKill = new DTDecision(ThereAreKillableEnemy);
-        DTDecision isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave = new DTDecision(CheckForLowerHpEnemyOrBravery);
+        DTDecision isThereAreReachableEnemyWithLessHealthThenMe = new DTDecision(CheckForLowerHpEnemy);
+        DTDecision amIBrave = new DTDecision(AmIBrave);
         DTDecision isThereAMissingReachbleUpgrade = new DTDecision(CheckForMissingUpgrade);
         DTDecision isThereAReachbleHealthChestAndImNotFull = new DTDecision(CheckIfHealthIsFullOrThereIsAChest);
         DTDecision randomBool = new DTDecision(RandomTF);
@@ -70,18 +73,18 @@ public class AgentAI : MonoBehaviour
         isThereAReachableEnemyThathCouldKill.AddLink(true, isThereOnlyOneEnemy);
         isThereAReachableEnemyThathCouldKill.AddLink(false, isThereAreviveChestAndADeathAlly);
         //0.1
-        isThereOnlyOneEnemy.AddLink(true, enemy);
+        isThereOnlyOneEnemy.AddLink(true, kill);
         isThereOnlyOneEnemy.AddLink(false, isThereAreviveChestAndADeathAllyWithAKillableEnemy);
         //0.1.0
         isThereAreviveChestAndADeathAllyWithAKillableEnemy.AddLink(true, revive);
-        isThereAreviveChestAndADeathAllyWithAKillableEnemy.AddLink(false, enemy);
+        isThereAreviveChestAndADeathAllyWithAKillableEnemy.AddLink(false, kill);
         //0.0
         isThereAreviveChestAndADeathAlly.AddLink(true, revive);
         isThereAreviveChestAndADeathAlly.AddLink(false, isThereAMissingReachbleUpgrade);
 
         //0.0.0
         isThereAMissingReachbleUpgrade.AddLink(true, isThereAReachableEnemyAndAMissingUpgrade);
-        isThereAMissingReachbleUpgrade.AddLink(false, isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave);
+        isThereAMissingReachbleUpgrade.AddLink(false, isThereAreReachableEnemyWithLessHealthThenMe);
 
         //0.0.0.1
         isThereAReachableEnemyAndAMissingUpgrade.AddLink(true, couldIDoBoth);
@@ -96,18 +99,21 @@ public class AgentAI : MonoBehaviour
         randomBool.AddLink(false, enemy);
 
         //0.0.0.0
-        isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave.AddLink(true, enemy);
-        isThereAreReachableEnemyWithLessHealthThenMeOrAmIBrave.AddLink(false, isThereAReachbleHealthChestAndImNotFull);
+        isThereAreReachableEnemyWithLessHealthThenMe.AddLink(true, lowerHealthEnemy);
+        isThereAreReachableEnemyWithLessHealthThenMe.AddLink(false, amIBrave);
 
         //0.0.0.0.0
+        amIBrave.AddLink(true, enemy);
+        amIBrave.AddLink(false, isThereAReachbleHealthChestAndImNotFull);
+
+        //0.0.0.0.0.0
         isThereAReachbleHealthChestAndImNotFull.AddLink(true, health);
         isThereAReachbleHealthChestAndImNotFull.AddLink(false, isThereAReachableEnemy);
 
-        //0.0.0.0.0.0
+        //0.0.0.0.0.0.0
         isThereAReachableEnemy.AddLink(true, enemy);
         isThereAReachableEnemy.AddLink(false, canAttack);
 
-        //0.0.0.0.0.0.0
         canAttack.AddLink(true, longEnemy);
         canAttack.AddLink(false, nothing);
 
@@ -235,22 +241,27 @@ public class AgentAI : MonoBehaviour
     }
 
     //TODO REDO
-    private object CheckForLowerHpEnemyOrBravery(object bundle)
+    private object CheckForLowerHpEnemy(object bundle)
     {
-        if (!enemyTargets.HasAReachAbleTarget(GetStartTile(), revision))
+        if (!inventory.canAttack)
         {
             return false;
         }
         List<Target<PlayerHealth>> playerWithLowerHp = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= playerHealth.hp);
-        if ((playerWithLowerHp.Count <= 0) && (!scared))
-        {
-            return true;
-        }
         return playerWithLowerHp.Count > 0;
+    }
+
+    private object AmIBrave(object bundle)
+    {
+        return (!scared) && enemyTargets.HasAReachAbleTarget(GetStartTile(), revision);
     }
 
     private object ThereAreKillableEnemy(object bundle)
     {
+        if (!inventory.canAttack)
+        {
+            return false;
+        }
         List<Target<PlayerHealth>> killableEnemies = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= lowHealthHp);
         return killableEnemies.Count() > 0;
     }
@@ -358,6 +369,24 @@ public class AgentAI : MonoBehaviour
     public object GoForEnemy(object o)
     {
         target = enemyTargets.GetClosest(GetStartTile(), revision).transform;
+        StartShootingBT();
+        return null;
+    }
+
+    public object GoToKill(object o)
+    {
+        List<Target<PlayerHealth>> killableEnemies = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= lowHealthHp);
+        killableEnemies.Sort();
+        target = killableEnemies[0].transform;
+        StartShootingBT();
+        return null;
+    }
+
+    public object GoForEnemyWithLowerHP(object o)
+    {
+        List<Target<PlayerHealth>> playerWithLowerHp = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= playerHealth.hp);
+        playerWithLowerHp.Sort();
+        target = playerWithLowerHp[0].transform;
         StartShootingBT();
         return null;
     }
