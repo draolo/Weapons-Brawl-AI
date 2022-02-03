@@ -43,15 +43,19 @@ public class Bot : Character
         MoveTo(new Vector2i(mapPosInTile.x, mapPosInTile.y + 1));
     }
 
-    public void Start()
+    public void Awake()
     {
         mMap = FindObjectOfType<Map>();
         mMap.mapModificationEvent.AddListener(UpdatePath);
         mInputs = new bool[(int)KeyInput.Count];
         mPrevInputs = new bool[(int)KeyInput.Count];
         mPosition = transform.position;
-        freeRoam = !GetComponent<PlayerManager>().isABot;
         mAABB.HalfSize = new Vector2(0.5f * mWidth, 0.5f * mHeight);
+    }
+
+    public void Start()
+    {
+        freeRoam = !GetComponent<PlayerManager>().isABot;
     }
 
     public bool IsOnGroundAndFitsPos(Vector2i pos)

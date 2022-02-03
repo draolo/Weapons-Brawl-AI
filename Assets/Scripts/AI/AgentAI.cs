@@ -7,41 +7,46 @@ using UnityEngine;
 
 public class AgentAI : MonoBehaviour
 {
-    public float aiTime = .2f;
-    public float beginWaitTime = 1f;
+    [SerializeField] private float reactionTime = 0.5f;
+    [SerializeField] private int hpMargin = 15;
+    [SerializeField] private int lowHealthHp = 20;
 
-    public bool scared;
-    public bool waitingActionToEnd;
-    public Color team;
-    public Bot bot;
-    public Transform target;
+    private OpenChestBT openBT;
+    private ShootBT shootBT;
+    private Bot bot;
+    private PlayerHealth playerHealth;
+    private PlayerWeaponManager_Inventory inventory;
+
+    private TargetManager<PlayerHealth> enemyTargets;
+    private TargetManager<AbstractChest> healthChest;
+    private TargetManager<AbstractChest> reviveChest;
+    private TargetManager<AbstractChest> upgradeChest;
+    private List<PlayerInfo> targetToRevive;
+
+    private System.Random rand;
+    private bool scared;
+    private Color team;
+    private bool waitingActionToEnd;
+    private Transform target;
+    private int revision;
 
     private IDTNode root;
     private DecisionTree dt;
-    private System.Random rand;
-    public int lowHealthHp = 20;
-
-    public OpenChestBT openBT;
-    public ShootBT shootBT;
-    public List<Target<PlayerHealth>> reachableTargets;
-    public List<Target<AbstractChest>> reachableHealthChest;
-    public List<Target<AbstractChest>> reachableReviveChest;
-    public List<Target<AbstractChest>> reachableUpgradeChest;
-    public List<Target<PlayerHealth>> availableTargets;
-    public List<PlayerInfo> targetToRevive;
-    private float reactionTime = 0.5f;
-    public int hpMargin = 15;
-    private PlayerHealth playerHealth;
-    private PlayerWeaponManager_Inventory inventory;
 
     private void Awake()
     {
         rand = new System.Random();
         openBT = GetComponent<OpenChestBT>();
         shootBT = GetComponent<ShootBT>();
+        bot = GetComponent<Bot>();
         playerHealth = GetComponent<PlayerHealth>();
         inventory = GetComponent<PlayerWeaponManager_Inventory>();
         scared = rand.Next(2) == 0;
+
+        revision = -1;
+        waitingActionToEnd = true;
+        target = null;
+
         DTAction health = new DTAction(GoForHealth);
         DTAction revive = new DTAction(GoForRevive);
         DTAction upgrade = new DTAction(GoForUpgrade);
@@ -112,21 +117,15 @@ public class AgentAI : MonoBehaviour
     private void Start()
     {
         team = transform.parent.GetComponent<PlayerInfo>().team;
+        InizializeEnemyTarget();
+        InizializeHealthChest();
+        InizializeReviveChest();
+        InizializeUpgradeChest();
     }
 
     private void OnEnable()
     {
         StopAndStart();
-    }
-
-    public void StopAndStart()
-    {
-        StopAllCoroutines();
-        shootBT.StopBehavior();
-        openBT.StopBehavior();
-        waitingActionToEnd = false;
-        dt = new DecisionTree(root);
-        StartCoroutine(PlayAI());
     }
 
     private void OnDisable()
@@ -137,94 +136,62 @@ public class AgentAI : MonoBehaviour
         waitingActionToEnd = false;
     }
 
+    public void InizializeEnemyTarget()
+    {
+        List<PlayerInfo> pinfoTarget = new List<PlayerInfo>();
+        foreach (Color color in MatchManager._instance.teams)
+        {
+            if (color != team)
+            {
+                pinfoTarget.AddRange(MatchManager._instance.teamMembers[color]);
+            }
+        }
+        var aliveTargets = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.alive);
+        List<PlayerHealth> enemies = new List<PlayerHealth>();
+
+        foreach (PlayerInfo p in aliveTargets)
+        {
+            enemies.Add(p.GetComponentInChildren<PlayerHealth>());
+        }
+        enemyTargets = new TargetManager<PlayerHealth>(enemies, bot);
+    }
+
+    public void InizializeReviveChest()
+    {
+        ResurrectionChest[] revives = GameObject.FindObjectsOfType<ResurrectionChest>();
+        List<AbstractChest> revivesList = new List<AbstractChest>(revives);
+        reviveChest = new TargetManager<AbstractChest>(revivesList, bot);
+    }
+
+    public void InizializeUpgradeChest()
+    {
+        WeaponChestScript[] upgrades = GameObject.FindObjectsOfType<WeaponChestScript>();
+        List<AbstractChest> uplgradesList = new List<AbstractChest>(upgrades);
+        upgradeChest = new TargetManager<AbstractChest>(uplgradesList, bot);
+        FilterOutAlreadyTakenUpgrade();
+    }
+
+    public void InizializeHealthChest()
+    {
+        LifeChest[] hps = GameObject.FindObjectsOfType<LifeChest>();
+        List<AbstractChest> hpsList = new List<AbstractChest>(hps);
+        healthChest = new TargetManager<AbstractChest>(hpsList, bot);
+    }
+
+    public void StopAndStart()
+    {
+        StopAllCoroutines();
+        shootBT.StopBehavior();
+        openBT.StopBehavior();
+        waitingActionToEnd = false;
+        revision++;
+        dt = new DecisionTree(root);
+        StartCoroutine(PlayAI());
+    }
+
     public void FindNewAction()
     {
         waitingActionToEnd = false;
-    }
-
-    private object RandomTF(object bundle)
-    {
-        return rand.Next(2) == 0;
-    }
-
-    private object CheckIfHealthIsFullOrThereIsAChest(object bundle)
-    {
-        if (playerHealth.hp + hpMargin < playerHealth.maxHealth)
-        {
-            SetUpAndFilterOutUnreachableHealthChest();
-            return reachableHealthChest.Count > 0;
-        }
-        return false;
-    }
-
-    private object CheckForMissingUpgrade(object bundle)
-    {
-        SetUpAndFilterOutUnreachableUpgradeChest();
-        return reachableUpgradeChest.Count > 0;
-    }
-
-    private object CheckForLowerHpEnemyOrBravery(object bundle)
-    {
-        SetUpAndFilterUnreachablePlayer();
-        if (reachableTargets.Count <= 0)
-        {
-            return false;
-        }
-        FilterPlayerWithLowerHp();
-        if ((availableTargets.Count <= 0) && (!scared))
-        {
-            SetUpAndFilterUnreachablePlayer();
-        }
-        return availableTargets.Count > 0;
-    }
-
-    private object FilterPlayerWithLowerHp()
-    {
-        SetUpAndFilterUnreachablePlayer();
-        availableTargets = availableTargets.FindAll(e => e.obj.hp <= playerHealth.hp);
-        return availableTargets.Count > 0;
-    }
-
-    private object ThereAreKillableEnemy(object bundle)
-    {
-        SetUpAndFilterUnreachablePlayer();
-        availableTargets = availableTargets.FindAll(e => e.obj.hp <= lowHealthHp);
-        return availableTargets.Count() > 0;
-    }
-
-    private object ThereAreReachAbleEnemy(object bundle)
-    {
-        if (!inventory.canAttack)
-        {
-            return false;
-        }
-        SetUpAndFilterUnreachablePlayer();
-        return reachableTargets.Count > 0;
-    }
-
-    private object IsTheLastEnemy(object bundle)
-    {
-        InizializePlayerTarget();
-        return (availableTargets.Count() == 1);
-    }
-
-    private object CanAttack(object bundle)
-    {
-        return inventory.canAttack;
-    }
-
-    private object CheckForAllyAndReviveChest(object bundle)
-    {
-        if (InizializeAllyToRevive())
-        {
-            SetUpandFilterOutUnreachableReviveChest();
-            if (reachableReviveChest.Count > 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public IEnumerator PlayAI()
@@ -236,11 +203,6 @@ public class AgentAI : MonoBehaviour
             {
                 try
                 {
-                    reachableHealthChest = null;
-                    reachableReviveChest = null;
-                    reachableUpgradeChest = null;
-                    reachableTargets = null;
-                    availableTargets = null;
                     dt.walk();
                 }
                 catch (MissingReferenceException mre)
@@ -252,7 +214,77 @@ public class AgentAI : MonoBehaviour
         }
     }
 
-    public bool InizializeAllyToRevive()
+    private object RandomTF(object bundle)
+    {
+        return rand.Next(2) == 0;
+    }
+
+    private object CheckIfHealthIsFullOrThereIsAChest(object bundle)
+    {
+        if (playerHealth.hp + hpMargin < playerHealth.maxHealth)
+        {
+            return healthChest.HasAReachAbleTarget(GetStartTile(), revision);
+        }
+        return false;
+    }
+
+    private object CheckForMissingUpgrade(object bundle)
+    {
+        //todo filter already taken targets
+        return upgradeChest.HasAReachAbleTarget(GetStartTile(), revision);
+    }
+
+    //TODO REDO
+    private object CheckForLowerHpEnemyOrBravery(object bundle)
+    {
+        if (!enemyTargets.HasAReachAbleTarget(GetStartTile(), revision))
+        {
+            return false;
+        }
+        List<Target<PlayerHealth>> playerWithLowerHp = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= playerHealth.hp);
+        if ((playerWithLowerHp.Count <= 0) && (!scared))
+        {
+            return true;
+        }
+        return playerWithLowerHp.Count > 0;
+    }
+
+    private object ThereAreKillableEnemy(object bundle)
+    {
+        List<Target<PlayerHealth>> killableEnemies = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= lowHealthHp);
+        return killableEnemies.Count() > 0;
+    }
+
+    private object ThereAreReachAbleEnemy(object bundle)
+    {
+        if (!inventory.canAttack)
+        {
+            return false;
+        }
+        return enemyTargets.HasAReachAbleTarget(GetStartTile(), revision);
+    }
+
+    private object IsTheLastEnemy(object bundle)
+    {
+        return (enemyTargets.NumberOfTargets() == 1);
+    }
+
+    private object CanAttack(object bundle)
+    {
+        return inventory.canAttack;
+    }
+
+    private object CheckForAllyAndReviveChest(object bundle)
+    {
+        if (SearchAllyToRevive())
+        {
+            return reviveChest.HasAReachAbleTarget(GetStartTile(), revision);
+        }
+
+        return false;
+    }
+
+    public bool SearchAllyToRevive()
     {
         List<PlayerInfo> pinfoTarget;
 
@@ -263,195 +295,26 @@ public class AgentAI : MonoBehaviour
         return targetToRevive.Count() > 0;
     }
 
-    public bool InizializePlayerTarget()
+    public object CouldIDoUpgradeAndEnemy(object bundle)
     {
-        List<PlayerInfo> pinfoTarget = new List<PlayerInfo>();
-        foreach (Color color in MatchManager._instance.teams)
-        {
-            if (color != team)
-            {
-                pinfoTarget.AddRange(MatchManager._instance.teamMembers[color]);
-            }
-        }
-        var aliveTargets = pinfoTarget.FindAll(e => e.status == PlayerInfo.Status.alive);
-        availableTargets = new List<Target<PlayerHealth>>();
+        //KISS no complex things, if we have a lot of time yes otherwise no
+        float marginTime = 12f;
+        float time = MatchManager._instance.waiting;
 
-        foreach (PlayerInfo p in aliveTargets)
-        {
-            availableTargets.Add(new Target<PlayerHealth>(p.GetComponentInChildren<PlayerHealth>()));
-        }
-        return availableTargets.Count() > 0;
+        float d = upgradeChest.GetClosest(GetStartTile(), revision).distance;
+        return d + marginTime < time;
     }
 
-    public void SetUpAndFilterUnreachablePlayer()
+    private void SetAllyToRevive()
     {
-        if (reachableTargets != null)
+        //CHOOSE THE ONE WITH THE HIGHER POITS
+        List<PlayerInfo> realPlayers = targetToRevive.FindAll((x) => !x.isAbot);
+        if (realPlayers.Count > 0)
         {
-            availableTargets = new List<Target<PlayerHealth>>(reachableTargets);
-            return;
+            targetToRevive = realPlayers;
         }
-        InizializePlayerTarget();
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        reachableTargets = availableTargets.FindAll(e => e.CalculatePath(startTile, bot));
-        availableTargets = new List<Target<PlayerHealth>>(reachableTargets);
-    }
-
-    public bool InizializeReviveChest()
-    {
-        List<AbstractChest> aChestRevive;
-        aChestRevive = MatchManager._instance._reviveChest;
-        reachableReviveChest = new List<Target<AbstractChest>>();
-
-        foreach (AbstractChest c in aChestRevive)
-        {
-            reachableReviveChest.Add(new Target<AbstractChest>(c));
-        }
-        return reachableReviveChest.Count() > 0;
-    }
-
-    public void SetUpandFilterOutUnreachableReviveChest()
-    {
-        if (reachableReviveChest != null)
-        {
-            return;
-        }
-        InizializeReviveChest();
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        reachableReviveChest = reachableReviveChest.FindAll(e => e.CalculatePath(startTile, bot));
-    }
-
-    public bool InizializeUpgradeChest()
-    {
-        List<AbstractChest> aChestUpgrade;
-        aChestUpgrade = MatchManager._instance._upgradeChest;
-        reachableUpgradeChest = new List<Target<AbstractChest>>();
-
-        foreach (AbstractChest c in aChestUpgrade)
-        {
-            reachableUpgradeChest.Add(new Target<AbstractChest>(c));
-        }
-        FilterOutAlreadyTakenUpgrade();
-        return reachableUpgradeChest.Count() > 0;
-    }
-
-    public void SetUpAndFilterOutUnreachableUpgradeChest()
-    {
-        if (reachableUpgradeChest != null)
-        {
-            return;
-        }
-        InizializeUpgradeChest();
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        reachableUpgradeChest = reachableUpgradeChest.FindAll(e => e.CalculatePath(startTile, bot));
-    }
-
-    public bool InizializeHealthChest()
-    {
-        List<AbstractChest> aChestHealth;
-        aChestHealth = MatchManager._instance._lifeChest;
-        reachableHealthChest = new List<Target<AbstractChest>>();
-
-        foreach (AbstractChest c in aChestHealth)
-        {
-            reachableHealthChest.Add(new Target<AbstractChest>(c));
-        }
-        return reachableHealthChest.Count() > 0;
-    }
-
-    public void SetUpAndFilterOutUnreachableHealthChest()
-    {
-        if (reachableHealthChest != null)
-        {
-            return;
-        }
-        InizializeHealthChest();
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        reachableHealthChest = reachableHealthChest.FindAll(e => e.CalculatePath(startTile, bot));
-    }
-
-    public bool SetClosestEnemy()
-    {
-        availableTargets.Sort();
-        if (availableTargets.Count() > 0)
-        {
-            target = availableTargets[0].obj.transform;
-            return true;
-        }
-        else
-        {
-            target = null;
-            return false;
-        }
-    }
-
-    public bool SetClosestHealthChest()
-    {
-        reachableHealthChest.Sort();
-        if (reachableHealthChest.Count() > 0)
-        {
-            target = reachableHealthChest[0].obj.transform;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public bool SetClosestReviveChest()
-    {
-        reachableReviveChest.Sort();
-        if (reachableReviveChest.Count() > 0)
-        {
-            target = reachableReviveChest[0].obj.transform;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public bool SetClosestUpgradeChest()
-    {
-        reachableUpgradeChest.Sort();
-        if (reachableUpgradeChest.Count > 0)
-        {
-            target = reachableUpgradeChest[0].obj.transform;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        targetToRevive.Sort((a, b) => b.GetPoints() - a.GetPoints());
+        gameObject.GetComponent<PlayerChestManager>().SetAllyToResurrectBot(targetToRevive[0].pname);
     }
 
     public bool StartShootingBT()
@@ -472,64 +335,41 @@ public class AgentAI : MonoBehaviour
 
     public object GoForHealth(object o)
     {
-        SetClosestHealthChest();
+        target = healthChest.GetClosest(GetStartTile(), revision).transform;
         StartOpenChestBT();
         return null;
     }
 
     public object GoForRevive(object o)
     {
-        SetClosestReviveChest();
+        target = reviveChest.GetClosest(GetStartTile(), revision).transform;
         SetAllyToRevive();
         StartOpenChestBT();
         return null;
     }
 
-    private void SetAllyToRevive()
-    {
-        //CHOOSE THE ON WITH THE HIGHER POITS
-        List<PlayerInfo> realPlayers = targetToRevive.FindAll((x) => !x.isAbot);
-        if (realPlayers.Count > 0)
-        {
-            targetToRevive = realPlayers;
-        }
-        targetToRevive.Sort((a, b) => b.GetPoints() - a.GetPoints());
-        gameObject.GetComponent<PlayerChestManager>().SetAllyToResurrectBot(targetToRevive[0].pname);
-    }
-
     public object GoForUpgrade(object o)
     {
-        SetClosestUpgradeChest();
+        target = upgradeChest.GetClosest(GetStartTile(), revision).transform;
         StartOpenChestBT();
         return null;
     }
 
     public object GoForEnemy(object o)
     {
-        InizializeTargetDistance();
-        SetClosestEnemy();
+        target = enemyTargets.GetClosest(GetStartTile(), revision).transform;
         StartShootingBT();
         return null;
     }
 
-    private void InizializeTargetDistance()
-    {
-        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
-        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
-        {
-            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
-                startTile.x += 1;
-            else
-                startTile.x -= 1;
-        }
-        availableTargets = availableTargets.FindAll(e => { e.SetUpDistance(startTile, bot); return true; });
-    }
-
     private object GoForEnemyLong(object bundle)
     {
-        InizializePlayerTarget();
-        InizializeTargetDistance();
-        SetClosestEnemy();
+        Target<PlayerHealth> playerHealthTarget = enemyTargets.GetClosest(GetStartTile(), revision, false);
+        if (playerHealthTarget == null)
+        {
+            return null;
+        }
+        target = playerHealthTarget.transform;
         StartShootingBT();
         return null;
     }
@@ -539,10 +379,10 @@ public class AgentAI : MonoBehaviour
         return null;
     }
 
-    public bool FilterOutAlreadyTakenUpgrade()
+    public void FilterOutAlreadyTakenUpgrade()
     {
-        reachableUpgradeChest = reachableUpgradeChest.FindAll(e => !DidIHaveThisUpgrade((WeaponChestScript)e.obj));
-        return reachableUpgradeChest.Count > 0;
+        Predicate<Target<AbstractChest>> predicate = new Predicate<Target<AbstractChest>>(e => !DidIHaveThisUpgrade((WeaponChestScript)e.obj));
+        upgradeChest.FilterTarget(predicate);
     }
 
     private bool DidIHaveThisUpgrade(WeaponChestScript chest)
@@ -552,13 +392,16 @@ public class AgentAI : MonoBehaviour
         return sameClassWeapon.Count > 0;
     }
 
-    public object CouldIDoUpgradeAndEnemy(object bundle)
+    private Vector2i GetStartTile()
     {
-        //KISS no complex things, if we have a lot of time yes otherwise no
-        float marginTime = 5f;
-        float time = MatchManager._instance.waiting;
-        reachableUpgradeChest.Sort();
-        float d = reachableUpgradeChest[0].distance;
-        return d + marginTime < time;
+        Vector2i startTile = bot.mMap.GetMapTileAtPoint(bot.mPosition - bot.mAABB.HalfSize + Vector2.one * Map.cTileSize * 0.5f);
+        if (bot.mOnGround && !bot.IsOnGroundAndFitsPos(startTile))
+        {
+            if (bot.IsOnGroundAndFitsPos(new Vector2i(startTile.x + 1, startTile.y)))
+                startTile.x += 1;
+            else
+                startTile.x -= 1;
+        }
+        return startTile;
     }
 }

@@ -2,12 +2,29 @@
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using UnityEngine.Events;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, AvailabilityNotificator
 {
     public int hp = 100;
     public int maxHealth = 100;
     public GameObject healthBar;
+
+    private UnityEvent<bool> _availabilityEvent;
+
+    public UnityEvent<bool> AvailabilityEvent
+    {
+        get
+        {
+            return _availabilityEvent;
+        }
+    }
+
+    private void Awake()
+    {
+        if (_availabilityEvent == null)
+            _availabilityEvent = new UnityEvent<bool>();
+    }
 
     public void TakeDamage(int damage, GameObject fromWho)
     {
@@ -57,6 +74,10 @@ public class PlayerHealth : MonoBehaviour
 
     public void GetLife(int life)
     {
+        if (hp <= 0)
+        {
+            _availabilityEvent.Invoke(true);
+        }
         hp += life;
         hp = Math.Min(hp, maxHealth);
         RefreshHealth();
@@ -73,5 +94,6 @@ public class PlayerHealth : MonoBehaviour
         this.gameObject.SetActive(false);
         this.gameObject.transform.position = new Vector3(0, 0);
         gameObject.GetComponent<PlayerManager>().PlayerDie();
+        _availabilityEvent.Invoke(false);
     }
 }

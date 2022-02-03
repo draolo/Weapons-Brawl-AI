@@ -1209,18 +1209,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe5d27ef260c8e94e9734b32cae1ad63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aiTime: 0.2
-  beginWaitTime: 1
-  scared: 0
-  waitingActionToEnd: 0
-  team: {r: 0, g: 0, b: 0, a: 0}
-  bot: {fileID: 1622671711}
-  target: {fileID: 0}
-  lowHealthHp: 20
-  openBT: {fileID: 1622671713}
-  shootBT: {fileID: 0}
-  targetToRevive: []
+  reactionTime: 0.5
   hpMargin: 15
+  lowHealthHp: 20
 --- !u!114 &1622671713
 MonoBehaviour:
   m_ObjectHideFlags: 0

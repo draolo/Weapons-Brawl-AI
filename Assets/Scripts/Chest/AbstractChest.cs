@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 
-public abstract class AbstractChest : MonoBehaviour
+public abstract class AbstractChest : MonoBehaviour, AvailabilityNotificator
 {
     public enum ChestType
     {
@@ -17,10 +18,20 @@ public abstract class AbstractChest : MonoBehaviour
     public int level;
     public CircleCollider2D playerNextToRay;
     public SpriteRenderer PressRImg;
+    private UnityEvent<bool> _availabilityEvent;
+
+    public UnityEvent<bool> AvailabilityEvent
+    {
+        get
+        {
+            return _availabilityEvent;
+        }
+    }
 
     private void Start()
     {
-        MatchManager._instance.AddChest(this);
+        if (_availabilityEvent == null)
+            _availabilityEvent = new UnityEvent<bool>();
     }
 
     internal abstract bool DoSomething(PlayerChestManager p);
@@ -92,6 +103,6 @@ public abstract class AbstractChest : MonoBehaviour
 
     private void OnDestroy()
     {
-        MatchManager._instance.RemoveChest(this);
+        _availabilityEvent.Invoke(false);
     }
 }

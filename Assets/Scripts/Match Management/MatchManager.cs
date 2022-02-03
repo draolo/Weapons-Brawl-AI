@@ -27,9 +27,6 @@ public class MatchManager : MonoBehaviour
     public bool isWaiting;
     public static MatchManager _instance = null;
     public List<PlayerInfo> _players = new List<PlayerInfo>();
-    public List<AbstractChest> _lifeChest = new List<AbstractChest>();
-    public List<AbstractChest> _upgradeChest = new List<AbstractChest>();
-    public List<AbstractChest> _reviveChest = new List<AbstractChest>();
     public Color winner;
 
     public Dictionary<Color, List<PlayerInfo>> teamMembers = new Dictionary<Color, List<PlayerInfo>>();
@@ -38,62 +35,6 @@ public class MatchManager : MonoBehaviour
     public bool gameHasStart;
 
     private PauseMenuScript UIManager;
-
-    internal void AddChest(AbstractChest abstractChest)
-    {
-        switch (abstractChest.type)
-        {
-            case AbstractChest.ChestType.Health:
-                {
-                    AddChestToList(_lifeChest, abstractChest);
-                    break;
-                }
-            case AbstractChest.ChestType.Revive:
-                {
-                    AddChestToList(_reviveChest, abstractChest);
-                    break;
-                }
-            case AbstractChest.ChestType.Upgrade:
-                {
-                    AddChestToList(_upgradeChest, abstractChest);
-                    break;
-                }
-            default:
-                break;
-        }
-    }
-
-    private void AddChestToList(List<AbstractChest> list, AbstractChest c)
-    {
-        if (list.Contains(c))
-            return;
-
-        list.Add(c);
-    }
-
-    internal void RemoveChest(AbstractChest abstractChest)
-    {
-        switch (abstractChest.type)
-        {
-            case AbstractChest.ChestType.Health:
-                {
-                    _lifeChest.Remove(abstractChest);
-                    break;
-                }
-            case AbstractChest.ChestType.Revive:
-                {
-                    _reviveChest.Remove(abstractChest);
-                    break;
-                }
-            case AbstractChest.ChestType.Upgrade:
-                {
-                    _upgradeChest.Remove(abstractChest);
-                    break;
-                }
-            default:
-                break;
-        }
-    }
 
     public void Awake()
     {
@@ -146,9 +87,10 @@ public class MatchManager : MonoBehaviour
                 winner = availableTeams.Count > 0 ? availableTeams[0] : blankColor;
                 GameOver(winner);
             }
-
-            UpdateTeams(); //if it works don't touch it, even if i don't remember why it's there, probably just to remove disconnected player in the OGD version of the game
-            ChangeTurn();
+            if (!gameIsOver)
+            {
+                ChangeTurn();
+            }
         }
     }
 
