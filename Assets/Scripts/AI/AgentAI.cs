@@ -29,6 +29,7 @@ public class AgentAI : MonoBehaviour
     private bool waitingActionToEnd;
     private Transform target;
     private int revision;
+    private int revisionThreshold = 2000;
 
     private IDTNode root;
     private DecisionTree dt;
@@ -191,6 +192,14 @@ public class AgentAI : MonoBehaviour
         openBT.StopBehavior();
         waitingActionToEnd = false;
         revision++;
+        if (revision > revisionThreshold)
+        {
+            revision = 0;
+            enemyTargets.ResetCounter();
+            upgradeChest.ResetCounter();
+            reviveChest.ResetCounter();
+            healthChest.ResetCounter();
+        }
         dt = new DecisionTree(root);
         StartCoroutine(PlayAI());
     }

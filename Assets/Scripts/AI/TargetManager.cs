@@ -122,7 +122,7 @@ public class TargetManager<T> where T : MonoBehaviour, AvailabilityNotificator
         return allTargets.Count;
     }
 
-    private void ResetCounter()
+    public void ResetCounter()
     {
         _revision = -1;
     }
