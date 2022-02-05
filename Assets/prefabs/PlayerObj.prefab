@@ -1243,7 +1243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aiTime: 0.2
   beginWaitTime: 1
-  safeDistance: 8
+  safeDistance: 8.5
   target: {fileID: 0}
   targetInfo: {fileID: 0}
   targetOld: {x: 0, y: 0}

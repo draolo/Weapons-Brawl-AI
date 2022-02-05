@@ -8,7 +8,7 @@ public class ShootBT : MonoBehaviour
 {
     public float aiTime = .2f;
     public float beginWaitTime = 1f;
-    public float safeDistance = 8f;
+    public float safeDistance = 8.5f;
     private BehaviorTree AI;
 
     private AgentAI aiManager;
@@ -77,18 +77,15 @@ public class ShootBT : MonoBehaviour
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
         BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, isThereAFireLine, aim, safeShoot });
         BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
+        BTSequence setPathAndStart = new BTSequence(new IBTTask[] { safeSetPath, startBot });
 
-        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
-        BTDecorator notInLine = new BTDecoratorInverter(couldSeeTheTarget);
-        BTDecorator notEmptyLine = new BTDecoratorInverter(isThereAFireLine);
-        BTDecorator failPause = new BTDecoratorInverter(pauseMovement);
-        BTDecorator failResume = new BTDecoratorInverter(resumeMovement);
+        BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, setPathAndStart });
 
         BTSequence checkTarget = new BTSequence(new IBTTask[] { couldSeeTheTarget, isThereAFireLine });
 
-        BTDecorator invertedTargetCheck = new BTDecoratorInverter(checkTarget);
+        BTDecorator invertedTargetCheck = new BTDecoratorInverter(isThereAFireLine);
 
-        BTDecorator waitUntilTargetLocked = new BTDecoratorUntilFail(invertedTargetCheck);
+        BTDecorator waitUntilTargetLocked = new BTDecoratorUntilSucces(checkTarget);
 
         BTSequence endMovementAndTest = new BTSequence(new IBTTask[] { pauseMovement, waitMovementEnd, invertedTargetCheck, resumeMovement });
 
@@ -102,8 +99,8 @@ public class ShootBT : MonoBehaviour
 
         BTDecorator didINotHitMyself = new BTDecoratorInverter(testIfIHitMyself);
 
-        BTSequence testIfIHitMyselfStraight = new BTSequence(new IBTTask[] { isGrounded, straightLine, setImpactPoint, setIfItIsAsafePlace, didINotHitMyself });
-        BTSequence testIfIHitMyselfLobbed = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, setIfItIsAsafePlace, didINotHitMyself });
+        BTSequence testIfIHitMyselfStraight = new BTSequence(new IBTTask[] { isGrounded, straightLine, setImpactPoint, didINotHitMyself, setIfItIsAsafePlace });
+        BTSequence testIfIHitMyselfLobbed = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, didINotHitMyself, setIfItIsAsafePlace });
 
         BTSelector testLobbedAndStraigthShoot = new BTSelector(new IBTTask[] { testIfIHitMyselfStraight, testIfIHitMyselfLobbed });
 
@@ -181,7 +178,6 @@ public class ShootBT : MonoBehaviour
     public IEnumerator ShootTarget()
     {
         Log("start coroutine");
-        yield return new WaitForSeconds(beginWaitTime);
         bool step;
         do
         {
