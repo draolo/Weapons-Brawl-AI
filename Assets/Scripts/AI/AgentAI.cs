@@ -128,6 +128,7 @@ public class AgentAI : MonoBehaviour
         InizializeHealthChest();
         InizializeReviveChest();
         InizializeUpgradeChest();
+        dt = new DecisionTree(root);
     }
 
     private void OnEnable()
@@ -137,7 +138,6 @@ public class AgentAI : MonoBehaviour
 
     private void OnDisable()
     {
-        StopAllCoroutines();
         shootBT.StopBehavior();
         openBT.StopBehavior();
         waitingActionToEnd = false;
@@ -187,49 +187,38 @@ public class AgentAI : MonoBehaviour
 
     public void StopAndStart()
     {
-        StopAllCoroutines();
         shootBT.StopBehavior();
         openBT.StopBehavior();
         waitingActionToEnd = false;
-        revision++;
-        if (revision > revisionThreshold)
+    }
+
+    private void Update()
+    {
+        while (!waitingActionToEnd)
         {
-            revision = 0;
-            enemyTargets.ResetCounter();
-            upgradeChest.ResetCounter();
-            reviveChest.ResetCounter();
-            healthChest.ResetCounter();
+            revision++;
+            if (revision > revisionThreshold)
+            {
+                revision = 0;
+                enemyTargets.ResetCounter();
+                upgradeChest.ResetCounter();
+                reviveChest.ResetCounter();
+                healthChest.ResetCounter();
+            }
+            try
+            {
+                dt.walk();
+            }
+            catch (MissingReferenceException mre)
+            {
+                Debug.Log(mre);
+            }
         }
-        dt = new DecisionTree(root);
-        StartCoroutine(PlayAI());
     }
 
     public void FindNewAction()
     {
         waitingActionToEnd = false;
-    }
-
-    public IEnumerator PlayAI()
-    {
-        yield return new WaitForSeconds(1);
-        while (true)
-        {
-            if (!waitingActionToEnd)  //todo find a new way
-            {
-                try
-                {
-                    float time = Time.realtimeSinceStartup;
-                    dt.walk();
-                    time = Time.realtimeSinceStartup - time;
-                    Debug.Log("decision taken in " + time + "s");
-                }
-                catch (MissingReferenceException mre)
-                {
-                    Debug.Log(mre);
-                }
-            }
-            yield return new WaitForSeconds(reactionTime);
-        }
     }
 
     private object RandomTF(object bundle)
@@ -252,7 +241,6 @@ public class AgentAI : MonoBehaviour
         return upgradeChest.HasAReachAbleTarget(GetStartTile(), revision);
     }
 
-    //TODO REDO
     private object CheckForLowerHpEnemy(object bundle)
     {
         if (!inventory.canAttack)
@@ -265,6 +253,10 @@ public class AgentAI : MonoBehaviour
 
     private object AmIBrave(object bundle)
     {
+        if (!inventory.canAttack)
+        {
+            return false;
+        }
         return (!scared) && enemyTargets.HasAReachAbleTarget(GetStartTile(), revision);
     }
 
@@ -417,6 +409,7 @@ public class AgentAI : MonoBehaviour
 
     private object DoNothing(object bundle)
     {
+        waitingActionToEnd = true;
         return null;
     }
 

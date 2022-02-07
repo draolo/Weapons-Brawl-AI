@@ -24,7 +24,9 @@ public class ShootBT : MonoBehaviour
     private PlayerWeaponManager_Inventory shootingManager;
     private PlayerMovementOffline playerMovementOffline;
     private RaycastHit2D hitPoint;
-    private Vector2 impactPoint;
+    private Vector2 impactPoint = new Vector2(-9999, -9999);
+
+    private float power;
     private Vector2 safePlace = new Vector2(-9999, -9999);
 
     // Start is called before the first frame update
@@ -57,6 +59,7 @@ public class ShootBT : MonoBehaviour
         BTAction faceTheTarget = new BTAction(FaceTheTarget);
         BTAction setIfItIsAsafePlace = new BTAction(CheckAndSetSafePlace);
         BTAction setImpactPoint = new BTAction(SetImpactPoint);
+        BTAction choosePower = new BTAction(SetPower);
         BTAction stupid = new BTAction(LogStupidAction);
 
         BTCondition testIfIHitMyself = new BTCondition(DoesTheShootHitMyself);
@@ -75,15 +78,16 @@ public class ShootBT : MonoBehaviour
         BTSequence emptyStraightFireLine = new BTSequence(new IBTTask[] { isGrounded, straightLine, setImpactPoint, setIfItIsAsafePlace, emptyFireline });
         BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, setIfItIsAsafePlace, emptyFireline });
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
-        BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, isThereAFireLine, aim, safeShoot });
+        BTDecorator FastThereIsAFireLine = new BTDecoratorFastTree(isThereAFireLine);
+        BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, FastThereIsAFireLine, aim, safeShoot });
         BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
         BTSequence setPathAndStart = new BTSequence(new IBTTask[] { safeSetPath, startBot });
 
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, setPathAndStart });
 
-        BTSequence checkTarget = new BTSequence(new IBTTask[] { isGrounded, couldSeeTheTarget, isThereAFireLine });
+        BTSequence checkTarget = new BTSequence(new IBTTask[] { isGrounded, couldSeeTheTarget, choosePower, FastThereIsAFireLine });
 
-        BTDecorator invertedTargetCheck = new BTDecoratorInverter(isThereAFireLine);
+        BTDecorator invertedTargetCheck = new BTDecoratorInverter(FastThereIsAFireLine);
 
         BTDecorator waitUntilTargetLocked = new BTDecoratorUntilSucces(checkTarget);
 
@@ -103,22 +107,23 @@ public class ShootBT : MonoBehaviour
         BTSequence testIfIHitMyselfLobbed = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, didINotHitMyself, setIfItIsAsafePlace });
 
         BTSelector testLobbedAndStraigthShoot = new BTSelector(new IBTTask[] { testIfIHitMyselfStraight, testIfIHitMyselfLobbed });
+        BTDecorator fastTestIfIHitMyself = new BTDecoratorFastTree(testLobbedAndStraigthShoot);
 
-        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, testLobbedAndStraigthShoot, aim, safeShoot });
+        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, fastTestIfIHitMyself, aim, safeShoot });
 
         BTSequence stupidShoot = new BTSequence(new IBTTask[] { stupid, faceTheTarget, straightLine, aim, safeShoot });
 
-        BTDecorator invertedFirelineCheck = new BTDecoratorInverter(isThereAFireLine);
+        BTDecorator invertedFirelineCheck = new BTDecoratorInverter(FastThereIsAFireLine);
 
-        BTSequence checkLineOrMovement = new BTSequence(new IBTTask[] { invertedFirelineCheck, isMovinig });
+        BTSequence checkLineOrMovement = new BTSequence(new IBTTask[] { choosePower, invertedFirelineCheck, isMovinig });
 
         BTDecorator waitUntilThereIsALineOrPathEnd = new BTDecoratorUntilFail(checkLineOrMovement);
 
         BTSequence searchAndShootForward = new BTSequence(new IBTTask[] { waitUntilThereIsALineOrPathEnd, shootWithoutHitMyself });
 
-        BTDecorator checkIfIHaventGotAline = new BTDecoratorInverter(testLobbedAndStraigthShoot);
+        BTDecorator checkIfIHaventGotAline = new BTDecoratorInverter(fastTestIfIHitMyself);
 
-        BTSequence testLineAndMovementBackwards = new BTSequence(new IBTTask[] { checkIfIHaventGotAline, isMovinig });
+        BTSequence testLineAndMovementBackwards = new BTSequence(new IBTTask[] { choosePower, checkIfIHaventGotAline, isMovinig });
 
         BTDecorator moveUntilIDontShootMyself = new BTDecoratorUntilFail(testLineAndMovementBackwards);
 
@@ -144,7 +149,7 @@ public class ShootBT : MonoBehaviour
     public void StartBehavior()
     {
         StopAllCoroutines();
-        targetAim.target = target;
+        power = 100;
         Log("starting behavior");
         try
         {
@@ -172,7 +177,7 @@ public class ShootBT : MonoBehaviour
         bot.StopTheBot();
         target = null;
         targetInfo = null;
-        targetAim.target = null;
+        targetAim.SetTarget(null);
     }
 
     public IEnumerator ShootTarget()
@@ -227,7 +232,7 @@ public class ShootBT : MonoBehaviour
     public bool TestAndSetStraight()
     {
         Log("test and set straight");
-        Vector2 direction = targetAim.Aim();
+        Vector2 direction = targetAim.GetShootingAngle(power / 100f);
         if (direction.x <= -999)
         {
             Log("fail");
@@ -238,10 +243,28 @@ public class ShootBT : MonoBehaviour
         return true;
     }
 
+    public bool SetPower()
+    {
+        Vector2 _45Deg = Vector2.one.normalized;
+        float normalizedPower = targetAim.GetPower(_45Deg);
+        int minPower;
+        if (normalizedPower < 0 || normalizedPower > 1)
+        {
+            minPower = 100;
+        }
+        else
+        {
+            minPower = Mathf.CeilToInt(normalizedPower * 100f);
+        }
+        minPower = Mathf.Clamp(minPower, 20, 100);
+        power = UnityEngine.Random.Range(minPower, 100);
+        return true;
+    }
+
     public bool SetImpactPoint()
     {
         Log("test if the fireline is empty " + shootingAngle);
-        hitPoint = targetAim.CollisionPredictionStupid(shootingAngle);
+        hitPoint = targetAim.CollisionPredictionStupid(shootingAngle, power / 100f);
         impactPoint = hitPoint.point;
         return true;
     }
@@ -252,7 +275,7 @@ public class ShootBT : MonoBehaviour
         {
             Log("success we hit nothing, is that a succes???");
             //very strange but we haven't hit nothing
-            return true;
+            return false;
         }
         if (hitPoint.collider.gameObject == target.gameObject)
         {
@@ -272,7 +295,7 @@ public class ShootBT : MonoBehaviour
     public bool TestAndSetLobbed()
     {
         Log("test and set lobbed");
-        Vector2 direction = targetAim.Aim(true);
+        Vector2 direction = targetAim.GetShootingAngle(power / 100f, true);
         if (direction.x <= -999)
         {
             Log("fail");
@@ -377,7 +400,7 @@ public class ShootBT : MonoBehaviour
     public bool Shoot()
     {
         Log("shooting");
-        shootingManager.Attack(100);
+        shootingManager.Attack(Mathf.FloorToInt(power));
         return true;
     }
 
@@ -423,7 +446,7 @@ public class ShootBT : MonoBehaviour
         float targetDistance = Vector2.Distance(transform.position, target.position);
         float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
         bool meleeOnly = targetDistance < targetAim.firePointDistance;
-        if (!emptyFireLine && !meleeOnly)
+        if ((!emptyFireLine && !meleeOnly) || targetDistance > 90)
         {
             shootingManager.SwitchWeapon(0);
             return true;
@@ -471,6 +494,7 @@ public class ShootBT : MonoBehaviour
     private bool LogStupidAction()
     {
         Debug.Log(gameObject.transform.parent.gameObject.name + " supid");
+        power = 100;
         return true;
     }
 }

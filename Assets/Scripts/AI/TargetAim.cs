@@ -5,26 +5,28 @@ using UnityEngine;
 
 public class TargetAim : MonoBehaviour
 {
-    public Transform target;
-    public Transform firePoint;
-    public int speed = 50;
-    public float firePointDistance;
-    public LayerMask projectileObstacle;
-    public Vector2 lastTest;
+    [SerializeField] private Transform target;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private GameObject FirePointPivot;
+    [SerializeField] private LayerMask projectileObstacle;
+    [SerializeField] private int maxSpeed = 50;
 
-    public GameObject FirePointPivot;
+    public float firePointDistance;
+
+    private Vector2 lastTest;
 
     private void Awake()
     {
         firePointDistance = Vector2.Distance(firePoint.position, FirePointPivot.transform.position);
     }
 
-    public Vector2 Aim(bool lobbed = false)
+    public Vector2 GetShootingAngle(float normalizedPower, bool lobbed = false)
     {
         if (target == null)
         {
             return new Vector2(-9999, -9999);
         }
+        float speed = maxSpeed * normalizedPower;
         Vector2 g = Physics.gravity;
         float gravity = g.magnitude;
         Vector2 deltaVec = target.position - transform.position;// calculate vector from target to start
@@ -72,23 +74,44 @@ public class TargetAim : MonoBehaviour
         return aimTo.normalized;
     }
 
-    public float GetHeightAtTime(Vector2 angle, float time)
+    public float GetPower(Vector2 angle)
+    {
+        angle.Normalize();
+        Vector2 g = Physics.gravity;
+        float gravity = g.magnitude;
+        Vector2 deltaVec = target.position - transform.position;// calculate vector from target to start
+        deltaVec.x = Math.Abs(deltaVec.x);
+        float gxx = gravity * deltaVec.x * deltaVec.x;
+        float denom = 2f * angle.x * ((angle.y * deltaVec.x) - (angle.x * deltaVec.y));
+        if (denom == 0)
+        {
+            return 99;
+        }
+        else
+        {
+            float power = Mathf.Sqrt(gxx / denom);
+            return power / maxSpeed;
+        }
+    }
+
+    private float GetHeightAtTime(Vector2 angle, float time, float speed)
     {
         return speed * time * angle.y + 0.5f * Physics.gravity.y * time * time + transform.position.y;
     }
 
-    public float GetLengthAtTime(Vector2 angle, float time)
+    private float GetLengthAtTime(Vector2 angle, float time, float speed)
     {
         return speed * time * angle.x + transform.position.x;
     }
 
-    public RaycastHit2D CollisionPredictionStupid(Vector2 angle, int halfOfpoints = 3)
+    public RaycastHit2D CollisionPredictionStupid(Vector2 angle, float normalizedPower, int halfOfpoints = 3)
     {
         lastTest = angle;
         RaycastHit2D mock = new RaycastHit2D();
         mock.point = new Vector2(-9999, -9999);
+        float speed = maxSpeed * normalizedPower;
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
-        Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT), GetHeightAtTime(angle, maxT));
+        Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT, speed), GetHeightAtTime(angle, maxT, speed));
         float step = maxT / halfOfpoints;
 
         Vector2 beginPos = (Vector2)transform.position + (firePointDistance * angle);
@@ -96,7 +119,7 @@ public class TargetAim : MonoBehaviour
         RaycastHit2D hit;
         for (int i = 1; i < halfOfpoints * 2; i++)
         {
-            endPos = new Vector2(GetLengthAtTime(angle, step * i), GetHeightAtTime(angle, step * i));
+            endPos = new Vector2(GetLengthAtTime(angle, step * i, speed), GetHeightAtTime(angle, step * i, speed));
             float xDistancePoint = endPos.x - beginPos.x;
             float xDistanceTarget = target.position.x - beginPos.x;
             if (Mathf.Abs(xDistanceTarget) < Mathf.Abs(xDistancePoint))
@@ -148,15 +171,16 @@ public class TargetAim : MonoBehaviour
         Gizmos.DrawSphere((Vector2)transform.position + (firePointDistance * lastTest), 1);
         int halfOfpoints = 3;
         Gizmos.color = Color.green;
-        Vector2 angle = Aim(false);
+        Vector2 angle = GetShootingAngle(1, false);
+        float speed = maxSpeed;
         float maxT = Mathf.Abs((speed * angle.y) / (Physics.gravity.y));
-        Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT), GetHeightAtTime(angle, maxT));
+        Vector2 maxHeight = new Vector2(GetLengthAtTime(angle, maxT, speed), GetHeightAtTime(angle, maxT, speed));
         float step = maxT / halfOfpoints;
         Vector2 beginPos = firePoint.position;
         Vector2 endPos;
         for (int i = 1; i <= halfOfpoints * 2; i++)
         {
-            endPos = new Vector2(GetLengthAtTime(angle, step * i), GetHeightAtTime(angle, step * i));
+            endPos = new Vector2(GetLengthAtTime(angle, step * i, speed), GetHeightAtTime(angle, step * i, speed));
             float xDistancePoint = endPos.x - firePoint.position.x;
             float xDistanceTarget = target.position.x - firePoint.position.x;
             if (Mathf.Abs(xDistanceTarget) < Mathf.Abs(xDistancePoint))
