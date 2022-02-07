@@ -218,7 +218,10 @@ public class AgentAI : MonoBehaviour
             {
                 try
                 {
+                    float time = Time.realtimeSinceStartup;
                     dt.walk();
+                    time = Time.realtimeSinceStartup - time;
+                    Debug.Log("decision taken in " + time + "s");
                 }
                 catch (MissingReferenceException mre)
                 {
@@ -321,7 +324,7 @@ public class AgentAI : MonoBehaviour
         float marginTime = 12f;
         float time = MatchManager._instance.waiting;
 
-        float d = upgradeChest.GetClosest(GetStartTile(), revision).distance;
+        float d = upgradeChest.GetClosest(GetStartTile(), revision).Distance;
         return d + marginTime < time;
     }
 

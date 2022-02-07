@@ -115,11 +115,11 @@ public class Map : MonoBehaviour
     {
         mPathFinder = new PathFinderFast(mGrid, this);
 
-        mPathFinder.Formula = HeuristicFormula.Manhattan;
+        mPathFinder.Formula = HeuristicFormula.Euclidean;
         //if false then diagonal movement will be prohibited
-        mPathFinder.Diagonals = false;
+        mPathFinder.Diagonals = true;
         //if true then diagonal movement will have higher cost
-        mPathFinder.HeavyDiagonals = false;
+        mPathFinder.HeavyDiagonals = true;
         //estimate of path length
         mPathFinder.HeuristicEstimate = 6;
         mPathFinder.PunishChangeDirection = false;
@@ -268,8 +268,6 @@ public class Map : MonoBehaviour
         TileBase[] actualTiles = tilemap.GetTilesBlock(tilemap.cellBounds);
         tilemapOffset = tilemap.cellBounds.min;
         mGrid = new byte[Mathf.NextPowerOfTwo((int)mWidth), Mathf.NextPowerOfTwo((int)mHeight)];
-        InitPathFinder();
-
         for (int y = 0; y < mHeight; ++y)
         {
             for (int x = 0; x < mWidth; ++x)
@@ -288,6 +286,7 @@ public class Map : MonoBehaviour
                 }
             }
         }
+        InitPathFinder();
     }
 
     public void DestroyCircle(Vector3 position, int explosionRadius)

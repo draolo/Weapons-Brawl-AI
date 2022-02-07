@@ -36,6 +36,9 @@ public class Character : MovingObject
     {
         DrawMovingObjectGizmos();
 
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere((mPosition - mAABB.HalfSize + 0.5f * Map.cTileSize * Vector2.one), 1);
+
         //draw the path
 
         if (mPath != null && mPath.Count > 0)

@@ -527,40 +527,41 @@ namespace Algorithms
                     var posX = end.x;
                     var posY = end.y;
 
-                    var fPrevNodeTmp = new PathFinderNodeFast();
-                    var fNodeTmp = nodes[mEndLocation][0];
+                    var FPPrevNode = new PathFinderNodeFast();
+                    var FPNode = nodes[mEndLocation][0];
 
-                    var fNode = end;
-                    var fPrevNode = end;
+                    var VectorNode = end;
+                    var VectorPrevNode = end;
 
-                    var loc = (fNodeTmp.PY << mGridXLog2) + fNodeTmp.PX;
+                    var loc = (FPNode.PY << mGridXLog2) + FPNode.PX;
 
-                    while (fNode.x != fNodeTmp.PX || fNode.y != fNodeTmp.PY)
+                    while (VectorNode.x != FPNode.PX || VectorNode.y != FPNode.PY)
                     {
-                        var fNextNodeTmp = nodes[loc][fNodeTmp.PZ];
+                        var FPNextNode = nodes[loc][FPNode.PZ];
 
                         if ((mClose.Count == 0)
-                            || (mMap.IsOneWayPlatform(fNode.x, fNode.y - 1))
-                            || (SafeGridGetter(fNode.x, fNode.y - 1, maxCharacterJumpHeight) == 0 && mMap.IsOneWayPlatform(fPrevNode.x, fPrevNode.y - 1))
-                            || (fNodeTmp.JumpLength == 3)
-                            || (fNextNodeTmp.JumpLength != 0 && fNodeTmp.JumpLength == 0)                                                                                                       //mark jumps starts
-                            || (fNodeTmp.JumpLength == 0 && fPrevNodeTmp.JumpLength != 0)                                                                                                       //mark landings
-                            || (fNode.y > mClose[mClose.Count - 1].y && fNode.y > fNodeTmp.PY)
-                            || (fNode.y < mClose[mClose.Count - 1].y && fNode.y < fNodeTmp.PY)
-                            || ((mMap.IsGround(fNode.x - 1, fNode.y) || mMap.IsGround(fNode.x + 1, fNode.y))
-                                && fNode.y != mClose[mClose.Count - 1].y && fNode.x != mClose[mClose.Count - 1].x))
-                            mClose.Add(fNode);
+                            || (mMap.IsOneWayPlatform(VectorNode.x, VectorNode.y - 1))
+                            || (SafeGridGetter(VectorNode.x, VectorNode.y - 1, maxCharacterJumpHeight) == 0 && mMap.IsOneWayPlatform(VectorPrevNode.x, VectorPrevNode.y - 1))
+                            || (FPNode.JumpLength == 3)
+                            || (FPNextNode.JumpLength != 0 && FPNode.JumpLength == 0)   //first node before a landing                                                                                               //mark jumps starts
+                            || (FPNode.JumpLength == 0 && FPPrevNode.JumpLength != 0)   //first node before jump                                                                                                    //mark landings
+                            || (FPNode.JumpLength != 0 && FPNextNode.JumpLength == 0)   //first node of a jump
+                            || (VectorNode.y > mClose[mClose.Count - 1].y && VectorNode.y > FPNode.PY)
+                            || (VectorNode.y < mClose[mClose.Count - 1].y && VectorNode.y < FPNode.PY)
+                            || ((mMap.IsGround(VectorNode.x - 1, VectorNode.y) || mMap.IsGround(VectorNode.x + 1, VectorNode.y))
+                                && VectorNode.y != mClose[mClose.Count - 1].y && VectorNode.x != mClose[mClose.Count - 1].x))
+                            mClose.Add(VectorNode);
 
-                        fPrevNode = fNode;
-                        posX = fNodeTmp.PX;
-                        posY = fNodeTmp.PY;
-                        fPrevNodeTmp = fNodeTmp;
-                        fNodeTmp = fNextNodeTmp;
-                        loc = (fNodeTmp.PY << mGridXLog2) + fNodeTmp.PX;
-                        fNode = new Vector2i(posX, posY);
+                        VectorPrevNode = VectorNode;
+                        posX = FPNode.PX;
+                        posY = FPNode.PY;
+                        FPPrevNode = FPNode;
+                        FPNode = FPNextNode;
+                        loc = (FPNode.PY << mGridXLog2) + FPNode.PX;
+                        VectorNode = new Vector2i(posX, posY);
                     }
 
-                    mClose.Add(fNode);
+                    mClose.Add(VectorNode);
 
                     mStopped = true;
 
@@ -624,6 +625,7 @@ namespace Algorithms
                             || (fNodeTmp.JumpLength == 3)
                             || (fNextNodeTmp.JumpLength != 0 && fNodeTmp.JumpLength == 0)                                                                                                       //mark jumps starts
                             || (fNodeTmp.JumpLength == 0 && fPrevNodeTmp.JumpLength != 0)                                                                                                       //mark landings
+                            || (fNodeTmp.JumpLength != 0 && fNextNodeTmp.JumpLength == 0)   //first node of a jump
                             || (fNode.y > mClose[mClose.Count - 1].y && fNode.y > fNodeTmp.PY)
                             || (fNode.y < mClose[mClose.Count - 1].y && fNode.y < fNodeTmp.PY)
                             || ((mMap.IsGround(fNode.x - 1, fNode.y) || mMap.IsGround(fNode.x + 1, fNode.y))

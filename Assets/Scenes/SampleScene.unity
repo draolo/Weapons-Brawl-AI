@@ -443,6 +443,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 803275185671330094, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1457694573283987974, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1538226005279532642, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1656506023439650592, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2135199179170453797, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -495,9 +511,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grid
       objectReference: {fileID: 0}
+    - target: {fileID: 3431584385816327909, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4630058986286257103, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4869905057719833359, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_LocalPosition.y
       value: -18.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6884406117188800246, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371776014924026647, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7521119287613192842, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: type
@@ -1135,6 +1167,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 7634618007085649274, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7634835911764952822, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -1146,6 +1182,10 @@ PrefabInstance:
     - target: {fileID: 7711436153590808894, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8198823417650415620, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 671866124b6822848a2c40ae3071bd6c, type: 3}
@@ -16876,9 +16916,6 @@ MonoBehaviour:
   inBetweenTime: 5
   isWaiting: 0
   _players: []
-  _lifeChest: []
-  _upgradeChest: []
-  _reviveChest: []
   winner: {r: 0, g: 0, b: 0, a: 0}
   gameIsOver: 0
   gameHasStart: 0

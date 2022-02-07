@@ -81,7 +81,7 @@ public class ShootBT : MonoBehaviour
 
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, setPathAndStart });
 
-        BTSequence checkTarget = new BTSequence(new IBTTask[] { couldSeeTheTarget, isThereAFireLine });
+        BTSequence checkTarget = new BTSequence(new IBTTask[] { isGrounded, couldSeeTheTarget, isThereAFireLine });
 
         BTDecorator invertedTargetCheck = new BTDecoratorInverter(isThereAFireLine);
 

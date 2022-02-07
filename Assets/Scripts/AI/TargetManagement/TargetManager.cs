@@ -89,7 +89,6 @@ public class TargetManager<T> where T : MonoBehaviour, AvailabilityNotificator
         {
             if (allTargets.Count > 0)
             {
-                allTargets = allTargets.FindAll(e => { e.SetUpDistance(startTile); return true; });
                 allTargets.Sort();
                 return allTargets[0];
             }
@@ -99,7 +98,6 @@ public class TargetManager<T> where T : MonoBehaviour, AvailabilityNotificator
             List<Target<T>> reachable = GetReachable(startTile, revision);
             if (reachable.Count > 0)
             {
-                reachable = reachable.FindAll(e => { e.SetUpDistance(startTile); return true; });
                 reachable.Sort();
                 return reachable[0];
             }

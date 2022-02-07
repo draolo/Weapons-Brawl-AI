@@ -31,10 +31,11 @@ public class OpenChestBT : MonoBehaviour
         BTAction stop = new BTAction(Stop);
         BTAction open = new BTAction(OpenTheChest);
 
-        BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath, startBot });
         BTCondition proximityCheck = new BTCondition(NotCloseToTheTarget);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
         BTCondition isMovinig = new BTCondition(IsItMoving);
+
+        BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath, startBot });
         BTSelector pathVerifier = new BTSelector(new IBTTask[] { samePosition, safeSetPath });
         BTSequence movingCycle = new BTSequence(new IBTTask[] { pathVerifier, proximityCheck });
         BTDecorator checkUntilFail = new BTDecoratorUntilFail(movingCycle);

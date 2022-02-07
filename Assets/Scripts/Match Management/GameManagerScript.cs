@@ -40,7 +40,7 @@ public class GameManagerScript : MonoBehaviour
         }
         else
         {
-            playerPerTeam = 3;
+            playerPerTeam = 1;
             nOfRealPlayers.Add(Color.blue, 0);
             nOfRealPlayers.Add(Color.red, 0);
         }
