@@ -2,13 +2,11 @@ using CRBT;
 using System.Collections;
 using UnityEngine;
 
-public class OpenChestBT : MonoBehaviour
+public class OpenChestBT : BTBehaviour
 {
-    private BehaviorTree AI;
     private PlayerChestManager playerChestManager;
     private Rigidbody2D _rigidbody;
     public Bot bot;
-    public float aiTime = .2f;
     public float beginWaitTime = 1f;
     public Transform target;
     public Vector2 targetOld;
@@ -24,7 +22,7 @@ public class OpenChestBT : MonoBehaviour
         aiManager = gameObject.GetComponent<AgentAI>();
     }
 
-    private void CreateTree()
+    protected override void CreateTree()
     {
         BTAction setPath = new BTAction(SearchAndSetPath);
         BTAction startBot = new BTAction(Move);
@@ -44,44 +42,11 @@ public class OpenChestBT : MonoBehaviour
         AI = new BehaviorTree(root);
     }
 
-    public void StartBehavior()
+    public override void StopBehavior()
     {
-        StopAllCoroutines();
-        CreateTree();
-        StartCoroutine(OpenChest());
-    }
-
-    public void StopBehavior()
-    {
-        StopAllCoroutines();
+        base.StopBehavior();
         bot.StopTheBot();
         target = null;
-    }
-
-    public IEnumerator OpenChest()
-    {
-        yield return new WaitForSeconds(beginWaitTime);
-        bool step;
-        do
-        {
-            yield return new WaitForSeconds(aiTime);
-            try
-            {
-                step = AI.Step();
-            }
-            catch (MissingReferenceException mre)
-            {
-                Debug.Log(mre);
-                step = false;
-            }
-        } while (step);
-        EndOfTask();
-    }
-
-    private void EndOfTask(bool completed = true)
-    {
-        StopBehavior();
-        aiManager.FindNewAction();
     }
 
     public bool SearchAndSetPath()

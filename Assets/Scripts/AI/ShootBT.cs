@@ -4,12 +4,10 @@ using UnityEngine;
 using CRBT;
 using System;
 
-public class ShootBT : MonoBehaviour
+public class ShootBT : BTBehaviour
 {
-    public float aiTime = .2f;
     public float beginWaitTime = 1f;
     public float safeDistance = 8.5f;
-    private BehaviorTree AI;
 
     private AgentAI aiManager;
 
@@ -27,6 +25,7 @@ public class ShootBT : MonoBehaviour
     private Vector2 impactPoint = new Vector2(-9999, -9999);
 
     private float power;
+    private int inaccuracy;
     private Vector2 safePlace = new Vector2(-9999, -9999);
 
     // Start is called before the first frame update
@@ -38,9 +37,10 @@ public class ShootBT : MonoBehaviour
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
         aiManager = gameObject.GetComponent<AgentAI>();
+        inaccuracy = UnityEngine.Random.Range(0, 15);
     }
 
-    private void CreateTree()
+    protected override void CreateTree()
     {
         //for advanced tree could be better to use a reset method that reset the index of BTComposite task
         BTAction setTarget = new BTAction(SetTarget);
@@ -79,7 +79,7 @@ public class ShootBT : MonoBehaviour
         BTSequence emptyLobbedFireLine = new BTSequence(new IBTTask[] { isGrounded, lobbedLine, setImpactPoint, setIfItIsAsafePlace, emptyFireline });
         BTSelector isThereAFireLine = new BTSelector(new IBTTask[] { emptyStraightFireLine, emptyLobbedFireLine });
         BTDecorator FastThereIsAFireLine = new BTDecoratorFastTree(isThereAFireLine);
-        BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, FastThereIsAFireLine, aim, safeShoot });
+        BTSequence shootWithEmptyFireLine = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, FastThereIsAFireLine, shake, aim, safeShoot });
         BTSequence safeSetPath = new BTSequence(new IBTTask[] { stop, setPath });
         BTSequence setPathAndStart = new BTSequence(new IBTTask[] { safeSetPath, startBot });
 
@@ -109,9 +109,9 @@ public class ShootBT : MonoBehaviour
         BTSelector testLobbedAndStraigthShoot = new BTSelector(new IBTTask[] { testIfIHitMyselfStraight, testIfIHitMyselfLobbed });
         BTDecorator fastTestIfIHitMyself = new BTDecoratorFastTree(testLobbedAndStraigthShoot);
 
-        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, fastTestIfIHitMyself, aim, safeShoot });
+        BTSequence shootWithoutHitMyself = new BTSequence(new IBTTask[] { stop, waitMovementEnd, faceTheTarget, fastTestIfIHitMyself, shake, aim, safeShoot });
 
-        BTSequence stupidShoot = new BTSequence(new IBTTask[] { stupid, faceTheTarget, straightLine, aim, safeShoot });
+        BTSequence stupidShoot = new BTSequence(new IBTTask[] { stupid, faceTheTarget, straightLine, shake, aim, safeShoot });
 
         BTDecorator invertedFirelineCheck = new BTDecoratorInverter(FastThereIsAFireLine);
 
@@ -146,67 +146,37 @@ public class ShootBT : MonoBehaviour
         //Debug.Log(gameObject.transform.parent.gameObject.name + " " + message);
     }
 
-    public void StartBehavior()
+    public override void StartBehavior()
     {
-        StopAllCoroutines();
         power = 100;
-        Log("starting behavior");
         try
         {
             targetInfo = target.gameObject.GetComponentInParent<PlayerInfo>();
-            CreateTree();
-            StartCoroutine(ShootTarget());
         }
         catch (Exception)
         {
-            EndOfTask(false);
+            FailedTask();
         }
+        base.StartBehavior();
     }
 
-    private void EndOfTask(bool completed = true)
+    public override void StopBehavior()
     {
-        Log("end of task");
-        StopBehavior();
-        aiManager.FindNewAction();
-    }
-
-    public void StopBehavior()
-    {
-        Log("ending behavior");
-        StopAllCoroutines();
+        base.StopBehavior();
         bot.StopTheBot();
         target = null;
         targetInfo = null;
         targetAim.SetTarget(null);
     }
 
-    public IEnumerator ShootTarget()
+    protected override void BeforeAIStep()
     {
-        Log("start coroutine");
-        bool step;
-        do
+        if (!IsTargetAlive())
         {
-            try
-            {
-                if (!IsTargetAlive())
-                {
-                    step = false;
-                    Log("stopped coroutine due to target death");
-                }
-                else
-                {
-                    step = AI.Step();
-                }
-            }
-            catch (MissingReferenceException mre)
-            {
-                Log("stopped coroutine due to missing reference");
-                Debug.Log(mre);
-                step = false;
-            }
-            yield return new WaitForSeconds(aiTime);
-        } while (step);
-        EndOfTask();
+            FailedTask();
+            Log("stopped coroutine due to target death");
+        }
+        base.BeforeAIStep();
     }
 
     public bool LineOfSight()
@@ -392,8 +362,13 @@ public class ShootBT : MonoBehaviour
     public bool AimShaker()
     {
         Log("adding an error to the aim");
-        //TODO
-
+        Vector2 shake = new Vector2();
+        shake.x = UnityEngine.Random.Range(-inaccuracy, inaccuracy);
+        shake.y = UnityEngine.Random.Range(-inaccuracy, inaccuracy);
+        shake /= 100;
+        Debug.Log("shake: " + shake.x + ":" + shake.y);
+        shootingAngle = shootingAngle + shake;
+        shootingAngle.Normalize();
         return true;
     }
 

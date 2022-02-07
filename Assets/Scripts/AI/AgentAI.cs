@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class AgentAI : MonoBehaviour
 {
-    [SerializeField] private float reactionTime = 0.5f;
     [SerializeField] private int hpMargin = 15;
     [SerializeField] private int lowHealthHp = 20;
 
@@ -129,6 +128,11 @@ public class AgentAI : MonoBehaviour
         InizializeReviveChest();
         InizializeUpgradeChest();
         dt = new DecisionTree(root);
+        shootBT.onBehaviourComplete.AddListener(FindNewAction);
+        openBT.onBehaviourComplete.AddListener(FindNewAction);
+
+        shootBT.onBehaviourFail.AddListener(FindNewAction);
+        openBT.onBehaviourFail.AddListener(FindNewAction);
     }
 
     private void OnEnable()
