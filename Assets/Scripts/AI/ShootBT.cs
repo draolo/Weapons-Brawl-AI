@@ -37,7 +37,7 @@ public class ShootBT : BTBehaviour
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
         aiManager = gameObject.GetComponent<AgentAI>();
-        inaccuracy = UnityEngine.Random.Range(0, 15);
+        inaccuracy = UnityEngine.Random.Range(0, 20);
     }
 
     protected override void CreateTree()
