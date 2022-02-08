@@ -117,7 +117,7 @@ public class Map : MonoBehaviour
 
         mPathFinder.Formula = HeuristicFormula.Euclidean;
         //if false then diagonal movement will be prohibited
-        mPathFinder.Diagonals = true;
+        mPathFinder.Diagonals = false;
         //if true then diagonal movement will have higher cost
         mPathFinder.HeavyDiagonals = true;
         //estimate of path length
