@@ -140,6 +140,11 @@ public class Bot : Character
         mCurrentAction = BotAction.MoveTo;
     }
 
+    public BotAction GetStatus()
+    {
+        return mCurrentAction;
+    }
+
     public void MoveTo(Vector2i destinationInTile)
     {
         if (SearchAndSetPath(destinationInTile))

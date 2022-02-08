@@ -209,6 +209,7 @@ public class AgentAI : MonoBehaviour
                 reviveChest.ResetCounter();
                 healthChest.ResetCounter();
             }
+            FilterOutAlreadyTakenUpgrade();
             try
             {
                 dt.walk();

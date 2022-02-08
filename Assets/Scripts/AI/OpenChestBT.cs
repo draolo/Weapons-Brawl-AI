@@ -11,15 +11,12 @@ public class OpenChestBT : BTBehaviour
     public Transform target;
     public Vector2 targetOld;
 
-    private AgentAI aiManager;
-
     // Start is called before the first frame update
     private void Awake()
     {
         playerChestManager = gameObject.GetComponent<PlayerChestManager>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         bot = gameObject.GetComponent<Bot>();
-        aiManager = gameObject.GetComponent<AgentAI>();
     }
 
     protected override void CreateTree()

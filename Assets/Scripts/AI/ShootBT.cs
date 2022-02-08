@@ -6,10 +6,7 @@ using System;
 
 public class ShootBT : BTBehaviour
 {
-    public float beginWaitTime = 1f;
     public float safeDistance = 8.5f;
-
-    private AgentAI aiManager;
 
     private TargetAim targetAim;
     public Transform target;
@@ -36,8 +33,8 @@ public class ShootBT : BTBehaviour
         bot = gameObject.GetComponent<Bot>();
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         shootingManager = gameObject.GetComponent<PlayerWeaponManager_Inventory>();
-        aiManager = gameObject.GetComponent<AgentAI>();
         inaccuracy = UnityEngine.Random.Range(0, 20);
+        aiTime = (float)UnityEngine.Random.Range(1, 5) / 10f; //random aitime from 0.1 to 0.5 with a scale of 0.1 to avoid unatural synchronized bot movement
     }
 
     protected override void CreateTree()
@@ -63,12 +60,12 @@ public class ShootBT : BTBehaviour
         BTAction stupid = new BTAction(LogStupidAction);
 
         BTCondition testIfIHitMyself = new BTCondition(DoesTheShootHitMyself);
-        // BTCondition targetAlive = new BTCondition(IsTargetAlive);
         BTCondition couldSeeTheTarget = new BTCondition(LineOfSight);
         BTCondition samePosition = new BTCondition(TargetPositionEqual);
         BTCondition straightLine = new BTCondition(TestAndSetStraight);
         BTCondition lobbedLine = new BTCondition(TestAndSetLobbed);
         BTCondition emptyFireline = new BTCondition(EmptyFireLine);
+        BTCondition doesPathHasMoreNode = new BTCondition(BotIsMoving);
         BTCondition isMovinig = new BTCondition(IsItMoving);
         BTCondition isGrounded = new BTCondition(IsItOnGround);
         BTDecorator waitMovementEnd = new BTDecoratorUntilFail(isMovinig);
@@ -115,7 +112,7 @@ public class ShootBT : BTBehaviour
 
         BTDecorator invertedFirelineCheck = new BTDecoratorInverter(FastThereIsAFireLine);
 
-        BTSequence checkLineOrMovement = new BTSequence(new IBTTask[] { choosePower, invertedFirelineCheck, isMovinig });
+        BTSequence checkLineOrMovement = new BTSequence(new IBTTask[] { choosePower, invertedFirelineCheck, doesPathHasMoreNode });
 
         BTDecorator waitUntilThereIsALineOrPathEnd = new BTDecoratorUntilFail(checkLineOrMovement);
 
@@ -123,7 +120,7 @@ public class ShootBT : BTBehaviour
 
         BTDecorator checkIfIHaventGotAline = new BTDecoratorInverter(fastTestIfIHitMyself);
 
-        BTSequence testLineAndMovementBackwards = new BTSequence(new IBTTask[] { choosePower, checkIfIHaventGotAline, isMovinig });
+        BTSequence testLineAndMovementBackwards = new BTSequence(new IBTTask[] { choosePower, checkIfIHaventGotAline, doesPathHasMoreNode });
 
         BTDecorator moveUntilIDontShootMyself = new BTDecoratorUntilFail(testLineAndMovementBackwards);
 
@@ -351,6 +348,11 @@ public class ShootBT : BTBehaviour
         return true;
     }
 
+    public bool BotIsMoving()
+    {
+        return bot.GetStatus() == Bot.BotAction.MoveTo;
+    }
+
     public bool TargetPositionEqual()
     {
         Log("testing if target is in the same position");
@@ -366,7 +368,6 @@ public class ShootBT : BTBehaviour
         shake.x = UnityEngine.Random.Range(-inaccuracy, inaccuracy);
         shake.y = UnityEngine.Random.Range(-inaccuracy, inaccuracy);
         shake /= 100;
-        Debug.Log("shake: " + shake.x + ":" + shake.y);
         shootingAngle = shootingAngle + shake;
         shootingAngle.Normalize();
         return true;
