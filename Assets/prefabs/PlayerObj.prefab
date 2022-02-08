@@ -866,7 +866,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.1, y: 0.2}
+  m_Size: {x: 1.95, y: 0.2}
   m_EdgeRadius: 0
 --- !u!114 &7416142084105937852
 MonoBehaviour:
@@ -1028,7 +1028,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.96, y: 4.6}
+  m_Size: {x: 1.9, y: 4.6}
   m_EdgeRadius: 0
 --- !u!68 &1622671716
 EdgeCollider2D:
@@ -1043,11 +1043,11 @@ EdgeCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -2.5}
-  m_EdgeRadius: 0.1
+  m_Offset: {x: 0, y: -2.55}
+  m_EdgeRadius: 0.05
   m_Points:
-  - {x: -0.88, y: 0}
-  - {x: 0.88, y: 0}
+  - {x: -0.95, y: 0}
+  - {x: 0.95, y: 0}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
@@ -1209,7 +1209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe5d27ef260c8e94e9734b32cae1ad63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reactionTime: 0.5
   hpMargin: 15
   lowHealthHp: 20
 --- !u!114 &1622671713
@@ -1224,8 +1223,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69a4c1d47a3f7284cb4bcc3fd9d0cd86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onStartBehaviour:
+    m_PersistentCalls:
+      m_Calls: []
+  onStopBehaviour:
+    m_PersistentCalls:
+      m_Calls: []
+  onBehaviourComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onBehaviourFail:
+    m_PersistentCalls:
+      m_Calls: []
   bot: {fileID: 1622671711}
-  aiTime: 0.2
   beginWaitTime: 1
   target: {fileID: 0}
   targetOld: {x: 0, y: 0}
@@ -1241,8 +1251,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f94cc64c66161fe449bc689dc8817392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aiTime: 0.2
-  beginWaitTime: 1
+  onStartBehaviour:
+    m_PersistentCalls:
+      m_Calls: []
+  onStopBehaviour:
+    m_PersistentCalls:
+      m_Calls: []
+  onBehaviourComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onBehaviourFail:
+    m_PersistentCalls:
+      m_Calls: []
   safeDistance: 8.5
   target: {fileID: 0}
   targetInfo: {fileID: 0}
@@ -1265,13 +1285,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   firePoint: {fileID: 7454441584663811358}
-  speed: 50
-  firePointDistance: 0
+  FirePointPivot: {fileID: 7456666564187390472}
   projectileObstacle:
     serializedVersion: 2
     m_Bits: 448
-  lastTest: {x: 0, y: 0}
-  FirePointPivot: {fileID: 7456666564187390472}
+  maxSpeed: 50
+  firePointDistance: 0
 --- !u!114 &2824344417399717766
 MonoBehaviour:
   m_ObjectHideFlags: 0

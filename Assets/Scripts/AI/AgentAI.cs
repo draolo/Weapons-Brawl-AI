@@ -198,7 +198,7 @@ public class AgentAI : MonoBehaviour
 
     private void Update()
     {
-        while (!waitingActionToEnd)
+        if (!waitingActionToEnd)
         {
             revision++;
             if (revision > revisionThreshold)
@@ -210,6 +210,7 @@ public class AgentAI : MonoBehaviour
                 healthChest.ResetCounter();
             }
             FilterOutAlreadyTakenUpgrade();
+
             try
             {
                 dt.walk();
