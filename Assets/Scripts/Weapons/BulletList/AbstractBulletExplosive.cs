@@ -10,6 +10,7 @@ public abstract class AbstractBulletExplosive : MonoBehaviour
     public int BulletPower = 20;
     public int FlingIntensity = 10;
     public float speed = 20f;
+    public float TimeToLive = -1;
 
     public Rigidbody2D rb;
     public Map map;

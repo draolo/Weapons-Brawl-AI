@@ -223,6 +223,8 @@ public class AgentAI : MonoBehaviour
 
     public void FindNewAction()
     {
+        shootBT.StopBehavior();
+        openBT.StopBehavior();
         waitingActionToEnd = false;
     }
 
@@ -355,14 +357,14 @@ public class AgentAI : MonoBehaviour
 
     public object GoForHealth(object o)
     {
-        target = healthChest.GetClosest(GetStartTile(), revision).transform;
+        target = healthChest.GetClosest(GetStartTile(), revision)._transform;
         StartOpenChestBT();
         return null;
     }
 
     public object GoForRevive(object o)
     {
-        target = reviveChest.GetClosest(GetStartTile(), revision).transform;
+        target = reviveChest.GetClosest(GetStartTile(), revision)._transform;
         SetAllyToRevive();
         StartOpenChestBT();
         return null;
@@ -370,14 +372,14 @@ public class AgentAI : MonoBehaviour
 
     public object GoForUpgrade(object o)
     {
-        target = upgradeChest.GetClosest(GetStartTile(), revision).transform;
+        target = upgradeChest.GetClosest(GetStartTile(), revision)._transform;
         StartOpenChestBT();
         return null;
     }
 
     public object GoForEnemy(object o)
     {
-        target = enemyTargets.GetClosest(GetStartTile(), revision).transform;
+        target = enemyTargets.GetClosest(GetStartTile(), revision)._transform;
         StartShootingBT();
         return null;
     }
@@ -386,7 +388,7 @@ public class AgentAI : MonoBehaviour
     {
         List<Target<PlayerHealth>> killableEnemies = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= lowHealthHp);
         killableEnemies.Sort();
-        target = killableEnemies[0].transform;
+        target = killableEnemies[0]._transform;
         StartShootingBT();
         return null;
     }
@@ -395,7 +397,7 @@ public class AgentAI : MonoBehaviour
     {
         List<Target<PlayerHealth>> playerWithLowerHp = enemyTargets.GetReachable(GetStartTile(), revision).FindAll(e => e.obj.hp <= playerHealth.hp);
         playerWithLowerHp.Sort();
-        target = playerWithLowerHp[0].transform;
+        target = playerWithLowerHp[0]._transform;
         StartShootingBT();
         return null;
     }
@@ -407,7 +409,7 @@ public class AgentAI : MonoBehaviour
         {
             return null;
         }
-        target = playerHealthTarget.transform;
+        target = playerHealthTarget._transform;
         StartShootingBT();
         return null;
     }

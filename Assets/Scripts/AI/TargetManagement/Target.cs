@@ -7,7 +7,7 @@ public class Target<T> : IComparable<Target<T>> where T : MonoBehaviour
 {
     public T obj;
     public List<Vector2i> path;
-    public Transform transform;
+    public Transform _transform;
 
     public float Distance
     {
@@ -24,22 +24,20 @@ public class Target<T> : IComparable<Target<T>> where T : MonoBehaviour
     {
         obj = o;
         _bot = bot;
-        transform = o.transform;
+        _transform = o.transform;
         path = null;
     }
 
     private void HeuristicDistance(Vector2i startTile)
     {
-        Vector2i tilePos = _bot.mMap.GetMapTileAtPoint(transform.position);
-        Vector2 difference = (Vector2)startTile - (Vector2)tilePos;
-        float vertical = difference.y > 0 ? 1.5f : 0.5f;
-        _hDistance = Mathf.Abs(difference.x) + vertical * Mathf.Abs(difference.y);
+        Vector2i tilePos = _bot.mMap.GetMapTileAtPoint(_transform.position);
+        _hDistance = Vector2.Distance(startTile, _transform.position);
     }
 
     public bool CalculatePath(Vector2i startTile)
     {
         HeuristicDistance(startTile);
-        Vector2i tilePos = _bot.mMap.GetMapTileAtPoint(transform.position);
+        Vector2i tilePos = _bot.mMap.GetMapTileAtPoint(_transform.position);
         path = _bot.mMap.mPathFinder.FindPath(
                 startTile,
                 tilePos,

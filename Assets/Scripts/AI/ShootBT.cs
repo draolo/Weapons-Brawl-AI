@@ -422,14 +422,16 @@ public class ShootBT : BTBehaviour
         float targetDistance = Vector2.Distance(transform.position, target.position);
         float impactPointDistance = Vector2.Distance(transform.position, impactPoint);
         bool meleeOnly = targetDistance < targetAim.firePointDistance;
-        if ((!emptyFireLine && !meleeOnly) || targetDistance > 90)
+        float timeToImpact = targetAim.GetPredictedTimeOfImpact(shootingAngle, power / 100f, target.position);
+        if (!emptyFireLine && !meleeOnly)
         {
             shootingManager.SwitchWeapon(0);
             return true;
         }
         List<AbstractWeaponGeneric> availableWeapons = shootingManager.Weapons;
         List<AbstractWeaponGeneric> longRangeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponBulletBased).IsAssignableFrom(w.GetType()));
-        List<AbstractWeaponGeneric> longRangeWeaponsThatDontHitMe = longRangeWeapons.FindAll(w => !DoesIHitMyselfWithThisWeapon((AbstractWeaponBulletBased)w, impactPointDistance));
+        List<AbstractWeaponGeneric> longRangeWeaponsThatreachTheTarget = longRangeWeapons.FindAll(w => ((AbstractWeaponBulletBased)w).GetProjectileTimeToLive() < 0 || ((AbstractWeaponBulletBased)w).GetProjectileTimeToLive() > timeToImpact);
+        List<AbstractWeaponGeneric> longRangeWeaponsThatDontHitMe = longRangeWeaponsThatreachTheTarget.FindAll(w => !DoesIHitMyselfWithThisWeapon((AbstractWeaponBulletBased)w, impactPointDistance));
         List<AbstractWeaponGeneric> meleeWeapons = availableWeapons.FindAll(w => typeof(AbstractWeaponMelee).IsAssignableFrom(w.GetType()));
         List<AbstractWeaponGeneric> meleeWeaponsThatHitTheTarget = meleeWeapons.FindAll(w => ((AbstractWeaponMelee)w).attackRange > targetDistance);
         List<AbstractWeaponGeneric> suitableWeapons = new List<AbstractWeaponGeneric>();
@@ -447,8 +449,8 @@ public class ShootBT : BTBehaviour
         }
         else
         {
-            longRangeWeapons.Sort();
-            bestWeapon = longRangeWeapons[0];
+            longRangeWeaponsThatreachTheTarget.Sort();
+            bestWeapon = longRangeWeaponsThatreachTheTarget[0];
         }
         if (bestWeapon)
         {

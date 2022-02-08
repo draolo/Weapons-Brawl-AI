@@ -104,6 +104,36 @@ public class TargetAim : MonoBehaviour
         return speed * time * angle.x + transform.position.x;
     }
 
+    public float GetPredictedTimeOfImpact(Vector2 angle, float normalizedPower, Vector2 target)
+    {
+        //easy formula could lead to unpredicted situation for negative target y
+        angle.Normalize();
+        float v = maxSpeed * normalizedPower;
+        Vector2 gravity = Physics.gravity;
+        float g = gravity.magnitude;
+        float sin = angle.y;
+        float deltaY = target.y - transform.position.y;
+        float a = g / 2;
+        float b = -v * sin;
+        float c = deltaY;
+        if (4 * a * c > b * b)
+        {
+            return -1;
+        }
+        float time0 = (-b + Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a); // find candidate times
+        float time1 = (-b - Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a);
+        float deltat0 = Mathf.Abs(target.x - GetLengthAtTime(angle, time0, v));
+        float deltat1 = Mathf.Abs(target.x - GetLengthAtTime(angle, time1, v));
+        if (deltat0 < deltat1)
+        {
+            return time0;
+        }
+        else
+        {
+            return time1;
+        }
+    }
+
     public RaycastHit2D CollisionPredictionStupid(Vector2 angle, float normalizedPower, int halfOfpoints = 3)
     {
         lastTest = angle;

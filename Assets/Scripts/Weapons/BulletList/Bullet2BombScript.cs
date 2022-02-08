@@ -5,13 +5,11 @@ using System.Collections.Generic;
 
 public class Bullet2BombScript : AbstractBulletExplosive
 {
-    public float ExplosionDelay = 2f;
-
     private new void Start()
     {
         base.Start();
         rb.velocity = transform.right * speed;
-        StartCoroutine(ExplodeWithDelay(ExplosionDelay));
+        StartCoroutine(ExplodeWithDelay(TimeToLive));
     }
 
     private IEnumerator ExplodeWithDelay(float delay)

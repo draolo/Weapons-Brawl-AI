@@ -139,7 +139,7 @@ MonoBehaviour:
   BulletPower: 40
   FlingIntensity: 10
   speed: 60
+  TimeToLive: 2
   rb: {fileID: 50575357874365502}
   map: {fileID: 0}
   explosionEffect: {fileID: 1899417354638636, guid: f3179cb56389b6d4f837e4ddd1b2ee3c, type: 3}
-  ExplosionDelay: 2

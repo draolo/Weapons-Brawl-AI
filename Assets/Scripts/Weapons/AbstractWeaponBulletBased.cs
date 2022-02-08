@@ -7,6 +7,11 @@ public abstract class AbstractWeaponBulletBased : AbstractWeaponGeneric
 {
     public GameObject bulletPrefab;
 
+    public float GetProjectileTimeToLive()
+    {
+        return bulletPrefab.GetComponent<AbstractBulletExplosive>().TimeToLive;
+    }
+
     public override void Attack(int charge)
     {
         Shoot(charge);
