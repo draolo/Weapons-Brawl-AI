@@ -58,7 +58,7 @@ namespace Algorithms
             public ushort PY;
             public byte Status;
             public byte PZ;
-            public short JumpLength;
+            public int JumpLength;
 
             #endregion Variables Declaration
 
@@ -400,7 +400,7 @@ namespace Algorithms
                         //calculate a proper jumplength value for the successor
 
                         var jumpLength = nodes[mLocation.xy][mLocation.z].JumpLength;
-                        short newJumpLength = jumpLength;
+                        int newJumpLength = jumpLength;
 
                         if (onGround)
                             newJumpLength = 0;
@@ -413,12 +413,15 @@ namespace Algorithms
                         }
                         else if (mNewLocationY > mLocationY)
                         {
-                            if (jumpLength < 2 && maxCharacterJumpHeight > 2) //first jump is always two block up instead of one up and optionally one to either right or left
+                            if (maxCharacterJumpHeight > 2 && jumpLength == 0) //first jump is always two block up instead of one up and optionally one to either right or left
                                 newJumpLength = 3;
-                            else if (jumpLength % 2 == 0)
-                                newJumpLength = (short)(jumpLength + 2);
-                            else
-                                newJumpLength = (short)(jumpLength + 1);
+                            else if (jumpLength > 0)
+                            {
+                                if (jumpLength % 2 == 0)
+                                    newJumpLength = (short)(jumpLength + 2);
+                                else
+                                    newJumpLength = (short)(jumpLength + 1);
+                            }
                         }
                         else if (mNewLocationY < mLocationY)
                         {
@@ -427,8 +430,16 @@ namespace Algorithms
                             else
                                 newJumpLength = (short)Mathf.Max(maxCharacterJumpHeight * 2, jumpLength + 1);
                         }
-                        else if (!onGround && mNewLocationX != mLocationX)
+                        else if (!onGround && mNewLocationX != mLocationX && jumpLength == 0)
+                        {
+                            newJumpLength = maxCharacterJumpHeight * 2;
+                        }
+                        else
+                        {
                             newJumpLength = (short)(jumpLength + 1);
+                        }
+                        if (jumpLength != 0 && newJumpLength <= 3 && newJumpLength > 0)
+                            continue;
 
                         if (jumpLength >= 0 && jumpLength % 2 != 0 && mLocationX != mNewLocationX)
                             continue;
@@ -439,6 +450,8 @@ namespace Algorithms
 
                         //if we're falling and succeor's height is bigger than ours, skip that successor
                         if (jumpLength >= maxCharacterJumpHeight * 2 && mNewLocationY > mLocationY)
+                            continue;
+                        if (newJumpLength == 0 && jumpLength != 0 && mNewLocationY == mLocationY)
                             continue;
 
                         mNewG = nodes[mLocation.xy][mLocation.z].G + SafeGridGetter(mNewLocationX, mNewLocationY, maxCharacterJumpHeight) + newJumpLength / 4;

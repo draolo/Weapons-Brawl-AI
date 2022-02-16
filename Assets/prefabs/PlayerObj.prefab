@@ -866,7 +866,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.95, y: 0.2}
+  m_Size: {x: 1.85, y: 0.25}
   m_EdgeRadius: 0
 --- !u!114 &7416142084105937852
 MonoBehaviour:
@@ -1028,7 +1028,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.9, y: 4.6}
+  m_Size: {x: 1.85, y: 4.5}
   m_EdgeRadius: 0
 --- !u!68 &1622671716
 EdgeCollider2D:
@@ -1039,15 +1039,15 @@ EdgeCollider2D:
   m_GameObject: {fileID: 7456557633283913568}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6f9cdc6cea8f7cc4081e616518b98fe9, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -2.55}
   m_EdgeRadius: 0.05
   m_Points:
-  - {x: -0.95, y: 0}
-  - {x: 0.95, y: 0}
+  - {x: -0.9, y: 0}
+  - {x: 0.9, y: 0}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0

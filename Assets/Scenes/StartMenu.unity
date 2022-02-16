@@ -1064,7 +1064,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -192, y: 36}
-  m_SizeDelta: {x: 360, y: 44.6}
+  m_SizeDelta: {x: 290, y: 44.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &626428427
 MonoBehaviour:
@@ -1273,7 +1273,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -192, y: -10}
-  m_SizeDelta: {x: 294, y: 44.6}
+  m_SizeDelta: {x: 270, y: 44.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &653749348
 MonoBehaviour:
@@ -1453,7 +1453,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.65
+  m_fontSize: 23.7
   m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1769,7 +1769,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PLAYER VS BOT
+  m_text: TWO PLAYERS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -3378,7 +3378,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: BOT VS BOT
+  m_text: SPECTATOR MODE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -4064,8 +4064,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPerTeam: 3
-  realBluePlayer: 0
-  realRedPlayer: 0
 --- !u!4 &1459435352
 Transform:
   m_ObjectHideFlags: 0
@@ -4501,7 +4499,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -192, y: -56}
-  m_SizeDelta: {x: 227, y: 44.6}
+  m_SizeDelta: {x: 345, y: 44.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1638729537
 MonoBehaviour:
@@ -4879,7 +4877,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PLAYER VS PLAYER
+  m_text: SINGLE PLAYER
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}

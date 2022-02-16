@@ -60,7 +60,7 @@ public class AgentAI : MonoBehaviour
         DTDecision isThereAreviveChestAndADeathAllyWithAKillableEnemy = new DTDecision(CheckForAllyAndReviveChest);
         DTDecision isThereOnlyOneEnemy = new DTDecision(IsTheLastEnemy);
         DTDecision isThereAReachableEnemy = new DTDecision(ThereAreReachAbleEnemy);
-        DTDecision isThereAReachableEnemyAndAMissingUpgrade = new DTDecision(ThereAreReachAbleEnemy);
+        DTDecision isThereAReachableEnemyWithLowerHPAndAMissingUpgrade = new DTDecision(CheckForLowerHpEnemy);
         DTDecision isThereAReachableEnemyThathCouldKill = new DTDecision(ThereAreKillableEnemy);
         DTDecision isThereAreReachableEnemyWithLessHealthThenMe = new DTDecision(CheckForLowerHpEnemy);
         DTDecision amIBrave = new DTDecision(AmIBrave);
@@ -83,12 +83,12 @@ public class AgentAI : MonoBehaviour
         isThereAreviveChestAndADeathAlly.AddLink(false, isThereAMissingReachbleUpgrade);
 
         //0.0.0
-        isThereAMissingReachbleUpgrade.AddLink(true, isThereAReachableEnemyAndAMissingUpgrade);
+        isThereAMissingReachbleUpgrade.AddLink(true, isThereAReachableEnemyWithLowerHPAndAMissingUpgrade);
         isThereAMissingReachbleUpgrade.AddLink(false, isThereAreReachableEnemyWithLessHealthThenMe);
 
         //0.0.0.1
-        isThereAReachableEnemyAndAMissingUpgrade.AddLink(true, couldIDoBoth);
-        isThereAReachableEnemyAndAMissingUpgrade.AddLink(false, upgrade);
+        isThereAReachableEnemyWithLowerHPAndAMissingUpgrade.AddLink(true, couldIDoBoth);
+        isThereAReachableEnemyWithLowerHPAndAMissingUpgrade.AddLink(false, upgrade);
 
         //0.0.0.1.1
         couldIDoBoth.AddLink(true, upgrade);
@@ -96,7 +96,7 @@ public class AgentAI : MonoBehaviour
 
         //0.0.0.1.1.0
         randomBool.AddLink(true, upgrade);
-        randomBool.AddLink(false, enemy);
+        randomBool.AddLink(false, lowerHealthEnemy);
 
         //0.0.0.0
         isThereAreReachableEnemyWithLessHealthThenMe.AddLink(true, lowerHealthEnemy);

@@ -31,7 +31,7 @@ public class Target<T> : IComparable<Target<T>> where T : MonoBehaviour
     private void HeuristicDistance(Vector2i startTile)
     {
         Vector2i tilePos = _bot.mMap.GetMapTileAtPoint(_transform.position);
-        _hDistance = Vector2.Distance(startTile, _transform.position);
+        _hDistance = Vector2.Distance(startTile, tilePos);
     }
 
     public bool CalculatePath(Vector2i startTile)
