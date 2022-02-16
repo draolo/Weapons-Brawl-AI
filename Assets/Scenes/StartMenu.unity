@@ -1112,7 +1112,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 351366738}
         m_TargetAssemblyTypeName: MainMenuScript, Assembly-CSharp
-        m_MethodName: Play2p
+        m_MethodName: Play1p
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1321,7 +1321,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 351366738}
         m_TargetAssemblyTypeName: MainMenuScript, Assembly-CSharp
-        m_MethodName: Play1p
+        m_MethodName: Play2p
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

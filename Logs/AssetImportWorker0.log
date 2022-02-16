@@ -1652,3 +1652,61 @@ System memory in use after: 97.0 MB.
 Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 2732.
 Total: 5.922100 ms (FindLiveObjects: 0.635800 ms CreateObjectMapping: 0.270600 ms MarkObjects: 4.456200 ms  DeleteObjects: 0.556700 ms)
 
+========================================================================
+Received Import Request.
+  Time since last request: 6994.252046 seconds.
+  path: Assets/prefabs/Grid.prefab
+  artifactKey: Guid(671866124b6822848a2c40ae3071bd6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/prefabs/Grid.prefab using Guid(671866124b6822848a2c40ae3071bd6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '28d1a81e56f4caa5816b980e95913828') in 0.128214 seconds
+  Import took 0.134789 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.649358 seconds.
+  path: Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+  artifactKey: Guid(8f586378b4e144a9851e7b34d9b748ee) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset using Guid(8f586378b4e144a9851e7b34d9b748ee) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '012442951c2af51cf6d0c4f6d14be546') in 0.152591 seconds
+  Import took 0.245202 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.001972 seconds.
+  path: Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+  artifactKey: Guid(8f586378b4e144a9851e7b34d9b748ee) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset using Guid(8f586378b4e144a9851e7b34d9b748ee) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '012442951c2af51cf6d0c4f6d14be546') in 0.034549 seconds
+  Import took 0.037701 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 3.728169 seconds.
+  path: Assets/Scenes/StartMenu.unity
+  artifactKey: Guid(a1d366cdc7c436943ab52e5490bf7f23) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scenes/StartMenu.unity using Guid(a1d366cdc7c436943ab52e5490bf7f23) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8b99710fbb57d38fc91bb603f1561480') in 0.013396 seconds
+  Import took 0.016820 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.001057 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for LinuxStandalone target not found
+Native extension for WindowsStandalone target not found
+Native extension for OSXStandalone target not found
+Refreshing native plugins compatible for Editor in 0.41 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.785 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.36 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2041 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 97.6 MB.
+System memory in use after: 97.3 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 2772.
+Total: 7.085400 ms (FindLiveObjects: 0.639600 ms CreateObjectMapping: 0.326700 ms MarkObjects: 5.369500 ms  DeleteObjects: 0.746000 ms)
+
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
